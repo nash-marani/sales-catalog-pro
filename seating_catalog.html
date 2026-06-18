@@ -41,6 +41,23 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .auth-msg.error{background:#FDECEA;color:var(--danger);display:block}
 .auth-msg.success{background:#E8F5E9;color:var(--success);display:block}
 
+/* ── CATALOG PICKER ── */
+.picker-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f3,#E8EFF5);padding:20px}
+.picker-card{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:32px;width:440px;max-width:100%;box-shadow:0 8px 40px rgba(50,106,149,.12)}
+.picker-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.picker-logo{height:44px;max-width:150px;object-fit:contain}
+.picker-title{font-size:19px;font-weight:600;color:var(--txt)}
+.picker-sub{font-size:13px;color:var(--txt2);margin-top:2px}
+.picker-list{display:flex;flex-direction:column;gap:9px}
+.picker-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 16px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+.picker-item:hover{background:var(--accbg);border-color:var(--acc);color:var(--acctxt)}
+.picker-item svg{width:18px;height:18px;color:var(--txt3)}
+.picker-item:hover svg{color:var(--acc)}
+
+/* ── NAV CATALOG INDICATOR ── */
+.nav-catalog{display:flex;align-items:center;gap:10px}
+.nav-catalog-name{font-size:13px;font-weight:600;color:var(--acctxt);background:var(--accbg);padding:3px 10px;border-radius:10px;white-space:nowrap}
+
 /* ── NAV ── */
 .nav{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;background:var(--bg);border-bottom:.5px solid var(--bdr);flex-shrink:0;position:sticky;top:0;z-index:50}
 .nav-brand{display:flex;align-items:center;text-decoration:none;flex-shrink:0}
@@ -258,9 +275,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424534</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">33761639-09fa-4768-aac8-41dd762c5441</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424534, NNN373W3ZMMJ-320560042-424534</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424542</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">6824cd24-3e5e-4e3b-8083-afc646fbf3c6</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424542, NNN373W3ZMMJ-320560042-424542</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -305,6 +322,11 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <span class="nav-cobrand-lbl">Prepared for</span>
       <img id="navClientLogo" class="nav-client-logo" src="" alt="" style="display:none">
       <span class="nav-client-name" id="navClientName">Project Builder</span>
+    </div>
+    <div class="nav-catalog" id="navCatalog" style="display:none">
+      <div class="nav-divider"></div>
+      <span class="nav-catalog-name" id="navCatalogName"></span>
+      <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
     <span class="nav-user" id="navUser"></span>
@@ -393,6 +415,21 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
   </div>
 </div>
 
+<!-- CATALOG PICKER -->
+<div id="pickerWrap" class="picker-wrap" style="display:none">
+  <div class="picker-card">
+    <div class="picker-head">
+      <img id="pickerLogo" class="picker-logo" src="" alt="" style="display:none">
+      <div>
+        <div class="picker-title" id="pickerTitle">Choose a catalog</div>
+        <div class="picker-sub" id="pickerSub">Select which catalog to work in.</div>
+      </div>
+    </div>
+    <div class="picker-list" id="pickerList"></div>
+    <button class="btn-sm-nav" style="margin-top:16px;width:100%" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
 <div id="modalWrap"></div>
 <div class="toast" id="toast" style="display:none"></div>
 
@@ -419,7 +456,8 @@ function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '
 
 // ── STATE ────────────────────────────────────────────────────
 let state = {
-  products: [], customer: null, pricing: {}, catalog: null,
+  products: [], customer: null, customerId: null, pricing: {}, catalog: null,
+  catalogs: [], activeCatalog: null, activeCatalogId: null,
   activeCat: 'All Products', search: '',
   projects: [], activeProjectId: null, activeProjItems: [],
   userId: null, userEmail: null, userRole: null,
@@ -473,11 +511,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
     state.userId    = session.user.id;
     state.userEmail = session.user.email;
     document.getElementById('authWrap').style.display = 'none';
-    document.getElementById('appWrap').style.display  = 'flex';
-    await bootstrap();
+    await bootstrap();   // bootstrap shows either the catalog picker or the app
   } else {
     document.getElementById('authWrap').style.display = 'flex';
     document.getElementById('appWrap').style.display  = 'none';
+    document.getElementById('pickerWrap').style.display = 'none';
   }
 });
 
@@ -492,20 +530,23 @@ function withTimeout(p, ms, label) {
 
 async function bootstrap() {
   try {
-    // 1. Load customer record from Supabase
+    // 1. Resolve which customer this login belongs to (via customer_users)
     const {data: cu, error: cuErr} = await withTimeout(
       sb.from('customer_users')
-        .select('role, full_name, customers(*)')
+        .select('role, full_name, customer_id, customers(*)')
         .eq('user_id', state.userId).single(),
       10000, 'Loading account');
     if (cuErr) console.warn('customer_users:', cuErr.message);
-    if (cu) {
-      state.customer  = cu.customers;
-      state.userRole  = cu.role;
-      applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
+    if (!cu || !cu.customers) {
+      showFatal('Your login isn’t linked to a customer yet. Contact your administrator.');
+      return;
     }
+    state.customer   = cu.customers;
+    state.customerId = cu.customers.id;
+    state.userRole   = cu.role;
+    applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
 
-    // 2. Load master products JSON
+    // 2. Master product list (lives in the repo, shared by all catalogs)
     try {
       const r = await fetch('master_products.json');
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -517,35 +558,114 @@ async function bootstrap() {
       console.warn('master_products.json failed:', e.message);
     }
 
-    // 3. Load pricing & catalog (try external files first, fallback to show-all)
+    // 3. Customer-level pricing (current price per SKU, from the view)
     try {
-      const pr = await fetch(`customers/${CUSTOMER_ID}/pricing.json`);
-      const pd = await pr.json();
-      state.pricing = pd.prices || {};
-    } catch(e) { state.pricing = {}; }
+      const {data: prices, error: pErr} = await withTimeout(
+        sb.from('customer_current_pricing')
+          .select('sku, unit_price')
+          .eq('customer_id', state.customerId),
+        10000, 'Loading pricing');
+      if (pErr) throw pErr;
+      state.pricing = {};
+      (prices || []).forEach(p => { state.pricing[p.sku] = Number(p.unit_price); });
+    } catch(e) { console.warn('pricing:', e.message); state.pricing = {}; }
 
-    try {
-      const cr = await fetch(`customers/${CUSTOMER_ID}/catalog.json`);
-      state.catalog = await cr.json();
-    } catch(e) { state.catalog = {show_all: true, included_skus: [], excluded_skus: []}; }
+    // 4. The customer's catalogs (business lines)
+    const {data: cats, error: catErr} = await withTimeout(
+      sb.from('catalogs')
+        .select('*')
+        .eq('customer_id', state.customerId)
+        .order('sort_order', {ascending: true}),
+      10000, 'Loading catalogs');
+    if (catErr) throw catErr;
+    state.catalogs = cats || [];
 
-    // 4. Load projects
-    await withTimeout(loadProjects(), 10000, 'Loading projects');
-
-    // 5. Render UI
-    renderCats();
-    renderProducts();
-    renderProjList();
+    // 5. Route: no catalogs → error; one → straight in; many → picker
+    if (state.catalogs.length === 0) {
+      showFatal('No catalogs are set up for your customer yet.');
+    } else if (state.catalogs.length === 1) {
+      selectCatalog(state.catalogs[0]);
+    } else {
+      showCatalogPicker();
+    }
   } catch(err) {
     console.error('Bootstrap failed:', err);
-    document.getElementById('prodGrid').innerHTML =
-      `<div class="no-results">
-         <span>Couldn't load the catalog.</span>
-         <span style="font-size:12px;color:var(--txt3)">${err.message}</span>
-         <button class="btn-secondary" style="margin-top:8px"
-           onclick="location.reload()">Retry</button>
-       </div>`;
+    showFatal('Couldn’t load your account: ' + err.message);
   }
+}
+
+// Show the catalog chooser (full-screen)
+function showCatalogPicker() {
+  document.getElementById('appWrap').style.display    = 'none';
+  document.getElementById('authWrap').style.display   = 'none';
+  const wrap = document.getElementById('pickerWrap');
+  wrap.style.display = 'flex';
+
+  const logo = document.getElementById('pickerLogo');
+  if (state.customer?.logo_url) {
+    logo.onerror = () => { logo.style.display = 'none'; };
+    logo.src = state.customer.logo_url; logo.style.display = 'block';
+  } else { logo.style.display = 'none'; }
+  document.getElementById('pickerTitle').textContent =
+    state.customer?.company_name || 'Choose a catalog';
+  document.getElementById('pickerSub').textContent = 'Select which catalog to work in.';
+
+  document.getElementById('pickerList').innerHTML = state.catalogs.map(c => `
+    <button class="picker-item" onclick="selectCatalogById('${c.id}')">
+      <span class="picker-item-name">${c.name}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>`).join('');
+}
+
+function selectCatalogById(id) {
+  const cat = state.catalogs.find(c => c.id === id);
+  if (cat) selectCatalog(cat);
+}
+
+// Enter a catalog: apply its SKU scoping, load its projects, show the app
+async function selectCatalog(cat) {
+  state.activeCatalog   = cat;
+  state.activeCatalogId = cat.id;
+  state.catalog = {
+    show_all:      cat.show_all !== false,
+    included_skus: cat.included_skus || [],
+    excluded_skus: cat.excluded_skus || []
+  };
+  state.activeCat = 'All Products';
+  state.activeProjectId = null;
+
+  // Header: show which catalog we're in
+  document.getElementById('navCatalogName').textContent = cat.name;
+  document.getElementById('navCatalog').style.display =
+    state.catalogs.length > 1 ? 'flex' : 'none';
+  document.getElementById('topTitle').textContent = 'All Products';
+
+  document.getElementById('pickerWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display    = 'flex';
+
+  // Projects are scoped to this catalog
+  document.getElementById('prodGrid').innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div><span>Loading catalog…</span></div>';
+  try {
+    await withTimeout(loadProjects(), 10000, 'Loading projects');
+  } catch(e) { console.warn('projects:', e.message); state.projects = []; }
+
+  renderCats();
+  renderProducts();
+  renderProjList();
+}
+
+// Full-screen fatal message (replaces the product grid / picker)
+function showFatal(msg) {
+  document.getElementById('authWrap').style.display  = 'none';
+  document.getElementById('pickerWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display   = 'flex';
+  document.getElementById('navCatalog').style.display = 'none';
+  document.getElementById('prodGrid').innerHTML =
+    `<div class="no-results">
+       <span>${msg}</span>
+       <button class="btn-secondary" style="margin-top:8px" onclick="signOut()">Sign out</button>
+     </div>`;
 }
 
 function applyBranding(customer, displayName, role) {
@@ -743,8 +863,11 @@ function closeModal() { document.getElementById('modalWrap').innerHTML=''; }
 
 // ── PROJECTS ─────────────────────────────────────────────────
 async function loadProjects() {
+  if (!state.activeCatalogId) { state.projects = []; renderProjList(); return; }
   const {data} = await sb.from('projects')
-    .select('*').order('updated_at', {ascending: false});
+    .select('*')
+    .eq('catalog_id', state.activeCatalogId)
+    .order('updated_at', {ascending: false});
   state.projects = data || [];
   if (state.projects.length && !state.activeProjectId)
     state.activeProjectId = state.projects[0].id;
@@ -886,7 +1009,7 @@ async function saveProject(id) {
   const name = document.getElementById('pName').value.trim();
   if (!name) { showToast('Project name is required'); return; }
   const payload = {
-    customer_id:          CUSTOMER_ID,
+    catalog_id:           state.activeCatalogId,
     project_name:         name,
     project_number:       document.getElementById('pNum').value.trim() || null,
     status:               document.getElementById('pStatus').value,
