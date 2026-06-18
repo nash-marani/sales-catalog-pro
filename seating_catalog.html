@@ -11,7 +11,7 @@
   --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede9;
   --txt:#1a1a1a;--txt2:#555;--txt3:#999;
   --bdr:rgba(0,0,0,.10);--bdr2:rgba(0,0,0,.18);
-  --acc:#534AB7;--acc2:#3C3489;--accbg:#EEEDFE;--acctxt:#3C3489;
+  --acc:#326A95;--acc2:#285578;--accbg:#E8EFF5;--acctxt:#285578; /* Xenali Lapis Lazuli */
   --danger:#A32D2D;--success:#2E7D32;
   --r:8px;--rl:12px;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
@@ -20,8 +20,8 @@
 body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
 
 /* ── AUTH ── */
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f3,#EEEDFE);padding:20px}
-.auth-card{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:36px;width:380px;max-width:100%;box-shadow:0 8px 40px rgba(83,74,183,.12)}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f3,#E8EFF5);padding:20px}
+.auth-card{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:36px;width:380px;max-width:100%;box-shadow:0 8px 40px rgba(50,106,149,.12)}
 .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
 .auth-logo-img{height:40px;max-width:160px;object-fit:contain}
 .auth-logo-text{font-size:16px;font-weight:600;color:var(--acc)}
@@ -43,9 +43,12 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 /* ── NAV ── */
 .nav{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;background:var(--bg);border-bottom:.5px solid var(--bdr);flex-shrink:0;position:sticky;top:0;z-index:50}
-.nav-logo{display:flex;align-items:center;gap:10px}
-.nav-logo-img{height:32px;max-width:120px;object-fit:contain}
-.nav-logo-text{font-size:15px;font-weight:600;color:var(--acc)}
+.nav-brand{display:flex;align-items:center;text-decoration:none;flex-shrink:0}
+.nav-brand-logo{height:30px;width:auto;display:block}
+.nav-cobrand{display:flex;align-items:center;gap:9px;min-width:0}
+.nav-cobrand-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);white-space:nowrap}
+.nav-client-logo{height:26px;max-width:130px;object-fit:contain;display:block}
+.nav-client-name{font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-divider{width:1px;height:20px;background:var(--bdr)}
 .nav-section{font-size:13px;color:var(--txt3)}
 .nav-sp{flex:1}
@@ -124,7 +127,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .status-pill{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
 .status-budget{background:#FFF8E1;color:#F57F17}
 .status-financial_negotiation{background:#E3F2FD;color:#1565C0}
-.status-engineering_design{background:#EEEDFE;color:#3C3489}
+.status-engineering_design{background:#E8EFF5;color:#285578}
 .status-ready_manufacture{background:#E8F5E9;color:#2E7D32}
 .proj-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--txt3);text-align:center;gap:8px}
 .proj-empty svg{width:36px;height:36px;opacity:.3}
@@ -233,7 +236,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .sync-lbl{font-size:11px;color:var(--txt3)}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:500;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(83,74,183,.35);transition:opacity .3s}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:500;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(50,106,149,.35);transition:opacity .3s}
 
 /* ── STATUS FILTER ── */
 .status-filter{display:flex;gap:5px;padding:8px 12px;border-bottom:.5px solid var(--bdr);flex-shrink:0;flex-wrap:wrap}
@@ -255,9 +258,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424531</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">d7ebae69-571d-4f2e-8424-bb6bcbdb9779</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424531, NNN373W3ZMMJ-320560042-424531</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424534</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">33761639-09fa-4768-aac8-41dd762c5441</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424534, NNN373W3ZMMJ-320560042-424534</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -267,8 +270,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 <div id="authWrap" class="auth-wrap">
   <div class="auth-card">
     <div class="auth-logo">
-      <img id="authLogo" src="" alt="" class="auth-logo-img" style="display:none">
-      <span class="auth-logo-text" id="authLogoText">OFWD Seating</span>
+      <img src="data:image/png;base64,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" alt="Xenali — Creating Inspirational Workspaces" class="auth-logo-img"/>
     </div>
     <div class="auth-title" id="authTitle">Project Builder</div>
     <div class="auth-sub" id="authSub">Sign in to browse products and manage your project BOMs.</div>
@@ -295,12 +297,15 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 <!-- APP -->
 <div id="appWrap" style="display:none;flex-direction:column;flex:1">
   <nav class="nav">
-    <div class="nav-logo">
-      <img id="navLogo" src="" alt="" class="nav-logo-img" style="display:none">
-      <span class="nav-logo-text" id="navLogoText">OFWD Seating</span>
-    </div>
+    <a class="nav-brand" href="https://www.xenali.com" target="_blank" rel="noopener" title="Xenali — Creating Inspirational Workspaces">
+      <img class="nav-brand-logo" src="data:image/png;base64,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" alt="Xenali"/>
+    </a>
     <div class="nav-divider"></div>
-    <span class="nav-section" id="navCompany">Project Builder</span>
+    <div class="nav-cobrand">
+      <span class="nav-cobrand-lbl">Prepared for</span>
+      <img id="navClientLogo" class="nav-client-logo" src="" alt="" style="display:none">
+      <span class="nav-client-name" id="navClientName">Project Builder</span>
+    </div>
     <div class="nav-sp"></div>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
@@ -544,26 +549,35 @@ async function bootstrap() {
 }
 
 function applyBranding(customer, displayName, role) {
+  // User identity (always shown)
+  document.getElementById('navUser').textContent = displayName || '';
+  document.getElementById('navRole').textContent = role || '';
   if (!customer) return;
-  const logoUrl = customer.logo_url;
-  if (logoUrl) {
-    ['authLogo','navLogo'].forEach(id => {
-      const el = document.getElementById(id);
-      el.src = logoUrl; el.style.display = 'block';
-    });
-    ['authLogoText','navLogoText'].forEach(id =>
-      document.getElementById(id).style.display = 'none');
+
+  // Co-brand lockup: the client's logo + name in the "Prepared for" slot.
+  // (The Xenali wordmark is the fixed platform mark and is not changed here.)
+  const name = customer.company_name || 'Project Builder';
+  document.getElementById('navClientName').textContent = name;
+
+  const logo = document.getElementById('navClientLogo');
+  if (customer.logo_url) {
+    logo.onerror = () => { logo.style.display = 'none'; }; // graceful fallback to name only
+    logo.src = customer.logo_url;
+    logo.alt = name;
+    logo.style.display = 'block';
+  } else {
+    logo.style.display = 'none';
   }
-  if (customer.welcome_msg)
-    document.getElementById('authSub').textContent = customer.welcome_msg;
-  document.getElementById('navCompany').textContent = customer.company_name || 'Project Builder';
-  document.getElementById('navUser').textContent    = displayName;
-  document.getElementById('navRole').textContent    = role;
-  if (customer.primary_color) {
-    document.documentElement.style.setProperty('--acc',  customer.primary_color);
-    document.documentElement.style.setProperty('--acc2', customer.secondary_color || customer.primary_color);
-  }
-  document.title = (customer.company_name || 'OFWD') + ' — Seating Catalog';
+
+  document.title = name + ' — Xenali Seating Catalog';
+
+  // NOTE: the app accent stays Xenali blue regardless of customer, so the
+  // platform reads as a Xenali product. Per-customer recolouring is intentionally
+  // disabled. To re-enable it, uncomment the block below.
+  // if (customer.primary_color) {
+  //   document.documentElement.style.setProperty('--acc',  customer.primary_color);
+  //   document.documentElement.style.setProperty('--acc2', customer.secondary_color || customer.primary_color);
+  // }
 }
 
 // ── CATALOG FILTERING ────────────────────────────────────────
