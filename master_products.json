@@ -1,0 +1,1695 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "created": "2026-06-18",
+    "description": "OFWD Master Product Catalog \u2014 single source of truth for all seating products",
+    "category_sequence": [
+      "Task Chairs",
+      "Guest Seating",
+      "Industrial/Stacking/Folding Chair",
+      "Executive Chairs",
+      "Ergonomic Chairs",
+      "Conference and Meeting Room Chairs",
+      "Big and Tall Chairs",
+      "Reception Seating",
+      "Stool/Nesting/Drafting Chairs",
+      "Chair Accessories"
+    ],
+    "cat_sku_sequence": {
+      "Task Chairs": [
+        "1-279-03",
+        "1-213-01",
+        "G-VARIABLE-1-267-03",
+        "208-1-4218-01-BK/BKGR",
+        "208-1-4218-05-BK/BFrGR(G)",
+        "208-1-4218-05-BK/GFrGR(G)",
+        "208-1-4225-03-BK/BKBK",
+        "208-1-4225-05-BK/BFrBK(G)",
+        "208-1-4225-07-BK/BVnBK(G)",
+        "208-1-4232-03-BK/BKGR",
+        "208-1-4232-03-WT/BKGR(NS)",
+        "208-1-4232-05-WT/GFrGR(G)",
+        "208-1-4232-07-BK/BVnGR(G)",
+        "208-1-4269-01-BK/GFrGR",
+        "208-1-4269-01-WT/GFrGR(NS)",
+        "208-1-4269-05-BK/GFrGR(G)",
+        "208-1-4269-05-WT/GFrGR(NS)(G)",
+        "1-239-01-BK(E)",
+        "SLIDER_for_1-271-03_or_1-213-01",
+        "208-1-4218-HR-BK",
+        "208-1-4218-Seattopper-GR",
+        "208-1-4225-HR-BK",
+        "208-1-4232-HR-WT(NS)",
+        "208-1-4225-Seattopper-PU-BK",
+        "208-1-4269-HR-BK",
+        "208-1-4269-HR-WT(NS)"
+      ],
+      "Guest Seating": [
+        "1-280-04",
+        "1-219-04",
+        "208-1-4238-04-BK/BKGR",
+        "G-VARIABLE-1-261-11",
+        "G-VARIABLE-1-261-44",
+        "VARIABLE-1-215-03",
+        "3-640-BK",
+        "8-500-BK",
+        "8-525-BK"
+      ],
+      "Industrial/Stacking/Folding Chair": [
+        "G-VARIABLE-1-261-11",
+        "G-VARIABLE-1-261-44",
+        "8-500-BK",
+        "8-525-BK",
+        "8-310-BK",
+        "3-640-BK",
+        "8-350-WT GRANITE",
+        "8-370-BK",
+        "8-350 - Trolley",
+        "8-310-TROLLEY"
+      ],
+      "Executive Chairs": [
+        "1-283F-03-BK",
+        "1-295-01",
+        "1-299-01-BK",
+        "1-299-03-BK",
+        "208-1-4232-03-BK/BKGR",
+        "208-1-4232-03-WT/BKGR(NS)",
+        "208-1-4232-05-WT/GFrGR(G)",
+        "208-1-4232-HR-WT(NS)",
+        "208-1-4232-07-BK/BVnGR(G)",
+        "208-1-4225-03-BK/BKBK",
+        "208-1-4225-05-BK/BFrBK(G)",
+        "208-1-4225-07-BK/BVnBK(G)",
+        "208-1-4269-01-BK/GFrGR",
+        "208-1-4269-01-WT/GFrGR(NS)",
+        "208-1-4269-05-BK/GFrGR(G)",
+        "208-1-4269-05-WT/GFrGR(NS)(G)",
+        "208-1-4218-05-BK/BFrGR(G)",
+        "208-1-4218-01-BK/BKGR",
+        "208-1-4218-05-BK/GFrGR(G)",
+        "208-1-4225-Seattopper-PU-BK",
+        "208-1-4269-HR-BK",
+        "208-1-4269-HR-WT(NS)",
+        "208-1-4218-HR-BK",
+        "208-1-4218-Seattopper-GR",
+        "208-1-4225-HR-BK"
+      ],
+      "Ergonomic Chairs": [
+        "1-279-03",
+        "1-213-01",
+        "G-VARIABLE-1-267-03",
+        "1-239-01-BK(E)",
+        "SLIDER_for_1-271-03_or_1-213-01"
+      ],
+      "Conference and Meeting Room Chairs": [
+        "1-283F-03-BK",
+        "1-295-01",
+        "1-299-01-BK",
+        "1-299-03-BK",
+        "VARIABLE-1-215-03",
+        "208-1-4225-03-BK/BKBK",
+        "208-1-4225-05-BK/BFrBK(G)",
+        "208-1-4225-07-BK/BVnBK(G)",
+        "208-1-4232-03-BK/BKGR",
+        "208-1-4232-03-WT/BKGR(NS)",
+        "208-1-4232-05-WT/GFrGR(G)",
+        "208-1-4232-07-BK/BVnGR(G)",
+        "208-1-4225-Seattopper-PU-BK",
+        "208-1-4232-HR-WT(NS)",
+        "208-1-4225-HR-BK"
+      ],
+      "Big and Tall Chairs": [
+        "1-222-01",
+        "1-278-01-BK"
+      ],
+      "Reception Seating": [
+        "2-140-VARIABLE",
+        "2-100-VARIABLE",
+        "1-280-04",
+        "1-219-04",
+        "208-1-4238-04-BK/BKGR",
+        "G-VARIABLE-1-261-11",
+        "G-VARIABLE-1-261-44",
+        "3-640-BK",
+        "8-500-BK",
+        "8-525-BK"
+      ],
+      "Stool/Nesting/Drafting Chairs": [
+        "1-232-VARIABLE",
+        "VARIABLE-1-215-03",
+        "1-233-05-VINYL",
+        "A100-Altos Arms (1 left & 1 right per box)"
+      ],
+      "Chair Accessories": [
+        "1-HARD-SURFACE-CASTORS",
+        "1-SOFT-SURFACE-CASTORS",
+        "1-STATIONARY-GLIDES",
+        "SLIDER_for_1-271-03_or_1-213-01",
+        "8-310-TROLLEY",
+        "8-350 - Trolley",
+        "A100-Altos Arms (1 left & 1 right per box)",
+        "208-1-4218-HR-BK",
+        "208-1-4218-Seattopper-GR",
+        "208-1-4225-HR-BK",
+        "208-1-4232-HR-WT(NS)",
+        "208-1-4225-Seattopper-PU-BK",
+        "208-1-4269-HR-BK",
+        "208-1-4269-HR-WT(NS)"
+      ]
+    }
+  },
+  "products": [
+    {
+      "id": "37232",
+      "sku": "1-279-03",
+      "name": "Epic Mid-Back Bonded Leather Task Chair",
+      "categories": [
+        "Task Chairs",
+        "Ergonomic Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Epic-Mid-Back-Bonded-Leather-Task-Chair-b-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-279-03-A1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/epic-mid-back-bonded-leather-task-chair/",
+      "description_short": "Multi-function task chair with soft faux leather, height-adjustable back and arms, seat slider included. BIFMA certified.",
+      "specs": [
+        "Soft Faux Leather",
+        "Multi-function task chair",
+        "Height adjustable back",
+        "Height-adjustable soft-touch arms",
+        "Synchronous seat & back",
+        "Tilt lock & independent back angle adjustment",
+        "Includes seat slider",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37239",
+      "sku": "1-213-01",
+      "name": "Seville Mid-Back Fabric Task Chair",
+      "categories": [
+        "Task Chairs",
+        "Ergonomic Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/SEVILLE-Ergonomic-Multi-function-Mid-Back-Fabric-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/seville-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/seville-front-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/seville-side-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/seville-mid-back-fabric-task-chair/",
+      "description_short": "Ergonomic mid-back fabric task chair with lumbar support, tilt lock, independent back angle adjustment, soft-touch arms.",
+      "specs": [
+        "Multi-function task chair",
+        "Tilt lock & independent back angle adjustment",
+        "Ergonomic & Synchronous back & seat",
+        "Height adjustable back",
+        "Soft-touch arms",
+        "Lumbar support",
+        "Seat slider available as optional upgrade"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37248",
+      "sku": "G-VARIABLE-1-267-03",
+      "name": "Contestar Mid-Back Ergonomic Chair \u2014 Various Upholstery",
+      "categories": [
+        "Task Chairs",
+        "Ergonomic Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/G-VARIABLE-1-267-03-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/contempra-e1643671414161-1.png"
+      ],
+      "url": "https://www.ofwd.com/product/contestar-mid-back-ergonomic-chair-various-upholstery/",
+      "description_short": "Breathable net mesh back with choice of fabric or faux leather seat. Synchronous adjustment, height-adjustable arms, seat slider.",
+      "specs": [
+        "Breathable net mesh back",
+        "Choice of fabric or faux leather seat",
+        "Synchronous back and seat adjustment with lock",
+        "Height adjustable back and arms",
+        "Pneumatic height adjustment",
+        "Tilt tension with lock",
+        "Built-in seat slider",
+        "Designer black nylon base"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38548",
+      "sku": "208-1-4218-01-BK/BKGR",
+      "name": "ProFlex High-Back \u2014 Black Frame/Black-Grey Mesh",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-01-BKBKGR-3-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-01-BKBKGR-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-01-BKBKGR-side-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-01-BKBKGR-front-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/proflex-high-back-black-frame/",
+      "description_short": "High-back mesh chair. Premium black fabric seat, synchronic mechanism with 3 locking positions, seat slider. BIFMA certified.",
+      "specs": [
+        "Mesh high-back for breathability",
+        "Premium black fabric seat",
+        "Height-adjustable seat",
+        "Height-adjustable arms with padded support",
+        "Adjustable lumbar support",
+        "Synchronic mechanism with 3 locking positions",
+        "Seat slider",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38539",
+      "sku": "208-1-4218-05-BK/BFrGR(G)",
+      "name": "ProFlex High-Back with Headrest \u2014 Black/Black-Grey",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKBFrGRG-3-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKBFrGRG-cross-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKBFrGRG-side-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKBFrGRG-front-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/proflex-high-back-with-headrest-black/",
+      "description_short": "High-back mesh chair with headrest. Black fabric seat, synchronic mechanism 3 positions, seat slider, height-adjustable arms. BIFMA certified.",
+      "specs": [
+        "Height-adjustable seat",
+        "Black fabric seating",
+        "Mesh back",
+        "Height-adjustable arms",
+        "Padded arm rest",
+        "Adjustable lumbar support",
+        "Synchronic mechanism with 3 locking positions",
+        "WITH HEADREST",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38557",
+      "sku": "208-1-4218-05-BK/GFrGR(G)",
+      "name": "ProFlex High-Back with Headrest \u2014 Grey Seat",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-Seattopper-GR-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKGFrGRG-front-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKGFrGRG-cross-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-05-BKGFrGRG-side-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/proflex-high-back-with-headrest-grey-seat/",
+      "description_short": "High-back mesh chair with headrest and grey fabric seat. Synchronic mechanism, seat slider. BIFMA certified.",
+      "specs": [
+        "Grey fabric seating",
+        "Mesh back",
+        "Height-adjustable arms",
+        "Padded arm rest",
+        "Adjustable lumbar support",
+        "Synchronic mechanism with 3 locking positions",
+        "WITH HEADREST",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38577",
+      "sku": "208-1-4225-03-BK/BKBK",
+      "name": "ErgoBreeze Mid-Back \u2014 Black/Black Mesh",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-03-BKBKBK-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-03-BKBKBK-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-03-BKBKBK-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-03-BKBKBK-side-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ergobreeze-mid-back-black/",
+      "description_short": "Mid-back mesh chair, height-adjustable seat and arms, adjustable lumbar, swivel tilt with lock. BIFMA certified.",
+      "specs": [
+        "Black fabric seating",
+        "Mesh mid-back",
+        "Height-adjustable arms",
+        "Padded arm rest",
+        "Height-adjustable seat",
+        "Adjustable lumbar support",
+        "Swivel tilt mechanism with locking",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38586",
+      "sku": "208-1-4225-05-BK/BFrBK(G)",
+      "name": "ErgoBreeze Mid-Back with Headrest \u2014 Black",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-with-HEADREST-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-with-HEADREST-side-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-with-HEADREST-cross-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-with-HEADREST-front-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ergobreeze-mid-back-with-headrest-black/",
+      "description_short": "Mid-back mesh chair with headrest, swivel tilt with lock, height-adjustable arms and seat. BIFMA certified.",
+      "specs": [
+        "Black fabric seating",
+        "Mesh mid-back",
+        "Height-adjustable arms",
+        "Height-adjustable seat",
+        "Adjustable lumbar support",
+        "Swivel tilt with locking",
+        "WITH HEADREST",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38595",
+      "sku": "208-1-4225-07-BK/BVnBK(G)",
+      "name": "ErgoBreeze Mid-Back \u2014 Faux Leather",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-cross-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-07-BKBVnBKG-side-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ergobreeze-mid-back-faux-leather/",
+      "description_short": "Mid-back faux leather chair (seat and back). Height-adjustable arms and seat, swivel tilt. BIFMA certified.",
+      "specs": [
+        "Black faux leather seating",
+        "Faux leather mid-back",
+        "Height-adjustable arms",
+        "Height-adjustable seat",
+        "Adjustable lumbar support",
+        "Swivel tilt mechanism",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38621",
+      "sku": "208-1-4232-03-BK/BKGR",
+      "name": "SitEase Mid-Back \u2014 Black/Grey Mesh",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-3-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-front-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-side-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-cross-1-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sitease-mid-back-black-grey-mesh/",
+      "description_short": "Mid-back with grey breathable mesh back, black fabric seat. Height-adjustable arms, lumbar support, swivel tilt. BIFMA certified.",
+      "specs": [
+        "Black fabric upholstery",
+        "Grey breathable mesh mid-back",
+        "Height-adjustable arms with padded support",
+        "Adjustable seat height",
+        "Adjustable lumbar support",
+        "Swivel tilt with smooth recline",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38630",
+      "sku": "208-1-4232-03-WT/BKGR(NS)",
+      "name": "SitEase Mid-Back \u2014 White Frame/Grey Mesh",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-03-WTBKGRNS-5-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-03-WTBKGRNS-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-03-WTBKGRNS-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-03-WTBKGRNS-cross-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sitease-mid-back-white-frame-grey-mesh/",
+      "description_short": "White frame mid-back chair with grey mesh back, black fabric seat. Swivel tilt, height-adjustable. BIFMA certified.",
+      "specs": [
+        "White frame",
+        "Height-adjustable seat",
+        "Black fabric seating",
+        "Grey mesh mid-back",
+        "Height-adjustable arms",
+        "Padded arm rest",
+        "Adjustable lumbar support",
+        "Swivel tilt mechanism",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38639",
+      "sku": "208-1-4232-05-WT/GFrGR(G)",
+      "name": "SitEase Mid-Back with Headrest \u2014 White Frame/Grey",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-05-WTGFrGRG-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-05-WTGFrGRG-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-05-WTGFrGRG-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-05-WTGFrGRG-cross-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sitease-mid-back-with-headrest-white-frame/",
+      "description_short": "White frame mid-back with headrest. Grey fabric seat, grey mesh back, swivel/tilt, lumbar support. BIFMA certified.",
+      "specs": [
+        "White frame with integrated headrest",
+        "Height-adjustable grey fabric seat",
+        "Grey mesh mid-back",
+        "Built-in lumbar support",
+        "Swivel and tilt functionality",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38648",
+      "sku": "208-1-4232-07-BK/BVnGR(G)",
+      "name": "SitEase Mid-Back \u2014 Faux Leather Seat/Grey Mesh",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-3-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-side-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-cross-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-07-BKBVnGRG-front-1-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sitease-mid-back-faux-leather-seat-grey-mesh/",
+      "description_short": "Faux leather seat, breathable mesh mid-back. Integrated lumbar support, swivel tilt. BIFMA certified.",
+      "specs": [
+        "Black faux leather seat",
+        "Breathable mesh mid-back",
+        "Height-adjustable seat",
+        "Integrated lumbar support",
+        "Swivel tilt for mobility",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38658",
+      "sku": "208-1-4269-01-BK/GFrGR",
+      "name": "PosturePro High-Back \u2014 Black Frame/Dark Grey",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-BKGFrGR4-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-BKGFrGR4-cross-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-BKGFrGR4-front-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-BKGFrGR4-side-1-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-high-back-black-frame-dark-grey/",
+      "description_short": "High-back with dark grey fabric seat, black-grey mesh back. Synchro-tilt, seat slider, height-adjustable arms. BIFMA certified.",
+      "specs": [
+        "Dark grey fabric seat",
+        "Black-grey mesh high-back",
+        "Height-adjustable arms with padded support",
+        "Height-adjustable seat with seat slider",
+        "Synchro-tilt mechanism",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38667",
+      "sku": "208-1-4269-01-WT/GFrGR(NS)",
+      "name": "PosturePro High-Back \u2014 White Frame/Dark Grey",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-WTGFrGRNS-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-WTGFrGRNS-cross-2-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-WTGFrGRNS-side-2-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-01-WTGFrGRNS-cross-front-3-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-high-back-white-frame-dark-grey/",
+      "description_short": "White frame high-back chair. Dark grey fabric seat, black-grey mesh back. Synchro-tilt, seat slider. BIFMA certified.",
+      "specs": [
+        "White frame",
+        "Dark grey fabric seat",
+        "Black-grey mesh high-back",
+        "Height-adjustable arms",
+        "Seat slider",
+        "Synchro-tilt",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38676",
+      "sku": "208-1-4269-05-BK/GFrGR(G)",
+      "name": "PosturePro High-Back with Headrest \u2014 Black Frame",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-BKGFrGRG-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-BKGFrGRG-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-BKGFrGRG-side-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-BKGFrGRG-front-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-high-back-with-headrest-black-frame/",
+      "description_short": "High-back with headrest, dark grey fabric seat, synchro-tilt, seat slider, height-adjustable arms. BIFMA certified.",
+      "specs": [
+        "Black-grey mesh high-back with headrest",
+        "Dark grey cushioned fabric seat",
+        "Height-adjustable seat",
+        "Height-adjustable arms with padded rests",
+        "Synchro-tilt with seat slider",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38685",
+      "sku": "208-1-4269-05-WT/GFrGR(NS)(G)",
+      "name": "PosturePro High-Back with Headrest \u2014 White Frame",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-WTGFrGRNSG-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-WTGFrGRNSG-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-WTGFrGRNSG-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-05-WTGFrGRNSG-front-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-high-back-with-headrest-white-frame/",
+      "description_short": "White frame high-back with headrest. Dark grey fabric seat, synchro-tilt, seat slider. BIFMA certified.",
+      "specs": [
+        "White frame",
+        "Black-grey mesh high-back with headrest",
+        "Dark grey fabric seat",
+        "Height-adjustable arms",
+        "Synchro-tilt with seat slider",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37909",
+      "sku": "1-239-01-BK(E)",
+      "name": "OPEL II High Back Manager Chair",
+      "categories": [
+        "Task Chairs",
+        "Ergonomic Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/OPEL-II-High-Back-Manager-Chair-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/OPEL-II-High-Back-Manager-Chair-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/OPEL-II-High-Back-Manager-Chair-front-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/OPEL-II-High-Back-Manager-Chair-cross-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/opel-ii-high-back-manager-chair/",
+      "description_short": "Breathable mesh back, cushioned fabric seat with waterfall edge. Independent back/seat adjustment, adjustable arms, swivel/tilt. BIFMA certified.",
+      "specs": [
+        "Breathable mesh backrest",
+        "Cushioned fabric seat with waterfall edge",
+        "Durable black nylon base",
+        "Independent back and seat adjustment with lock",
+        "Adjustable seat height",
+        "Adjustable arm height",
+        "Swivel & tilt tension adjustment with lock",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37217",
+      "sku": "SLIDER_for_1-271-03_or_1-213-01",
+      "name": "Seat Slider for Alpha and Seville Chairs",
+      "categories": [
+        "Task Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/SLIDER_for_1-271-03_or_1-213-01-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-271-03-A1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/seat-slider-for-alpha-and-seville-chairs/",
+      "description_short": "Optional seat slider accessory for extending seat space on Alpha and Seville chairs.",
+      "specs": [
+        "Compatible with Alpha and Seville chairs",
+        "Extends usable seat depth",
+        "Easy installation"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38566",
+      "sku": "208-1-4218-HR-BK",
+      "name": "ProFlex Black Mesh Headrest",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-HR-BK-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-HR-BK-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-HR-BK-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-HR-BK-cross-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/proflex-black-mesh-headrest/",
+      "description_short": "Breathable black mesh headrest for ProFlex series chairs. BIFMA certified.",
+      "specs": [
+        "Black mesh for breathability",
+        "Compatible with ProFlex series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38573",
+      "sku": "208-1-4218-Seattopper-GR",
+      "name": "ProFlex Grey Fabric Seat Cover",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4218-Seattopper-GR-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/proflex-grey-fabric-seat-cover/",
+      "description_short": "Grey fabric seat cover for ProFlex chairs. BIFMA certified.",
+      "specs": [
+        "Grey fabric",
+        "Compatible with ProFlex series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38603",
+      "sku": "208-1-4225-HR-BK",
+      "name": "ErgoBreeze Black Mesh Headrest",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-side-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ergobreeze-black-mesh-headrest/",
+      "description_short": "Black mesh headrest for ErgoBreeze series chairs. BIFMA certified.",
+      "specs": [
+        "Black mesh",
+        "Compatible with ErgoBreeze series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38610",
+      "sku": "208-1-4232-HR-WT(NS)",
+      "name": "SitEase Grey-White Frame Headrest",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-HR-WTNS-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-HR-WTNS-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-HR-WTNS-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4232-HR-WTNS-front-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sitease-grey-white-frame-headrest/",
+      "description_short": "Grey-white frame headrest with grey mesh for SitEase series chairs.",
+      "specs": [
+        "Grey-white frame",
+        "Grey mesh",
+        "Compatible with SitEase series"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38617",
+      "sku": "208-1-4225-Seattopper-PU-BK",
+      "name": "ErgoBreeze Black Faux Leather Seat Cover",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-Seattopper-PU-BK-1-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ergobreeze-black-faux-leather-seat-cover/",
+      "description_short": "Black faux leather seat cover for ErgoBreeze chairs. BIFMA certified.",
+      "specs": [
+        "Black faux leather",
+        "Compatible with ErgoBreeze series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38694",
+      "sku": "208-1-4269-HR-BK",
+      "name": "PosturePro Black Mesh Headrest",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-front-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4225-HR-BK-side-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-black-mesh-headrest/",
+      "description_short": "Black mesh headrest for PosturePro High-Back Chair. BIFMA certified.",
+      "specs": [
+        "Black mesh",
+        "Compatible with PosturePro series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38697",
+      "sku": "208-1-4269-HR-WT(NS)",
+      "name": "PosturePro White Mesh Headrest",
+      "categories": [
+        "Task Chairs",
+        "Executive Chairs",
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-side-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-cross-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4269-front-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/posturepro-white-mesh-headrest/",
+      "description_short": "White mesh headrest for PosturePro high-back chair. BIFMA certified.",
+      "specs": [
+        "White mesh",
+        "Compatible with PosturePro white frame series",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37286",
+      "sku": "1-280-04",
+      "name": "Aura Low-Back Bonded Leather Visitor Chair",
+      "categories": [
+        "Guest Seating",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/AURA-vCHAIR-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-280-04-A1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/aura-low-back-bonded-leather-visitor-chair/",
+      "description_short": "Padded bonded leather visitor chair with padded armrests, tubular steel base. BIFMA certified.",
+      "specs": [
+        "Padded bonded leather",
+        "Padded armrests",
+        "Black in colour",
+        "Tubular steel base",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37293",
+      "sku": "1-219-04",
+      "name": "Caprice Low-Back Bonded Leather Visitor Chair",
+      "categories": [
+        "Guest Seating",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2023/12/1-219-04-blue.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2023/12/1-219-04-front.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2023/12/1-219-04-cross-rotated.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2023/12/1-219-04-side.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/caprice-low-back-bonded-leather-visitor-chair/",
+      "description_short": "Padded faux leather visitor chair with padded armrests, tubular steel base. Black with black stitching. BIFMA certified.",
+      "specs": [
+        "Padded faux leather",
+        "Padded arm rests",
+        "Black with black stitching",
+        "Tubular steel base",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "38651",
+      "sku": "208-1-4238-04-BK/BKGR",
+      "name": "CoreComfort Guest Chair \u2014 Black/Grey Mesh",
+      "categories": [
+        "Guest Seating",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4238-04-BKBKGR-1-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4238-04-BKBKGR-cross-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4238-04-BKBKGR-front-1-1-scaled-2.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/208-1-4238-04-BKBKGR-side-1-scaled-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/corecomfort-guest-chair-black-grey-mesh/",
+      "description_short": "Guest/visitor chair. Black fabric seat, grey/black breathable mesh back, fixed arms, black metal frame. BIFMA certified.",
+      "specs": [
+        "Durable black fabric seat",
+        "Breathable grey/black mesh backrest",
+        "Black metal frame",
+        "Fixed arm design",
+        "Contemporary/professional style",
+        "Assembly required",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37339",
+      "sku": "G-VARIABLE-1-261-11",
+      "name": "Kalor Stacker Chair without Arms",
+      "categories": [
+        "Guest Seating",
+        "Industrial/Stacking/Folding Chair",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/KALOR-CHAIR-WITHOUT-ARMS-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-withOUT-arms-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-withOUT-arms-front-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-withOUT-arms-side-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/kalor-stacker-chair-without-arms/",
+      "description_short": "Stackable to 5 high. Air mesh or vinyl padded seat, black powder-coated cantilever base.",
+      "specs": [
+        "Air mesh or vinyl padded seats",
+        "Stackable to 5 chairs high",
+        "Black padded vinyl or air mesh seat padded cushion",
+        "Black powder-coated steel cantilever base",
+        "Air mesh contoured back"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37302",
+      "sku": "G-VARIABLE-1-261-44",
+      "name": "Kalor Stacker Chair with Arms",
+      "categories": [
+        "Guest Seating",
+        "Industrial/Stacking/Folding Chair",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/KALOR-Stacker-Chair-With-Arms-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-with-arms-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-with-arms-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/kalor-stacker-with-arms-front-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/kalor-stacker-chair-with-arms/",
+      "description_short": "Stackable to 5 high. Fabric or vinyl padded seat, air mesh contoured back, enhanced armrests. Black powder-coated steel base.",
+      "specs": [
+        "Fabric or vinyl padded seat",
+        "Stackable to 5 chairs high",
+        "Black padded vinyl or air mesh seat padded cushion",
+        "Black powder-coated steel cantilever base",
+        "Air mesh contoured back",
+        "Enhanced armrests"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37310",
+      "sku": "VARIABLE-1-215-03",
+      "name": "Kapsel Nesting Chair \u2014 Various Upholstery",
+      "categories": [
+        "Guest Seating",
+        "Conference and Meeting Room Chairs",
+        "Stool/Nesting/Drafting Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/VARIABLE-1-215-03-980x980-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/KAPSEL-Nesting-Chair-1-1-215-03-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/KAPSEL-Nesting-Chair-1-1-215-03-1-2.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/kapsel-nesting-chair-various-upholstery/",
+      "description_short": "Flip-up seat nesting chair on casters. Frames nest for compact storage. Mesh, vinyl, bonded leather or fabric options.",
+      "specs": [
+        "Nesting chair with flip-up seat",
+        "Smooth-rolling casters",
+        "Mesh or vinyl seating options",
+        "Bonded leather or fabric upholstery options",
+        "Space-saving nested storage",
+        "Built for frequent professional use"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37328",
+      "sku": "3-640-BK",
+      "name": "Technik Stacking Chair with Plastic Seat",
+      "categories": [
+        "Guest Seating",
+        "Industrial/Stacking/Folding Chair",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TECHNIK-STACKING-CHAIR-PLASTICSEAT-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/STACKING-CHAIR-PLASTIC-cross-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TECHNIK-Stacking-Chair-Plastic-Seat-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/technik-stacking-chair-with-plastic-seat/",
+      "description_short": "Perforated plastic backrest with easy-grip handle. Durable plastic seat. Conference rooms, classrooms, mobile offices.",
+      "specs": [
+        "Perforated plastic backrest",
+        "Easy-grip handle",
+        "Durable plastic seat",
+        "Stackable"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37346",
+      "sku": "8-500-BK",
+      "name": "Tapp Stacking Chair with Plastic Seat",
+      "categories": [
+        "Guest Seating",
+        "Industrial/Stacking/Folding Chair",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-CHAIR-PLASTIC-SEAT-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-PLASTIC-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-PLASTIC-front-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-PLASTIC-cross-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tapp-stacking-chair-with-plastic-seat/",
+      "description_short": "High-impact polypropylene, powder-coated steel frame. Supports up to 450 lbs. Indoor/outdoor. Stackable.",
+      "specs": [
+        "High-impact polypropylene seat and backrest",
+        "Powder-coated steel frame",
+        "Scratch-resistant weatherproof surface",
+        "Weight capacity: 450 lbs",
+        "Indoor and outdoor use",
+        "Stackable for easy storage"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37353",
+      "sku": "8-525-BK",
+      "name": "Tapp Stacking Chair with Vinyl Seat",
+      "categories": [
+        "Guest Seating",
+        "Industrial/Stacking/Folding Chair",
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-CHAIR-VINYL-SEAT-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-VINYL-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TAPP-STACKING-VINYL-front-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tapp-stacking-chair-with-vinyl-seat/",
+      "description_short": "Commercial-grade stacking chair, high-impact polypropylene with vinyl seat. Supports 450 lbs.",
+      "specs": [
+        "High-impact polypropylene",
+        "Vinyl seat",
+        "Powder-coated steel frame",
+        "Scratch-resistant weatherproof coating",
+        "Weight capacity: 450 lbs",
+        "Indoor & outdoor",
+        "Stackable"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37358",
+      "sku": "8-310-BK",
+      "name": "Tuffmaxx BOLT Molded Stacking Chair",
+      "categories": [
+        "Industrial/Stacking/Folding Chair"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TUFFMAXX-BOLT-Molded-Stacking-Chair-1-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Tuffmaxx-BOLT-cross-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tuffmaxx-bolt-molded-stacking-chair/",
+      "description_short": "High-impact polypropylene on powder-coated steel. Supports up to 500 lbs. Scratch-resistant, weatherproof. Stackable.",
+      "specs": [
+        "High-impact polypropylene seat & back",
+        "Powder-coated steel frame",
+        "Weight capacity: 500 lbs",
+        "Lightweight durable scratch-resistant weatherproof",
+        "Indoor and outdoor",
+        "Stackable space-saving design"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37379",
+      "sku": "8-350-WT GRANITE",
+      "name": "Tuffmaxx TAGG Blow Molded Folding Chair",
+      "categories": [
+        "Industrial/Stacking/Folding Chair"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TUFFMAXX-TAGG-BLOW-MOLDED-FOLDING-CHAIR-1-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tuffmaxx-tagg-blow-molded-folding-chair/",
+      "description_short": "Lightweight blow-molded plastic folding chair, heavy-duty steel frame, supports 350 lbs. Indoor/outdoor.",
+      "specs": [
+        "Blow-molded plastic back and seat",
+        "Heavy-duty steel frame",
+        "Weight capacity: 350 lbs",
+        "Light durable scratch-resistant weatherproof",
+        "Indoor and outdoor use"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37400",
+      "sku": "8-370-BK",
+      "name": "Tuffmaxx LANN Blow Molded Folding Chair",
+      "categories": [
+        "Industrial/Stacking/Folding Chair"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Tuffmaxx-LANN-Blow-Molded-Folding-Chair-1-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tuffmaxx-lann-blow-molded-folding-chair/",
+      "description_short": "Durable blow-molded folding chair, heavy-duty steel frame, supports 350 lbs. Scratch-resistant and weatherproof.",
+      "specs": [
+        "Blow-molded plastic back and seat",
+        "Heavy-duty steel frame",
+        "Weight capacity: 350 lbs",
+        "Scratch-resistant weatherproof",
+        "Indoor and outdoor use"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37393",
+      "sku": "8-350 - Trolley",
+      "name": "Tuffmaxx Trolley for TAGG Folding Chairs",
+      "categories": [
+        "Chair Accessories",
+        "Industrial/Stacking/Folding Chair"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-350-Trolley-02-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-350-TROLLEY-3-scaled-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-350-trolley-1.png"
+      ],
+      "url": "https://www.ofwd.com/product/tuffmaxx-trolley-for-tagg-folding-chairs/",
+      "description_short": "Holds up to 30 TAGG folding chairs. Heavy-duty transport cart for banquet halls, schools, event spaces.",
+      "specs": [
+        "Compatible with Tuffmaxx TAGG folding chairs",
+        "Capacity: 30 chairs",
+        "Heavy-duty frame",
+        "Use: banquet halls schools event spaces rental companies"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37372",
+      "sku": "8-310-TROLLEY",
+      "name": "Tuffmaxx Trolley for BOLT Stacking Chairs",
+      "categories": [
+        "Chair Accessories",
+        "Industrial/Stacking/Folding Chair"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-310-TROLLEY-blue-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-310-trolley-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/8-310-BK-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/tuffmaxx-trolley-for-bolt-stacking-chairs/",
+      "description_short": "Holds up to 21 BOLT stacking chairs with support straps. Heavy-duty frame with smooth-rolling wheels.",
+      "specs": [
+        "Compatible with Tuffmaxx BOLT stacking chairs",
+        "Capacity: 21 chairs with support straps",
+        "Heavy-duty frame",
+        "Smooth-rolling wheels"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37169",
+      "sku": "1-283F-03-BK",
+      "name": "Cortina Mid-Back Bonded Leather Chair",
+      "categories": [
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CORTINA-TaskConference-Mid-Back-Faux-Leather-Xenali-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CORTINA-TaskConference-Mid-Back-Faux-Leather-side-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CORTINA-TaskConference-Mid-Back-Faux-Leather-front-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CORTINA-TaskConference-Mid-Back-Faux-Leather-cross-1-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/cortina-mid-back-bonded-leather-chair/",
+      "description_short": "Soft faux leather mid-back chair. Synchronous back and seat adjustment, tilt tension with lock, pneumatic height adjustment. BIFMA certified.",
+      "specs": [
+        "Soft faux leather surfaces",
+        "Synchronous back and seat adjustment",
+        "Tilt tension with lock",
+        "Stationary contoured PP arms",
+        "Pneumatic height adjustment",
+        "BIFMA certified"
+      ],
+      "bifma": true,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37208",
+      "sku": "1-295-01",
+      "name": "Ambrosia High-Back Bonded Leather Chair",
+      "categories": [
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/AMBROSIA-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-295-01-A2-14-2-6-10-3-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-295-01-A3-14-2-6-10-3-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-295-01-A1-1-1-1-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/ambrosia-high-back-bonded-leather-chair/",
+      "description_short": "High-back executive chair with bonded leather, height-adjustable PP arms, pneumatic seat-height adjustment, tilt lock, 360\u00b0 swivel.",
+      "specs": [
+        "Bonded leather upholstery",
+        "Height-adjustable polypropylene arms with polyurethane padding",
+        "Pneumatic seat-height adjustment",
+        "Tilt lock",
+        "Adjustable tilt tension",
+        "360\u00b0 swivel"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37180",
+      "sku": "1-299-01-BK",
+      "name": "Manhattan High Back Bonded Leather Chair",
+      "categories": [
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-01-BK-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-01-A4-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-01-A2-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-01-A1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/manhattan-high-back-bonded-leather-chair/",
+      "description_short": "High-back executive chair with bonded leather, polished chrome base, pneumatic height adjustment, 360\u00b0 swivel, tilt and tilt-lock.",
+      "specs": [
+        "Black or Cafe bonded leather upholstery",
+        "Polished five-star chromed base",
+        "Smooth-rolling casters",
+        "Polished chromed steel accent arm frames",
+        "Pneumatic seat-height adjustment",
+        "360\u00b0 swivel",
+        "Tilt tension and tilt lock"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37192",
+      "sku": "1-299-03-BK",
+      "name": "Manhattan Mid-Back Bonded Leather Chair",
+      "categories": [
+        "Executive Chairs",
+        "Conference and Meeting Room Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-03-BK-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-03-A3-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-03-A1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-299-03-A2-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/manhattan-mid-back-bonded-leather-chair/",
+      "description_short": "Mid-back executive bonded leather chair with polished chrome base, pneumatic seat height adjustment, 360\u00b0 swivel, tilt tension and lock.",
+      "specs": [
+        "Black bonded leather upholstery",
+        "Polished five-star chromed base",
+        "Smooth-rolling casters",
+        "Pneumatic seat height adjustment",
+        "360\u00b0 swivel",
+        "Tilt tension and tilt lock"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37255",
+      "sku": "1-222-01",
+      "name": "Enduro Big & Tall High-Back Mesh Chair",
+      "categories": [
+        "Big and Tall Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Enduro-Big-Tall-High-Back-Mesh-Chair-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/enduro-big-and-tall-high-back-mesh-chair/",
+      "description_short": "Supports up to 450 lbs. Black mesh back with breathable support, cushioned fabric seat.",
+      "specs": [
+        "Weight capacity: 450 lbs",
+        "Black mesh back with breathable stretch support",
+        "Cushioned fabric seat",
+        "Ergonomic support for all-day comfort"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37265",
+      "sku": "1-278-01-BK",
+      "name": "Sovereign Big & Tall High-Back Bonded Leather Chair",
+      "categories": [
+        "Big and Tall Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-278-01-BK-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-278-01-A2-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-278-01-A1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/1-278-01-A3-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/sovereign-big-and-tall-high-back-bonded-leather-chair/",
+      "description_short": "Genuine leather, supports up to 450 lbs. Integrated headrest, tilt tension and lock, 5-star chrome base.",
+      "specs": [
+        "Genuine leather surfaces",
+        "Weight capacity: 450 lbs",
+        "Tilt tension tilt lock & posture mechanism with lock",
+        "Integrated headrest",
+        "Fixed padded loop arms",
+        "5-star chrome base",
+        "Pneumatic lift adjustment"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37403",
+      "sku": "2-140-VARIABLE",
+      "name": "Elise Modular Sofa Collection \u2014 Various Arms",
+      "categories": [
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ELISE-SOFA-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ELISE-SOFA-2-140-CU-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ELISE-Modular-Sofa-Seating-5-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ELISE-SOFA-front-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/elise-modular-sofa-collection-various-arms-rests/",
+      "description_short": "Modular commercial sofa in black leatherette. Heavy-duty construction, thick cushioning. 2 arms, no arms, or corner unit.",
+      "specs": [
+        "Black leatherette upholstery",
+        "Heavy-duty commercial construction",
+        "Thick comfortable cushioning",
+        "Available: 2 arms / no arms / corner unit",
+        "Ideal for reception areas and guest seating"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37417",
+      "sku": "2-100-VARIABLE",
+      "name": "Triggs Sofa Collection \u2014 Various Seat Counts",
+      "categories": [
+        "Reception Seating"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TRIGGS-SOFA-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/triggs-sofa-front-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/triggs-sofa-2-seater-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/triggs-sofa-3-seater-cross-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/triggs-sofa-collection-various-numbers-of-seat/",
+      "description_short": "Contemporary bonded leather commercial sofa. 1, 2, or 3-seat configurations for reception areas.",
+      "specs": [
+        "Ultra-durable bonded leather",
+        "Heavy-duty commercial construction",
+        "Thick comfortable cushioning",
+        "Available: 1 seat / 2 seat / 3 seat",
+        "Open inviting modern design"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37225",
+      "sku": "1-232-VARIABLE",
+      "name": "Altos Drafting Chair \u2014 Various Upholstery",
+      "categories": [
+        "Stool/Nesting/Drafting Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ALTO-DRAFTING-1-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ALTOS-Drafting-Chair-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ALTOS-Drafting-Chair-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/ALTOS-Drafting-Chair-front-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/altos-drafting-chair-various-upholstry/",
+      "description_short": "Versatile drafting chair for elevated surfaces. Available in bonded leather or fabric. Optional adjustable armrests.",
+      "specs": [
+        "Intended use: Drafting front-desk lab design studios",
+        "Seat upholstery: Bonded leather or fabric",
+        "Optional adjustable arms",
+        "Ergonomic design supports posture",
+        "Designed for elevated work surfaces",
+        "Ideal for lab technicians architects artists receptionists cashiers"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37436",
+      "sku": "1-233-05-VINYL",
+      "name": "Cadence Bonded Leather Stool",
+      "categories": [
+        "Stool/Nesting/Drafting Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CADENCE-STOOL-1-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/cadence-bonded-leather-stool/",
+      "description_short": "Padded bonded leather stool ideal for medical areas, labs, and schools. Easy to disinfect surface.",
+      "specs": [
+        "Padded bonded leather surface",
+        "Easy to disinfect",
+        "Ideal for medical areas labs and schools",
+        "Compact and durable"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37678",
+      "sku": "A100-Altos Arms (1 left & 1 right per box)",
+      "name": "Arms for Altos Chair",
+      "categories": [
+        "Chair Accessories",
+        "Stool/Nesting/Drafting Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/A100-Altos-Arms-1-left-1-right-per-box-2-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/A100-Altos-Arms-1-left-1-right-per-box-1-1-1-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/A100-Altos-Arms-1-left-1-right-per-box-3-300x300-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/arms-for-altos-chair/",
+      "description_short": "Adjustable-height arms for Altos Drafting Chair models 1-232-F-BK & 1-232-VINYL-BK. Soft padded vinyl. 1 set per box.",
+      "specs": [
+        "Compatible with Altos Drafting Chairs (1-232-F-BK & 1-232-VINYL-BK)",
+        "Adjustable height",
+        "Soft padded vinyl upholstery",
+        "Fully assembled \u2014 no setup required",
+        "1 set (left + right) per box"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37155",
+      "sku": "1-HARD-SURFACE-CASTORS",
+      "name": "Set of 5 Hard Surface Casters",
+      "categories": [
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-1.png",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-2-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-3-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/set-of-5-hard-surface-casters/",
+      "description_short": "50mm black nylon replacement casters for hard surface floors (tile, hardwood, chair mats). Set of 5. No assembly required.",
+      "specs": [
+        "Designed for: hard surfaces (tile hardwood chair mats)",
+        "Diameter: 50mm",
+        "Width: 45.8mm",
+        "Height: 79.3mm",
+        "Finish: Black nylon",
+        "Set of 5",
+        "No assembly required"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37161",
+      "sku": "1-SOFT-SURFACE-CASTORS",
+      "name": "Set of 5 Soft Surface Casters",
+      "categories": [
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-1.png",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-2-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Casters-set-of-5-3-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/set-of-5-soft-surface-casters/",
+      "description_short": "50mm black polyurethane casters for soft flooring and low-pile carpets. Set of 5. No assembly required.",
+      "specs": [
+        "Designed for: soft flooring and low-pile carpets",
+        "Diameter: 50mm",
+        "Width: 45.8mm",
+        "Height: 79.3mm",
+        "Finish: Black polyurethane",
+        "Set of 5",
+        "No assembly required"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37164",
+      "sku": "1-STATIONARY-GLIDES",
+      "name": "Set of 5 Stationary Glides",
+      "categories": [
+        "Chair Accessories"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Untitled-Diagram-3-1.png",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/Stationary-Glides-set-of-5-2-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/set-of-5-stationary-glides/",
+      "description_short": "Stationary glides compatible with most office chairs as a replacement for casters. Set of 5.",
+      "specs": [
+        "Compatible with most office chairs",
+        "Replaces casters",
+        "Set of 5"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37820",
+      "sku": "10-190-01-BK-OFWD",
+      "name": "TITAN Big & Tall Manager High Back Leather Chair",
+      "categories": [
+        "Big and Tall Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TITAN-Big-Tall-Manager-High-Back-Leather-Chair-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TITAN-Big-Tall-Manager-High-Back-Leather-Chair-SIDE-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TITAN-Big-Tall-Manager-High-Back-Leather-Chair-FRONT-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/TITAN-Big-Tall-Manager-High-Back-Leather-Chair-CROSS-1-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/titan-big-and-tall-manager-high-back-leather-chair/",
+      "description_short": "Genuine leather, supports up to 450 lbs. Integrated headrest and lumbar support, fixed padded loop arms, 5-star base.",
+      "specs": [
+        "Genuine leather with soft-thread finish",
+        "Weight capacity: 450 lbs",
+        "Fixed padded loop arms",
+        "Integrated headrest and lumbar support",
+        "Five-star base with smooth-rolling casters",
+        "Seat: 22-5/8\" W x 23-3/4\" D",
+        "Seat height: 18-3/4\" - 21-1/2\"",
+        "Pneumatic seat-height adjustment",
+        "360\u00b0 swivel",
+        "Tilt & tilt lock",
+        "Posture mechanism/lock"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    },
+    {
+      "id": "37146",
+      "sku": "1-289-01-BK",
+      "name": "Contempra High Back Bonded Leather Chair",
+      "categories": [
+        "Executive Chairs"
+      ],
+      "images": [
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CONTEMPRA-HIGH-BACK-300x300-1-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CONTEMPRA-HIGH-BACK-BONDED-LEATHER-CHAIR-side-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CONTEMPRA-HIGH-BACK-BONDED-LEATHER-CHAIR-cross-1.jpg",
+        "https://www.ofwd.com/wp-content/uploads/sites/4/2025/03/CONTEMPRA-HIGH-BACK-BONDED-LEATHER-CHAIR-front-1.jpg"
+      ],
+      "url": "https://www.ofwd.com/product/contempra-high-back-bonded-leather-chair/",
+      "description_short": "Premium bonded leather executive chair with chromed steel frame, 360\u00b0 swivel, pneumatic height adjustment, waterfall-edge cushioned seat.",
+      "specs": [
+        "Bonded leather backrest & seat",
+        "Chromed steel frame with polished aluminum five-star base",
+        "Fixed chrome arms with removable matching sleeves",
+        "Color options: White or Black",
+        "Waterfall-edge cushioned seat",
+        "Pneumatic seat height adjustment",
+        "Tilt tension control",
+        "Tilt lock",
+        "360\u00b0 swivel",
+        "Center tilt mechanism",
+        "Modern European executive design"
+      ],
+      "bifma": false,
+      "base_price": 0,
+      "active": true
+    }
+  ]
+}
