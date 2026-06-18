@@ -61,7 +61,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .sidebar{width:220px;min-width:220px;background:var(--bg);border-right:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
 .sidebar-section{padding:10px 14px 6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3)}
 .cat-list{overflow-y:auto;padding:4px 0}
-.cat-item{padding:8px 14px;font-size:13px;cursor:pointer;color:var(--txt2);border-left:2px solid transparent;display:flex;align-items:center;justify-content:space-between;transition:background .1s;user-select:none}
+.cat-item{padding:8px 14px;font-size:13px;cursor:pointer;color:var(--txt2);border-left:2px solid transparent;display:flex;align-items:center;justify-content:space-between;transition:background .1s;user-select:none;-webkit-user-select:none}
 .cat-item:hover{background:var(--bg2);color:var(--txt)}
 .cat-item.active{background:var(--bg2);color:var(--txt);font-weight:500;border-left-color:var(--acc)}
 .cat-count{font-size:11px;color:var(--txt3);background:var(--bg2);padding:1px 6px;border-radius:10px}
@@ -122,10 +122,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .proj-card-name{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px}
 .proj-card-meta{font-size:11px;color:var(--txt3);display:flex;gap:10px;flex-wrap:wrap}
 .status-pill{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
-.status-active{background:#E8F5E9;color:#2E7D32}
-.status-on_hold{background:#FFF8E1;color:#F57F17}
-.status-completed{background:#E3F2FD;color:#1565C0}
-.status-archived{background:var(--bg2);color:var(--txt3)}
+.status-budget{background:#FFF8E1;color:#F57F17}
+.status-financial_negotiation{background:#E3F2FD;color:#1565C0}
+.status-engineering_design{background:#EEEDFE;color:#3C3489}
+.status-ready_manufacture{background:#E8F5E9;color:#2E7D32}
 .proj-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--txt3);text-align:center;gap:8px}
 .proj-empty svg{width:36px;height:36px;opacity:.3}
 .proj-empty p{font-size:13px;line-height:1.5}
@@ -145,7 +145,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .bom-sku{font-size:10px;color:var(--txt3);font-family:var(--mono)}
 .bom-price{font-size:11px;color:var(--txt2);margin-top:2px}
 .qty-row{display:flex;align-items:center;gap:5px;margin-top:5px}
-.qty-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:14px;color:var(--txt2);background:var(--bg);user-select:none}
+.qty-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:14px;color:var(--txt2);background:var(--bg);user-select:none;-webkit-user-select:none}
 .qty-btn:hover{background:var(--bg2)}
 .qty-val{font-size:13px;font-weight:500;min-width:22px;text-align:center}
 .qty-lbl{font-size:11px;color:var(--txt3)}
@@ -255,9 +255,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424501</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">83c57089-9b76-437f-bb3a-2af418a68ac9</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424501, NNN373W3ZMMJ-320560042-424501</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424531</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">d7ebae69-571d-4f2e-8424-bb6bcbdb9779</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424531, NNN373W3ZMMJ-320560042-424531</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -345,10 +345,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
         </div>
         <div class="status-filter" id="statusFilter">
           <button class="sf-btn active" data-status="all" onclick="setStatusFilter('all')">All</button>
-          <button class="sf-btn" data-status="active" onclick="setStatusFilter('active')">Active</button>
-          <button class="sf-btn" data-status="on_hold" onclick="setStatusFilter('on_hold')">On Hold</button>
-          <button class="sf-btn" data-status="completed" onclick="setStatusFilter('completed')">Completed</button>
-          <button class="sf-btn" data-status="archived" onclick="setStatusFilter('archived')">Archived</button>
+          <button class="sf-btn" data-status="budget" onclick="setStatusFilter('budget')">Budget</button>
+          <button class="sf-btn" data-status="financial_negotiation" onclick="setStatusFilter('financial_negotiation')">Financial</button>
+          <button class="sf-btn" data-status="engineering_design" onclick="setStatusFilter('engineering_design')">Eng &amp; Design</button>
+          <button class="sf-btn" data-status="ready_manufacture" onclick="setStatusFilter('ready_manufacture')">Ready</button>
         </div>
         <div class="proj-list" id="projList"></div>
       </div>
@@ -400,6 +400,17 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Customer config — loaded from URL param or defaults to 'ofwd'
 const CUSTOMER_ID = new URLSearchParams(window.location.search).get('customer') || 'ofwd';
+
+// Project status stages — single source of truth (value, label)
+const STATUS_OPTIONS = [
+  ['budget',                 'At Budget Stage'],
+  ['financial_negotiation',  'At Financial Negotiation'],
+  ['engineering_design',     'At Engineering & Design'],
+  ['ready_manufacture',      'Ready for Manufacture']
+];
+const STATUS_LABELS = Object.fromEntries(STATUS_OPTIONS);
+const DEFAULT_STATUS = 'budget';
+function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '); }
 
 // ── STATE ────────────────────────────────────────────────────
 let state = {
@@ -465,48 +476,71 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
+// Wrap a promise so it rejects if it hasn't settled in `ms` milliseconds.
+function withTimeout(p, ms, label) {
+  return Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() =>
+      rej(new Error((label || 'Request') + ' timed out')), ms))
+  ]);
+}
+
 async function bootstrap() {
-  // 1. Load customer record from Supabase
-  const {data: cu} = await sb.from('customer_users')
-    .select('role, full_name, customers(*)')
-    .eq('user_id', state.userId).single();
-  if (cu) {
-    state.customer  = cu.customers;
-    state.userRole  = cu.role;
-    applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
+  try {
+    // 1. Load customer record from Supabase
+    const {data: cu, error: cuErr} = await withTimeout(
+      sb.from('customer_users')
+        .select('role, full_name, customers(*)')
+        .eq('user_id', state.userId).single(),
+      10000, 'Loading account');
+    if (cuErr) console.warn('customer_users:', cuErr.message);
+    if (cu) {
+      state.customer  = cu.customers;
+      state.userRole  = cu.role;
+      applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
+    }
+
+    // 2. Load master products JSON
+    try {
+      const r = await fetch('master_products.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      state.products    = d.products || [];
+      state.CAT_ORDER   = d._meta?.category_sequence || [];
+      state.CAT_SKU_SEQ = d._meta?.cat_sku_sequence  || {};
+    } catch(e) {
+      console.warn('master_products.json failed:', e.message);
+    }
+
+    // 3. Load pricing & catalog (try external files first, fallback to show-all)
+    try {
+      const pr = await fetch(`customers/${CUSTOMER_ID}/pricing.json`);
+      const pd = await pr.json();
+      state.pricing = pd.prices || {};
+    } catch(e) { state.pricing = {}; }
+
+    try {
+      const cr = await fetch(`customers/${CUSTOMER_ID}/catalog.json`);
+      state.catalog = await cr.json();
+    } catch(e) { state.catalog = {show_all: true, included_skus: [], excluded_skus: []}; }
+
+    // 4. Load projects
+    await withTimeout(loadProjects(), 10000, 'Loading projects');
+
+    // 5. Render UI
+    renderCats();
+    renderProducts();
+    renderProjList();
+  } catch(err) {
+    console.error('Bootstrap failed:', err);
+    document.getElementById('prodGrid').innerHTML =
+      `<div class="no-results">
+         <span>Couldn't load the catalog.</span>
+         <span style="font-size:12px;color:var(--txt3)">${err.message}</span>
+         <button class="btn-secondary" style="margin-top:8px"
+           onclick="location.reload()">Retry</button>
+       </div>`;
   }
-
-  // 2. Load master products JSON
-  try {
-    const r = await fetch('master_products.json');
-    const d = await r.json();
-    state.products    = d.products || [];
-    state.CAT_ORDER   = d._meta?.category_sequence || [];
-    state.CAT_SKU_SEQ = d._meta?.cat_sku_sequence  || {};
-  } catch(e) {
-    // Fallback: products already embedded below
-    console.warn('master_products.json not found, using embedded data');
-  }
-
-  // 3. Load pricing & catalog (try external files first, fallback to show-all)
-  try {
-    const pr = await fetch(`customers/${CUSTOMER_ID}/pricing.json`);
-    const pd = await pr.json();
-    state.pricing = pd.prices || {};
-  } catch(e) { state.pricing = {}; }
-
-  try {
-    const cr = await fetch(`customers/${CUSTOMER_ID}/catalog.json`);
-    state.catalog = await cr.json();
-  } catch(e) { state.catalog = {show_all: true, included_skus: [], excluded_skus: []}; }
-
-  // 4. Load projects
-  await loadProjects();
-
-  // 5. Render UI
-  renderCats();
-  renderProducts();
-  renderProjList();
 }
 
 function applyBranding(customer, displayName, role) {
@@ -717,7 +751,8 @@ function renderProjList() {
     const matchQ = !q || p.project_name.toLowerCase().includes(q) ||
       (p.project_number||'').toLowerCase().includes(q) ||
       (p.site_address||'').toLowerCase().includes(q) ||
-      (p.general_contractor||'').toLowerCase().includes(q);
+      (p.general_contractor||'').toLowerCase().includes(q) ||
+      (p.owner_name||'').toLowerCase().includes(q);
     const matchS = state.statusFilter==='all' || p.status===state.statusFilter;
     return matchQ && matchS;
   });
@@ -736,9 +771,11 @@ function renderProjList() {
       onclick="selectProject('${p.id}')">
       <div class="proj-card-name">${p.project_name}</div>
       <div class="proj-card-meta">
-        <span class="status-pill status-${p.status}">${p.status.replace('_',' ')}</span>
+        <span class="status-pill status-${p.status}">${statusLabel(p.status)}</span>
         ${p.project_number ? `<span>#${p.project_number}</span>` : ''}
+        ${p.owner_name     ? `<span>👤 ${p.owner_name}</span>` : ''}
         ${p.site_address   ? `<span>📍 ${p.site_address}</span>` : ''}
+        ${p.material_order_by ? `<span>📦 by ${new Date(p.material_order_by).toLocaleDateString('en-CA')}</span>` : ''}
         <span>${new Date(p.updated_at).toLocaleDateString('en-CA')}</span>
       </div>
     </div>`).join('');
@@ -776,10 +813,26 @@ function openProjModal(proj) {
         <div class="mfield">
           <label>Status</label>
           <select id="pStatus">
-            ${['active','on_hold','completed','archived'].map(s=>
-              `<option value="${s}"${(proj?.status||'active')===s?' selected':''}>${s.replace('_',' ')}</option>`
+            ${STATUS_OPTIONS.map(([v,lbl])=>
+              `<option value="${v}"${(proj?.status||DEFAULT_STATUS)===v?' selected':''}>${lbl}</option>`
             ).join('')}
           </select>
+        </div>
+        <div class="mfield">
+          <label>Project Start Date</label>
+          <input id="pStart" type="date" value="${proj?.start_date||''}"/>
+        </div>
+        <div class="mfield">
+          <label>Material Order-By Date</label>
+          <input id="pOrderBy" type="date" value="${proj?.material_order_by||''}"/>
+        </div>
+        <div class="mfield">
+          <label>Project Owner Name</label>
+          <input id="pOwner" type="text" value="${proj?.owner_name||''}" placeholder="John Doe"/>
+        </div>
+        <div class="mfield">
+          <label>Project Owner Phone</label>
+          <input id="pOwnerPhone" type="tel" value="${proj?.owner_phone||''}" placeholder="(780) 555-0123"/>
         </div>
         <div class="mfield mfield-full">
           <label>Site Address</label>
@@ -823,6 +876,10 @@ async function saveProject(id) {
     project_name:         name,
     project_number:       document.getElementById('pNum').value.trim() || null,
     status:               document.getElementById('pStatus').value,
+    start_date:           document.getElementById('pStart').value || null,
+    material_order_by:    document.getElementById('pOrderBy').value || null,
+    owner_name:           document.getElementById('pOwner').value.trim() || null,
+    owner_phone:          document.getElementById('pOwnerPhone').value.trim() || null,
     site_address:         document.getElementById('pAddr').value.trim() || null,
     general_contractor:   document.getElementById('pGC').value.trim() || null,
     project_manager:      document.getElementById('pPM').value.trim() || null,
@@ -884,7 +941,7 @@ function renderBom() {
   // Header
   document.getElementById('bomProjName').textContent = proj?.project_name || 'No project selected';
   document.getElementById('bomProjMeta').textContent = proj
-    ? [proj.project_number, proj.site_address, proj.general_contractor].filter(Boolean).join(' · ') || proj.status
+    ? [proj.project_number, proj.owner_name, proj.site_address].filter(Boolean).join(' · ') || statusLabel(proj.status)
     : 'Select a project from the Projects tab';
   document.getElementById('bomActions').style.display = proj ? 'flex' : 'none';
   document.getElementById('dlBtn').disabled = !proj || !state.activeProjItems.length;
@@ -1009,6 +1066,7 @@ function openDownload() {
   const showPrice = state.customer?.show_pricing !== false;
   const totalUnits = items.reduce((s,i)=>s+i.quantity,0);
   const totalPrice = showPrice ? items.reduce((s,i)=>s+(i.unit_price||0)*i.quantity,0) : 0;
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
   const rows = items.map(item => `
     <tr>
       <td style="font-family:monospace;font-size:11px">${item.sku}</td>
@@ -1017,15 +1075,26 @@ function openDownload() {
       ${showPrice ? `<td style="text-align:right">${item.unit_price ? '$'+item.unit_price.toFixed(2) : '—'}</td>
       <td style="text-align:right">${item.unit_price ? '$'+(item.unit_price*item.quantity).toFixed(2) : '—'}</td>` : ''}
     </tr>`).join('');
+  const metaLine = [proj.project_number, proj.site_address, proj.general_contractor, proj.project_manager].filter(Boolean).join(' · ');
+  const ownerLine = [
+    proj.owner_name  ? `Owner: ${proj.owner_name}` : '',
+    proj.owner_phone ? `Tel: ${proj.owner_phone}` : ''
+  ].filter(Boolean).join(' · ');
+  const dateLine = [
+    `Status: ${statusLabel(proj.status)}`,
+    proj.start_date        ? `Start: ${fmtDate(proj.start_date)}` : '',
+    proj.material_order_by ? `Order materials by: ${fmtDate(proj.material_order_by)}` : '',
+    proj.estimated_completion ? `Est. completion: ${fmtDate(proj.estimated_completion)}` : ''
+  ].filter(Boolean).join(' · ');
   document.getElementById('modalWrap').innerHTML = `
   <div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal modal-xl">
       <div style="margin-bottom:20px">
         <div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Project BOM</div>
         <div style="font-size:22px;font-weight:600;color:var(--txt)">${proj.project_name}</div>
-        <div style="font-size:13px;color:var(--txt2);margin-top:4px">
-          ${[proj.project_number, proj.site_address, proj.general_contractor, proj.project_manager].filter(Boolean).join(' · ')}
-        </div>
+        ${metaLine  ? `<div style="font-size:13px;color:var(--txt2);margin-top:4px">${metaLine}</div>` : ''}
+        ${ownerLine ? `<div style="font-size:13px;color:var(--txt2);margin-top:2px">${ownerLine}</div>` : ''}
+        ${dateLine  ? `<div style="font-size:12px;color:var(--txt2);margin-top:2px">${dateLine}</div>` : ''}
         <div style="font-size:12px;color:var(--txt3);margin-top:3px">Prepared: ${today} · ${state.userEmail}</div>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
@@ -1076,17 +1145,23 @@ function copyBom() {
   const proj  = state.projects.find(p=>p.id===state.activeProjectId);
   const today = new Date().toLocaleDateString('en-CA');
   const showPrice = state.customer?.show_pricing !== false;
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
   const lines = [
     `Project: ${proj.project_name}`,
     proj.project_number ? `Reference: ${proj.project_number}` : '',
+    `Status: ${statusLabel(proj.status)}`,
+    proj.owner_name ? `Owner: ${proj.owner_name}` : '',
+    proj.owner_phone ? `Owner Phone: ${proj.owner_phone}` : '',
     proj.site_address ? `Address: ${proj.site_address}` : '',
+    proj.start_date ? `Start Date: ${fmtDate(proj.start_date)}` : '',
+    proj.material_order_by ? `Material Order-By: ${fmtDate(proj.material_order_by)}` : '',
     `Date: ${today}`, '',
     showPrice ? 'SKU | Product | Qty | Unit Price | Line Total'
               : 'SKU | Product | Qty',
     ...state.activeProjItems.map(i => showPrice
       ? `${i.sku} | ${i.product_name} | ${i.quantity} | ${i.unit_price?'$'+i.unit_price.toFixed(2):'—'} | ${i.unit_price?'$'+(i.unit_price*i.quantity).toFixed(2):'—'}`
       : `${i.sku} | ${i.product_name} | ${i.quantity}`)
-  ].filter(l=>l!==null).join('\n');
+  ].filter(l=>l!==null && l!=='' || l==='').join('\n');
   navigator.clipboard.writeText(lines).then(()=>showToast('Copied to clipboard'));
 }
 
