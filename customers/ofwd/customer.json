@@ -1,0 +1,15 @@
+{
+  "id": "ofwd",
+  "company_name": "OFWD — Office Furniture Warehouse Direct",
+  "logo_url": "",
+  "welcome_message": "Welcome to the OFWD Seating Project Builder",
+  "primary_color": "#534AB7",
+  "secondary_color": "#3C3489",
+  "contact_rep": "Nash Marani",
+  "contact_email": "nash.marani@xenali.com",
+  "contact_phone": "",
+  "valid_until": "",
+  "show_pricing": true,
+  "allow_export": true,
+  "notes": "Master admin account"
+}
