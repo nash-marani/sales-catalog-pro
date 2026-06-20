@@ -275,9 +275,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424565</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">5c946861-9395-4c98-87be-68ef52f25167</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424565, NNN373W3ZMMJ-320560042-424565</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424566</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">49752cae-bae5-4929-894c-7252533e3a42</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424566, NNN373W3ZMMJ-320560042-424566</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -546,17 +546,10 @@ async function bootstrap() {
     state.userRole   = cu.role;
     applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
 
-    // 2. Master product list (lives in the repo, shared by all catalogs)
-    try {
-      const r = await fetch('master_products.json');
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      state.products    = d.products || [];
-      state.CAT_ORDER   = d._meta?.category_sequence || [];
-      state.CAT_SKU_SEQ = d._meta?.cat_sku_sequence  || {};
-    } catch(e) {
-      console.warn('master_products.json failed:', e.message);
-    }
+    // 2. Products are no longer loaded globally from master_products.json.
+    //    Each catalog now loads its RESOLVED products from the database view
+    //    catalog_effective_products (master -> template -> catalog overrides),
+    //    handled in loadCatalogProducts() when a catalog is selected.
 
     // 3. Customer-level pricing (current price per SKU, from the view)
     try {
@@ -626,11 +619,9 @@ function selectCatalogById(id) {
 async function selectCatalog(cat) {
   state.activeCatalog   = cat;
   state.activeCatalogId = cat.id;
-  state.catalog = {
-    show_all:      cat.show_all !== false,
-    included_skus: cat.included_skus || [],
-    excluded_skus: cat.excluded_skus || []
-  };
+  // Resolution (subset/rename/curation) is done server-side by the view,
+  // so no client-side scoping is needed — show everything the view returns.
+  state.catalog = { show_all: true, included_skus: [], excluded_skus: [] };
   state.activeCat = 'All Products';
   state.activeProjectId = null;
 
@@ -643,9 +634,16 @@ async function selectCatalog(cat) {
   document.getElementById('pickerWrap').style.display = 'none';
   document.getElementById('appWrap').style.display    = 'flex';
 
-  // Projects are scoped to this catalog
   document.getElementById('prodGrid').innerHTML =
     '<div class="loading-wrap"><div class="spinner"></div><span>Loading catalog…</span></div>';
+
+  // Load this catalog's RESOLVED products from the view, then its projects
+  try {
+    await withTimeout(loadCatalogProducts(cat.id), 12000, 'Loading products');
+  } catch(e) {
+    console.error('catalog products:', e.message);
+    state.products = []; state.CAT_ORDER = []; state.CAT_SKU_SEQ = {};
+  }
   try {
     await withTimeout(loadProjects(), 10000, 'Loading projects');
   } catch(e) { console.warn('projects:', e.message); state.projects = []; }
@@ -653,6 +651,46 @@ async function selectCatalog(cat) {
   renderCats();
   renderProducts();
   renderProjList();
+}
+
+// Load the resolved product set for one catalog and rebuild the in-memory
+// shapes the renderers expect (state.products / CAT_ORDER / CAT_SKU_SEQ).
+async function loadCatalogProducts(catalogId) {
+  const { data, error } = await sb
+    .from('catalog_effective_products')
+    .select('sku,product_name,images,url,description_short,specs,bifma,category_slug,category_label,group_label,category_sort,product_sort')
+    .eq('catalog_id', catalogId)
+    .order('category_sort', { ascending: true })
+    .order('product_sort',  { ascending: true })
+    .limit(5000);
+  if (error) throw error;
+  const rows = data || [];
+
+  const prodMap = new Map();   // sku -> product object (deduped across categories)
+  const catOrder = [];         // effective category labels, in order
+  const catSeen  = new Set();
+  const catSku   = {};         // category label -> ordered, deduped sku list
+
+  for (const r of rows) {
+    const label = r.category_label;
+    if (!catSeen.has(label)) { catSeen.add(label); catOrder.push(label); catSku[label] = []; }
+    if (!catSku[label].includes(r.sku)) catSku[label].push(r.sku);
+    if (!prodMap.has(r.sku)) {
+      prodMap.set(r.sku, {
+        sku: r.sku, name: r.product_name,
+        images: r.images || [], url: r.url,
+        description_short: r.description_short,
+        specs: r.specs || [], bifma: r.bifma,
+        categories: [label]
+      });
+    } else {
+      const p = prodMap.get(r.sku);
+      if (!p.categories.includes(label)) p.categories.push(label);
+    }
+  }
+  state.products    = Array.from(prodMap.values());
+  state.CAT_ORDER   = catOrder;
+  state.CAT_SKU_SEQ = catSku;
 }
 
 // Full-screen fatal message (replaces the product grid / picker)
