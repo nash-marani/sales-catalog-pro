@@ -288,9 +288,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424708</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">95e922b4-4ea9-418d-a025-0c1459acfb96</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424708, NNN373W3ZMMJ-320560042-424708</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424710</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">43f4193a-bcba-40bd-ae2d-77cc2bba481f</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424710, NNN373W3ZMMJ-320560042-424710</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -893,7 +893,7 @@ function renderProducts() {
     const img   = (p.images||[])[0] || '';
     const price = showPricing ? formatPrice(p.sku) : '';
     const nFiles = (p._assets||[]).length;
-    const showExt = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
+    const showExt = !!p.url;   // show the card's external-link icon for any product that has a URL
     return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button">
       <div class="card-img" style="position:relative">
         ${img
@@ -924,7 +924,7 @@ function openDetail(sku) {
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   const assets = p._assets || [];
-  const showFull = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
+  const showFull = !!p.url;   // show the product-page link for any product that has a URL
   document.getElementById('modalWrap').innerHTML = `
   <div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal modal-xl">
