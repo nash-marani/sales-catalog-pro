@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OFWD Seating Catalog</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede9;
+  --txt:#1a1a1a;--txt2:#555;--txt3:#999;
+  --bdr:rgba(0,0,0,.10);--bdr2:rgba(0,0,0,.18);
+  --acc:#326A95;--acc2:#285578;--accbg:#E8EFF5;--acctxt:#285578; /* Xenali Lapis Lazuli */
+  --danger:#A32D2D;--success:#2E7D32;
+  --r:8px;--rl:12px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono','Fira Code',monospace;
+}
+body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── AUTH ── */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f3,#E8EFF5);padding:20px}
+.auth-card{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:36px;width:380px;max-width:100%;box-shadow:0 8px 40px rgba(50,106,149,.12)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+.auth-logo-img{height:40px;max-width:160px;object-fit:contain}
+.auth-logo-text{font-size:16px;font-weight:600;color:var(--acc)}
+.auth-title{font-size:20px;font-weight:500;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--txt2);margin-bottom:22px;line-height:1.5}
+.auth-tabs{display:flex;border:.5px solid var(--bdr2);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--txt2);background:var(--bg2);border:none;font-family:var(--font);transition:background .15s,color .15s}
+.auth-tab.active{background:var(--acc);color:#fff}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:4px}
+.field input{width:100%;padding:9px 11px;font-size:14px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--acc)}
+.btn-auth{width:100%;padding:11px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s;margin-top:4px}
+.btn-auth:hover{background:var(--acc2)}
+.btn-auth:disabled{background:var(--bg2);color:var(--txt3);cursor:default}
+.auth-msg{font-size:12px;margin-top:10px;padding:9px 11px;border-radius:var(--r);display:none}
+.auth-msg.error{background:#FDECEA;color:var(--danger);display:block}
+.auth-msg.success{background:#E8F5E9;color:var(--success);display:block}
+
+/* ── CATALOG PICKER ── */
+.picker-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f3,#E8EFF5);padding:20px}
+.picker-card{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:32px;width:440px;max-width:100%;box-shadow:0 8px 40px rgba(50,106,149,.12)}
+.picker-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.picker-logo{height:44px;max-width:150px;object-fit:contain}
+.picker-title{font-size:19px;font-weight:600;color:var(--txt)}
+.picker-sub{font-size:13px;color:var(--txt2);margin-top:2px}
+.picker-list{display:flex;flex-direction:column;gap:9px}
+.picker-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 16px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+.picker-item:hover{background:var(--accbg);border-color:var(--acc);color:var(--acctxt)}
+.picker-item svg{width:18px;height:18px;color:var(--txt3)}
+.picker-item:hover svg{color:var(--acc)}
+
+/* ── NAV CATALOG INDICATOR ── */
+.nav-catalog{display:flex;align-items:center;gap:10px}
+.nav-catalog-name{font-size:13px;font-weight:600;color:var(--acctxt);background:var(--accbg);padding:3px 10px;border-radius:10px;white-space:nowrap}
+
+/* ── NAV ── */
+.nav{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;background:var(--bg);border-bottom:.5px solid var(--bdr);flex-shrink:0;position:sticky;top:0;z-index:50}
+.nav-brand{display:flex;align-items:center;text-decoration:none;flex-shrink:0}
+.nav-brand-logo{height:30px;width:auto;display:block}
+.nav-cobrand{display:flex;align-items:center;gap:9px;min-width:0}
+.nav-cobrand-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);white-space:nowrap}
+.nav-client-logo{height:26px;max-width:130px;object-fit:contain;display:block}
+.nav-client-name{font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-divider{width:1px;height:20px;background:var(--bdr)}
+.nav-section{font-size:13px;color:var(--txt3)}
+.nav-sp{flex:1}
+.nav-user{font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:8px}
+.nav-role{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--accbg);color:var(--acctxt);font-weight:500}
+.btn-sm-nav{font-size:12px;padding:5px 12px;border:.5px solid var(--bdr2);border-radius:6px;cursor:pointer;background:transparent;color:var(--txt2);font-family:var(--font);transition:background .1s}
+.btn-sm-nav:hover{background:var(--bg2)}
+
+/* ── APP LAYOUT ── */
+.app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;min-width:220px;background:var(--bg);border-right:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-section{padding:10px 14px 6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3)}
+.cat-list{overflow-y:auto;padding:4px 0}
+.cat-item{padding:8px 14px;font-size:13px;cursor:pointer;color:var(--txt2);border-left:2px solid transparent;display:flex;align-items:center;justify-content:space-between;transition:background .1s;user-select:none;-webkit-user-select:none}
+.cat-item:hover{background:var(--bg2);color:var(--txt)}
+.cat-item.active{background:var(--bg2);color:var(--txt);font-weight:500;border-left-color:var(--acc)}
+.cat-count{font-size:11px;color:var(--txt3);background:var(--bg2);padding:1px 6px;border-radius:10px}
+.cat-item.active .cat-count{background:var(--bg)}
+.sidebar-div{height:.5px;background:var(--bdr);margin:6px 0}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg2)}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-bottom:.5px solid var(--bdr);flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:500;color:var(--txt2);min-width:90px}
+.srch{flex:1;position:relative}
+.srch svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--txt3);pointer-events:none}
+.srch input{width:100%;padding:7px 10px 7px 30px;font-size:13px;border:.5px solid var(--bdr);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none;transition:border-color .15s}
+.srch input:focus{border-color:var(--acc)}
+.srch input::placeholder{color:var(--txt3)}
+.result-ct{font-size:12px;color:var(--txt3);white-space:nowrap}
+.products-grid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;align-content:start}
+
+/* ── PRODUCT CARD ── */
+.prod-card{background:var(--bg);border:.5px solid var(--bdr);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s}
+.prod-card:hover{border-color:var(--acc);transform:translateY(-1px)}
+.card-img{height:130px;background:var(--bg2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card-img .no-img{color:var(--txt3)}
+.card-img .no-img svg{width:36px;height:36px}
+.card-ext{position:absolute;top:7px;right:7px;width:26px;height:26px;background:rgba(255,255,255,.92);border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;color:var(--acc);text-decoration:none}
+.card-ext svg{width:13px;height:13px}
+.prod-card:hover .card-ext{opacity:1}
+.card-body{padding:10px 12px 12px}
+.card-sku{font-size:10px;color:var(--txt3);font-family:var(--mono);margin-bottom:3px}
+.card-name{font-size:12px;font-weight:500;color:var(--txt);line-height:1.4;margin-bottom:6px}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.card-cat{font-size:10px;color:var(--acctxt);background:var(--accbg);padding:2px 7px;border-radius:10px}
+.card-price{font-size:12px;font-weight:600;color:var(--txt)}
+.no-results{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:var(--txt3);gap:10px;text-align:center;font-size:14px}
+
+/* ── RIGHT PANEL — PROJECTS ── */
+.rpanel{width:300px;min-width:300px;background:var(--bg);border-left:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+.rp-tabs{display:flex;border-bottom:.5px solid var(--bdr);flex-shrink:0}
+.rp-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;color:var(--txt3);border-bottom:2px solid transparent;transition:color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.rp-tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+.rp-panel{flex:1;overflow-y:auto;display:none;flex-direction:column}
+.rp-panel.active{display:flex}
+
+/* Projects list panel */
+.proj-toolbar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:.5px solid var(--bdr);flex-shrink:0}
+.proj-srch{flex:1;position:relative}
+.proj-srch svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--txt3);pointer-events:none}
+.proj-srch input{width:100%;padding:6px 8px 6px 27px;font-size:12px;border:.5px solid var(--bdr);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none}
+.proj-srch input:focus{border-color:var(--acc)}
+.btn-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:var(--r);cursor:pointer;background:var(--bg2);color:var(--txt2);transition:background .1s;flex-shrink:0}
+.btn-icon:hover{background:var(--bg3);color:var(--txt)}
+.btn-icon svg{width:14px;height:14px}
+.proj-list{flex:1;overflow-y:auto;padding:8px}
+.proj-card{padding:10px 12px;border:.5px solid var(--bdr);border-radius:var(--r);margin-bottom:7px;cursor:pointer;transition:border-color .15s,background .1s;background:var(--bg)}
+.proj-card:hover{border-color:var(--acc);background:var(--bg2)}
+.proj-card.active-proj{border-color:var(--acc);background:var(--accbg)}
+.proj-card-name{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.proj-card-meta{font-size:11px;color:var(--txt3);display:flex;gap:10px;flex-wrap:wrap}
+.status-pill{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.status-budget{background:#FFF8E1;color:#F57F17}
+.status-financial_negotiation{background:#E3F2FD;color:#1565C0}
+.status-engineering_design{background:#E8EFF5;color:#285578}
+.status-ready_manufacture{background:#E8F5E9;color:#2E7D32}
+.proj-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--txt3);text-align:center;gap:8px}
+.proj-empty svg{width:36px;height:36px;opacity:.3}
+.proj-empty p{font-size:13px;line-height:1.5}
+
+/* BOM panel */
+.bom-header{padding:10px 12px;border-bottom:.5px solid var(--bdr);flex-shrink:0}
+.bom-proj-name{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.bom-proj-meta{font-size:11px;color:var(--txt3)}
+.bom-actions{display:flex;gap:6px;margin-top:8px}
+.bom-items{flex:1;overflow-y:auto;padding:8px}
+.bom-item{display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:var(--r);border:.5px solid var(--bdr);margin-bottom:7px;background:var(--bg2)}
+.bom-thumb{width:42px;height:42px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--txt3)}
+.bom-thumb img{width:100%;height:100%;object-fit:cover}
+.bom-thumb svg{width:18px;height:18px}
+.bom-info{flex:1;min-width:0}
+.bom-name{font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bom-sku{font-size:10px;color:var(--txt3);font-family:var(--mono)}
+.bom-price{font-size:11px;color:var(--txt2);margin-top:2px}
+.qty-row{display:flex;align-items:center;gap:5px;margin-top:5px}
+.qty-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:14px;color:var(--txt2);background:var(--bg);user-select:none;-webkit-user-select:none}
+.qty-btn:hover{background:var(--bg2)}
+.qty-val{font-size:13px;font-weight:500;min-width:22px;text-align:center}
+.qty-lbl{font-size:11px;color:var(--txt3)}
+.rm-btn{margin-left:auto;color:var(--txt3);cursor:pointer;background:none;border:none;display:flex;align-items:center;padding:2px;border-radius:4px}
+.rm-btn:hover{color:var(--danger)}
+.rm-btn svg{width:13px;height:13px}
+.bom-footer{padding:10px 12px;border-top:.5px solid var(--bdr);flex-shrink:0}
+.bom-stats{display:flex;gap:8px;margin-bottom:8px}
+.stat-box{flex:1;background:var(--bg2);border-radius:var(--r);padding:7px 10px;text-align:center}
+.stat-val{font-size:18px;font-weight:600;color:var(--txt)}
+.stat-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em}
+.bom-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--txt3);text-align:center;padding:20px;gap:8px}
+.bom-empty svg{width:32px;height:32px;opacity:.3}
+.bom-empty p{font-size:13px;line-height:1.5}
+
+/* ── BUTTONS ── */
+.btn-primary{width:100%;padding:9px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font);transition:background .15s}
+.btn-primary:hover{background:var(--acc2)}
+.btn-primary:disabled{background:var(--bg2);color:var(--txt3);cursor:default}
+.btn-primary svg{width:14px;height:14px}
+.btn-secondary{padding:7px 12px;border:.5px solid var(--bdr2);border-radius:var(--r);font-size:12px;cursor:pointer;background:var(--bg2);color:var(--txt2);font-family:var(--font);display:inline-flex;align-items:center;gap:5px;transition:background .1s}
+.btn-secondary:hover{background:var(--bg3)}
+.btn-secondary svg{width:13px;height:13px}
+.btn-danger{padding:9px;background:var(--danger);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font)}
+.btn-accent{padding:7px 12px;background:var(--accbg);color:var(--acctxt);border:.5px solid transparent;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;text-decoration:none;transition:background .15s}
+.btn-accent:hover{background:var(--acc);color:#fff}
+.btn-accent svg{width:13px;height:13px}
+
+/* ── MODALS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal{background:var(--bg);border-radius:var(--rl);border:.5px solid var(--bdr);padding:22px;width:420px;max-width:100%}
+.modal-lg{width:600px}
+.modal-xl{width:740px;max-height:88vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:16px;color:var(--txt)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mfield{margin-bottom:0}
+.mfield label{display:block;font-size:11px;font-weight:500;color:var(--txt2);margin-bottom:4px}
+.mfield input,.mfield select,.mfield textarea{width:100%;padding:8px 10px;font-size:13px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none;transition:border-color .15s}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--acc)}
+.mfield textarea{resize:vertical;min-height:70px}
+.mfield-full{grid-column:1/-1}
+.modal-note{font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.5}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btns button{flex:1;padding:9px;border-radius:var(--r);font-size:13px;cursor:pointer;border:.5px solid var(--bdr2);background:var(--bg2);color:var(--txt);font-family:var(--font)}
+.modal-btns .confirm{background:var(--acc);color:#fff;border-color:var(--acc)}
+.modal-btns .confirm:hover{background:var(--acc2)}
+.modal-btns .danger-btn{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+/* ── PRODUCT DETAIL MODAL ── */
+.detail-wrap{display:flex;gap:20px}
+.detail-gallery{width:260px;flex-shrink:0}
+.detail-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);border:.5px solid var(--bdr);margin-bottom:8px}
+.detail-thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.detail-thumb{width:52px;height:52px;object-fit:cover;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:border-color .15s}
+.detail-thumb.active{border-color:var(--acc)}
+.detail-thumb:hover{border-color:var(--acc)}
+.detail-info{flex:1;min-width:0}
+.detail-sku{font-size:11px;color:var(--txt3);font-family:var(--mono);margin-bottom:4px}
+.detail-name{font-size:18px;font-weight:500;color:var(--txt);margin-bottom:10px;line-height:1.35}
+.detail-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.cat-badge{font-size:10px;padding:3px 8px;border-radius:10px;background:var(--accbg);color:var(--acctxt);font-weight:500}
+.bifma-badge{font-size:10px;padding:3px 8px;border-radius:10px;background:#E8F5E9;color:#2E7D32;font-weight:500}
+.detail-desc{font-size:13px;color:var(--txt2);line-height:1.65;margin-bottom:12px}
+.detail-specs{margin-bottom:14px}
+.detail-specs h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:8px}
+.spec-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.spec-list li{font-size:12px;color:var(--txt2);display:flex;align-items:flex-start;gap:7px}
+.spec-list li::before{content:"\2713";color:var(--acc);font-weight:600;flex-shrink:0;margin-top:1px}
+.detail-price{font-size:22px;font-weight:700;color:var(--txt);margin-bottom:14px}
+.detail-price span{font-size:13px;color:var(--txt3);font-weight:400}
+.detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
+.qty-input-wrap{display:flex;align-items:center;gap:6px}
+.qty-input-wrap label{font-size:12px;color:var(--txt2)}
+.qty-input-wrap input{width:60px;padding:8px;border:.5px solid var(--bdr2);border-radius:var(--r);font-size:14px;text-align:center;background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none}
+.qty-input-wrap input:focus{border-color:var(--acc)}
+.btn-add{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s}
+.btn-add:hover{background:var(--acc2)}
+.btn-close{padding:10px 14px;border:.5px solid var(--bdr2);border-radius:var(--r);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--txt2);font-family:var(--font)}
+
+/* ── DETAIL RESOURCES (downloads) — added ── */
+.detail-resources{margin:0 0 14px;padding-top:14px;border-top:.5px solid var(--bdr)}
+.detail-resources h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:8px}
+.res-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.res-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--acctxt);text-decoration:none;padding:7px 10px;border:.5px solid var(--bdr);border-radius:var(--r);background:var(--bg2);transition:background .12s,border-color .12s}
+.res-link:hover{background:var(--accbg);border-color:var(--acc)}
+.res-link svg{flex-shrink:0;color:var(--acc)}
+.res-type{margin-left:auto;font-size:10px;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+/* file-count chip on product cards */
+.card-files{position:absolute;bottom:7px;left:7px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.92);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--acctxt)}
+.card-files svg{width:11px;height:11px}
+
+/* ── SYNC INDICATOR ── */
+.sync-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:.5px solid var(--bdr);background:var(--bg2);flex-shrink:0}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0;transition:background .3s}
+.sync-dot.saving{background:#FFC107}
+.sync-dot.err{background:var(--danger)}
+.sync-lbl{font-size:11px;color:var(--txt3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:500;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(50,106,149,.35);transition:opacity .3s}
+
+/* ── STATUS FILTER ── */
+.status-filter{display:flex;gap:5px;padding:8px 12px;border-bottom:.5px solid var(--bdr);flex-shrink:0;flex-wrap:wrap}
+.sf-btn{font-size:11px;padding:3px 9px;border-radius:10px;border:.5px solid var(--bdr2);background:var(--bg2);color:var(--txt3);cursor:pointer;font-family:var(--font);transition:background .1s}
+.sf-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* ── LOADING ── */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--txt3)}
+.spinner{width:32px;height:32px;border:3px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media print{
+  .nav,.sidebar,.topbar,.products-grid,.rpanel{display:none!important}
+  .overlay{position:static!important;background:none!important}
+  .modal-xl{width:100%!important;max-height:none!important;box-shadow:none!important;border:none!important;padding:0!important}
+  .modal-btns,.btn-secondary,.btn-primary{display:none!important}
+}
+</style>
+
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authWrap" class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="data:image/png;base64,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" alt="Xenali — Creating Inspirational Workspaces" class="auth-logo-img"/>
+    </div>
+    <div class="auth-title" id="authTitle">Project Builder</div>
+    <div class="auth-sub" id="authSub">Sign in to browse products and manage your project BOMs.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSI" onclick="switchTab('si')">Sign In</button>
+      <button class="auth-tab" id="tabSU" onclick="switchTab('su')">Create Account</button>
+    </div>
+    <div id="siForm">
+      <div class="field"><label>Email</label><input type="email" id="siEmail" placeholder="you@company.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="siPwd" placeholder="••••••••"/></div>
+      <button class="btn-auth" id="siBtn" onclick="signIn()">Sign In</button>
+      <div class="auth-msg" id="siMsg"></div>
+    </div>
+    <div id="suForm" style="display:none">
+      <div class="field"><label>Full name</label><input type="text" id="suName" placeholder="Jane Smith"/></div>
+      <div class="field"><label>Email</label><input type="email" id="suEmail" placeholder="you@company.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="suPwd" placeholder="Min. 6 characters"/></div>
+      <button class="btn-auth" id="suBtn" onclick="signUp()">Create Account</button>
+      <div class="auth-msg" id="suMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appWrap" style="display:none;flex-direction:column;flex:1">
+  <nav class="nav">
+    <a class="nav-brand" href="https://www.xenali.com" target="_blank" rel="noopener" title="Xenali — Creating Inspirational Workspaces">
+      <img class="nav-brand-logo" src="data:image/png;base64,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" alt="Xenali"/>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-cobrand">
+      <span class="nav-cobrand-lbl">Prepared for</span>
+      <img id="navClientLogo" class="nav-client-logo" src="" alt="" style="display:none">
+      <span class="nav-client-name" id="navClientName">Project Builder</span>
+    </div>
+    <div class="nav-catalog" id="navCatalog" style="display:none">
+      <div class="nav-divider"></div>
+      <span class="nav-catalog-name" id="navCatalogName"></span>
+      <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
+    </div>
+    <div class="nav-sp"></div>
+    <span class="nav-user" id="navUser"></span>
+    <span class="nav-role" id="navRole"></span>
+    <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
+  </nav>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">Categories</div>
+      <div class="cat-list" id="catList"></div>
+    </aside>
+    <!-- Product grid -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title" id="topTitle">All Products</div>
+        <div class="srch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="srchInput" placeholder="Search by name, SKU, or category…"/>
+        </div>
+        <span class="result-ct" id="resultCt"></span>
+      </div>
+      <div class="products-grid" id="prodGrid">
+        <div class="loading-wrap"><div class="spinner"></div><span>Loading catalog…</span></div>
+      </div>
+    </main>
+    <!-- Right panel -->
+    <aside class="rpanel">
+      <div class="rp-tabs">
+        <button class="rp-tab active" id="tabProj" onclick="switchRTab('projects')">Projects</button>
+        <button class="rp-tab" id="tabBom" onclick="switchRTab('bom')">Current BOM</button>
+      </div>
+      <!-- Projects list -->
+      <div class="rp-panel active" id="panelProjects">
+        <div class="proj-toolbar">
+          <div class="proj-srch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="projSrch" placeholder="Search projects…" oninput="renderProjList()"/>
+          </div>
+          <button class="btn-icon" onclick="openNewProj()" title="New project">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="status-filter" id="statusFilter">
+          <button class="sf-btn active" data-status="all" onclick="setStatusFilter('all')">All</button>
+          <button class="sf-btn" data-status="budget" onclick="setStatusFilter('budget')">Budget</button>
+          <button class="sf-btn" data-status="financial_negotiation" onclick="setStatusFilter('financial_negotiation')">Financial</button>
+          <button class="sf-btn" data-status="engineering_design" onclick="setStatusFilter('engineering_design')">Eng &amp; Design</button>
+          <button class="sf-btn" data-status="ready_manufacture" onclick="setStatusFilter('ready_manufacture')">Ready</button>
+        </div>
+        <div class="proj-list" id="projList"></div>
+      </div>
+      <!-- BOM panel -->
+      <div class="rp-panel" id="panelBom">
+        <div class="bom-header" id="bomHeader">
+          <div class="bom-proj-name" id="bomProjName">No project selected</div>
+          <div class="bom-proj-meta" id="bomProjMeta">Select a project from the Projects tab</div>
+          <div class="bom-actions" id="bomActions" style="display:none">
+            <button class="btn-secondary" onclick="openEditProj()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="btn-secondary" onclick="openDownload()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download
+            </button>
+            <button class="btn-secondary" onclick="confirmDelProj()" style="color:var(--danger)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="sync-bar">
+          <div class="sync-dot" id="syncDot"></div>
+          <span class="sync-lbl" id="syncLbl">Cloud sync</span>
+        </div>
+        <div class="bom-items" id="bomItems"></div>
+        <div class="bom-footer">
+          <div class="bom-stats" id="bomStats"></div>
+          <button class="btn-primary" id="dlBtn" disabled onclick="openDownload()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View & Download BOM
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- CATALOG PICKER -->
+<div id="pickerWrap" class="picker-wrap" style="display:none">
+  <div class="picker-card">
+    <div class="picker-head">
+      <img id="pickerLogo" class="picker-logo" src="" alt="" style="display:none">
+      <div>
+        <div class="picker-title" id="pickerTitle">Choose a catalog</div>
+        <div class="picker-sub" id="pickerSub">Select which catalog to work in.</div>
+      </div>
+    </div>
+    <div class="picker-list" id="pickerList"></div>
+    <button class="btn-sm-nav" style="margin-top:16px;width:100%" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
+<div id="modalWrap"></div>
+<div class="toast" id="toast" style="display:none"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const SUPABASE_URL = 'https://qaecdgtqmleilkclrpyk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_iUwwJShUMJRjyD1If6DT4w_ezlK9bYc';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Customer config — loaded from URL param or defaults to 'ofwd'
+const CUSTOMER_ID = new URLSearchParams(window.location.search).get('customer') || 'ofwd';
+
+// Project status stages — single source of truth (value, label)
+const STATUS_OPTIONS = [
+  ['budget',                 'At Budget Stage'],
+  ['financial_negotiation',  'At Financial Negotiation'],
+  ['engineering_design',     'At Engineering & Design'],
+  ['ready_manufacture',      'Ready for Manufacture']
+];
+const STATUS_LABELS = Object.fromEntries(STATUS_OPTIONS);
+const DEFAULT_STATUS = 'budget';
+function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '); }
+
+// ── SMALL HELPERS (added) ────────────────────────────────────
+// Escape a string before putting it into innerHTML or an attribute.
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+// Friendly fallback label when an asset row has no `label` value.
+function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing'}[a&&a.asset_type] || 'Download');}
+// True if a product page URL points at the Bobrick storefront — we must NOT
+// navigate the main window there; downloads still open in a new tab.
+function isBobrickPage(url){return !!url && /bobrick\.com/i.test(url);}
+
+// ── STATE ────────────────────────────────────────────────────
+let state = {
+  products: [], customer: null, customerId: null, pricing: {}, catalog: null,
+  catalogs: [], activeCatalog: null, activeCatalogId: null,
+  activeCat: 'All Products', search: '',
+  projects: [], activeProjectId: null, activeProjItems: [],
+  userId: null, userEmail: null, userRole: null,
+  statusFilter: 'all', syncTimer: null,
+  CAT_ORDER: [], CAT_SKU_SEQ: {}
+};
+
+// ── SUPABASE AUTH ────────────────────────────────────────────
+function switchTab(t) {
+  document.getElementById('siForm').style.display = t==='si'?'block':'none';
+  document.getElementById('suForm').style.display = t==='su'?'block':'none';
+  document.getElementById('tabSI').classList.toggle('active', t==='si');
+  document.getElementById('tabSU').classList.toggle('active', t==='su');
+}
+
+async function signIn() {
+  const email = document.getElementById('siEmail').value.trim();
+  const pwd   = document.getElementById('siPwd').value;
+  const msg   = document.getElementById('siMsg');
+  const btn   = document.getElementById('siBtn');
+  msg.className='auth-msg'; msg.style.display='none';
+  btn.disabled=true; btn.textContent='Signing in…';
+  const {error} = await sb.auth.signInWithPassword({email, password: pwd});
+  btn.disabled=false; btn.textContent='Sign In';
+  if (error) { msg.textContent=error.message; msg.className='auth-msg error'; }
+}
+
+async function signUp() {
+  const name  = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pwd   = document.getElementById('suPwd').value;
+  const msg   = document.getElementById('suMsg');
+  const btn   = document.getElementById('suBtn');
+  msg.className='auth-msg'; msg.style.display='none';
+  if (!name) { msg.textContent='Please enter your name.'; msg.className='auth-msg error'; return; }
+  btn.disabled=true; btn.textContent='Creating account…';
+  const {error} = await sb.auth.signUp({email, password: pwd, options:{data:{full_name:name}}});
+  btn.disabled=false; btn.textContent='Create Account';
+  if (error) { msg.textContent=error.message; msg.className='auth-msg error'; }
+  else { msg.textContent='Account created! Check your email to confirm, then sign in.'; msg.className='auth-msg success'; }
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// ── BOOTSTRAP ────────────────────────────────────────────────
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    state.userId    = session.user.id;
+    state.userEmail = session.user.email;
+    document.getElementById('authWrap').style.display = 'none';
+    await bootstrap();   // bootstrap shows either the catalog picker or the app
+  } else {
+    document.getElementById('authWrap').style.display = 'flex';
+    document.getElementById('appWrap').style.display  = 'none';
+    document.getElementById('pickerWrap').style.display = 'none';
+  }
+});
+
+// Wrap a promise so it rejects if it hasn't settled in `ms` milliseconds.
+function withTimeout(p, ms, label) {
+  return Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() =>
+      rej(new Error((label || 'Request') + ' timed out')), ms))
+  ]);
+}
+
+async function bootstrap() {
+  try {
+    // 1. Resolve which customer this login belongs to (via customer_users)
+    const {data: cu, error: cuErr} = await withTimeout(
+      sb.from('customer_users')
+        .select('role, full_name, customer_id, customers(*)')
+        .eq('user_id', state.userId).single(),
+      10000, 'Loading account');
+    if (cuErr) console.warn('customer_users:', cuErr.message);
+    if (!cu || !cu.customers) {
+      showFatal('Your login isn’t linked to a customer yet. Contact your administrator.');
+      return;
+    }
+    state.customer   = cu.customers;
+    state.customerId = cu.customers.id;
+    state.userRole   = cu.role;
+    applyBranding(cu.customers, cu.full_name || state.userEmail, cu.role);
+
+    // 2. Products are no longer loaded globally from master_products.json.
+    //    Each catalog now loads its RESOLVED products from the database view
+    //    catalog_effective_products (master -> template -> catalog overrides),
+    //    handled in loadCatalogProducts() when a catalog is selected.
+
+    // 3. Customer-level pricing (current price per SKU, from the view)
+    try {
+      const {data: prices, error: pErr} = await withTimeout(
+        sb.from('customer_current_pricing')
+          .select('sku, unit_price')
+          .eq('customer_id', state.customerId),
+        10000, 'Loading pricing');
+      if (pErr) throw pErr;
+      state.pricing = {};
+      (prices || []).forEach(p => { state.pricing[p.sku] = Number(p.unit_price); });
+    } catch(e) { console.warn('pricing:', e.message); state.pricing = {}; }
+
+    // 4. The customer's catalogs (business lines)
+    const {data: cats, error: catErr} = await withTimeout(
+      sb.from('catalogs')
+        .select('*')
+        .eq('customer_id', state.customerId)
+        .order('sort_order', {ascending: true}),
+      10000, 'Loading catalogs');
+    if (catErr) throw catErr;
+    state.catalogs = cats || [];
+
+    // 5. Route: no catalogs → error; one → straight in; many → picker
+    if (state.catalogs.length === 0) {
+      showFatal('No catalogs are set up for your customer yet.');
+    } else if (state.catalogs.length === 1) {
+      selectCatalog(state.catalogs[0]);
+    } else {
+      showCatalogPicker();
+    }
+  } catch(err) {
+    console.error('Bootstrap failed:', err);
+    showFatal('Couldn’t load your account: ' + err.message);
+  }
+}
+
+// Show the catalog chooser (full-screen)
+function showCatalogPicker() {
+  document.getElementById('appWrap').style.display    = 'none';
+  document.getElementById('authWrap').style.display   = 'none';
+  const wrap = document.getElementById('pickerWrap');
+  wrap.style.display = 'flex';
+
+  const logo = document.getElementById('pickerLogo');
+  if (state.customer?.logo_url) {
+    logo.onerror = () => { logo.style.display = 'none'; };
+    logo.src = state.customer.logo_url; logo.style.display = 'block';
+  } else { logo.style.display = 'none'; }
+  document.getElementById('pickerTitle').textContent =
+    state.customer?.company_name || 'Choose a catalog';
+  document.getElementById('pickerSub').textContent = 'Select which catalog to work in.';
+
+  document.getElementById('pickerList').innerHTML = state.catalogs.map(c => `
+    <button class="picker-item" onclick="selectCatalogById('${c.id}')">
+      <span class="picker-item-name">${escapeHtml(c.name)}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>`).join('');
+}
+
+function selectCatalogById(id) {
+  const cat = state.catalogs.find(c => c.id === id);
+  if (cat) selectCatalog(cat);
+}
+
+// Enter a catalog: apply its SKU scoping, load its projects, show the app
+async function selectCatalog(cat) {
+  state.activeCatalog   = cat;
+  state.activeCatalogId = cat.id;
+  // Resolution (subset/rename/curation) is done server-side by the view,
+  // so no client-side scoping is needed — show everything the view returns.
+  state.catalog = { show_all: true, included_skus: [], excluded_skus: [] };
+  state.activeCat = 'All Products';
+  state.activeProjectId = null;
+
+  // Header: show which catalog we're in
+  document.getElementById('navCatalogName').textContent = cat.name;
+  document.getElementById('navCatalog').style.display =
+    state.catalogs.length > 1 ? 'flex' : 'none';
+  document.getElementById('topTitle').textContent = 'All Products';
+
+  document.getElementById('pickerWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display    = 'flex';
+
+  document.getElementById('prodGrid').innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div><span>Loading catalog…</span></div>';
+
+  // Load this catalog's RESOLVED products from the view, then its projects
+  try {
+    await withTimeout(loadCatalogProducts(cat.id), 12000, 'Loading products');
+  } catch(e) {
+    console.error('catalog products:', e.message);
+    state.products = []; state.CAT_ORDER = []; state.CAT_SKU_SEQ = {};
+  }
+  try {
+    await withTimeout(loadProjects(), 10000, 'Loading projects');
+  } catch(e) { console.warn('projects:', e.message); state.projects = []; }
+
+  renderCats();
+  renderProducts();
+  renderProjList();
+}
+
+// Load the resolved product set for one catalog and rebuild the in-memory
+// shapes the renderers expect (state.products / CAT_ORDER / CAT_SKU_SEQ).
+async function loadCatalogProducts(catalogId) {
+  const { data, error } = await sb
+    .from('catalog_effective_products')
+    .select('sku,product_name,images,url,description_short,specs,bifma,category_slug,category_label,group_label,category_sort,product_sort')
+    .eq('catalog_id', catalogId)
+    .order('category_sort', { ascending: true })
+    .order('product_sort',  { ascending: true })
+    .limit(5000);
+  if (error) throw error;
+  const rows = data || [];
+
+  const prodMap = new Map();   // sku -> product object (deduped across categories)
+  const catOrder = [];         // effective category labels, in order
+  const catSeen  = new Set();
+  const catSku   = {};         // category label -> ordered, deduped sku list
+
+  for (const r of rows) {
+    const label = r.category_label;
+    if (!catSeen.has(label)) { catSeen.add(label); catOrder.push(label); catSku[label] = []; }
+    if (!catSku[label].includes(r.sku)) catSku[label].push(r.sku);
+    if (!prodMap.has(r.sku)) {
+      prodMap.set(r.sku, {
+        sku: r.sku, name: r.product_name,
+        images: r.images || [], url: r.url,
+        description_short: r.description_short,
+        specs: r.specs || [], bifma: r.bifma,
+        categories: [label]
+      });
+    } else {
+      const p = prodMap.get(r.sku);
+      if (!p.categories.includes(label)) p.categories.push(label);
+    }
+  }
+  state.products    = Array.from(prodMap.values());
+  state.CAT_ORDER   = catOrder;
+  state.CAT_SKU_SEQ = catSku;
+
+  // ── Downloadable assets (added) ────────────────────────────
+  // The view exposes only `sku`, but product_assets joins on products.id.
+  // Bridge sku -> id, then prefetch brochure/bim/cad assets for this catalog's
+  // products in one query so cards can show a file count and the detail modal
+  // can list Resources without a per-open round-trip. (.in() lists are fine for
+  // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
+  state.products.forEach(p => { p._assets = []; p._pid = null; });
+  try {
+    const skus = state.products.map(p => p.sku).filter(Boolean);
+    if (skus.length) {
+      const { data: idRows } = await sb.from('products').select('id,sku').in('sku', skus);
+      const idBySku = {};
+      (idRows || []).forEach(r => { idBySku[r.sku] = r.id; });
+      state.products.forEach(p => { p._pid = idBySku[p.sku] || null; });
+
+      const pids = state.products.map(p => p._pid).filter(Boolean);
+      if (pids.length) {
+        const { data: assetRows } = await sb.from('product_assets')
+          .select('product_id,asset_type,url,label,sort_order')
+          .in('product_id', pids)
+          .in('asset_type', ['brochure','bim','cad'])
+          .order('sort_order', { ascending: true });
+        const byPid = {};
+        (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
+        state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._assets = byPid[p._pid]; });
+      }
+    }
+  } catch (e) { console.warn('asset prefetch:', e.message); }
+}
+
+// Full-screen fatal message (replaces the product grid / picker)
+function showFatal(msg) {
+  document.getElementById('authWrap').style.display  = 'none';
+  document.getElementById('pickerWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display   = 'flex';
+  document.getElementById('navCatalog').style.display = 'none';
+  document.getElementById('prodGrid').innerHTML =
+    `<div class="no-results">
+       <span>${msg}</span>
+       <button class="btn-secondary" style="margin-top:8px" onclick="signOut()">Sign out</button>
+     </div>`;
+}
+
+function applyBranding(customer, displayName, role) {
+  // User identity (always shown)
+  document.getElementById('navUser').textContent = displayName || '';
+  document.getElementById('navRole').textContent = role || '';
+  if (!customer) return;
+
+  // Co-brand lockup: the client's logo + name in the "Prepared for" slot.
+  // (The Xenali wordmark is the fixed platform mark and is not changed here.)
+  const name = customer.company_name || 'Project Builder';
+  document.getElementById('navClientName').textContent = name;
+
+  const logo = document.getElementById('navClientLogo');
+  if (customer.logo_url) {
+    logo.onerror = () => { logo.style.display = 'none'; }; // graceful fallback to name only
+    logo.src = customer.logo_url;
+    logo.alt = name;
+    logo.style.display = 'block';
+  } else {
+    logo.style.display = 'none';
+  }
+
+  document.title = name + ' — Xenali Seating Catalog';
+
+  // NOTE: the app accent stays Xenali blue regardless of customer, so the
+  // platform reads as a Xenali product. Per-customer recolouring is intentionally
+  // disabled. To re-enable it, uncomment the block below.
+  // if (customer.primary_color) {
+  //   document.documentElement.style.setProperty('--acc',  customer.primary_color);
+  //   document.documentElement.style.setProperty('--acc2', customer.secondary_color || customer.primary_color);
+  // }
+}
+
+// ── CATALOG FILTERING ────────────────────────────────────────
+function getVisibleProducts() {
+  if (!state.catalog || state.catalog.show_all) return state.products;
+  const inc = new Set(state.catalog.included_skus || []);
+  const exc = new Set(state.catalog.excluded_skus || []);
+  return state.products.filter(p =>
+    (inc.size === 0 || inc.has(p.sku)) && !exc.has(p.sku)
+  );
+}
+
+function getProductsForCat(cat) {
+  const visible = getVisibleProducts();
+  if (cat === 'All Products') return visible;
+  const skuList = state.CAT_SKU_SEQ[cat] || [];
+  return skuList.map(sku => visible.find(p => p.sku === sku)).filter(Boolean);
+}
+
+function getPrice(sku) {
+  const p = state.pricing[sku];
+  return (p && p > 0) ? p : null;
+}
+
+function formatPrice(sku) {
+  const p = getPrice(sku);
+  if (!p) return '';
+  return '$' + p.toFixed(2);
+}
+
+// ── RENDER CATEGORIES ────────────────────────────────────────
+function renderCats() {
+  const visible = getVisibleProducts();
+  const all = ['All Products', ...state.CAT_ORDER];
+  document.getElementById('catList').innerHTML = all.map(c => {
+    const count = c === 'All Products'
+      ? visible.length
+      : (state.CAT_SKU_SEQ[c] || []).filter(s => visible.find(p => p.sku===s)).length;
+    return `<div class="cat-item${state.activeCat===c?' active':''}"
+      onclick="setCat('${c.replace(/'/g,"\\'")}')">
+      <span>${escapeHtml(c)}</span><span class="cat-count">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function setCat(c) {
+  state.activeCat = c;
+  document.getElementById('topTitle').textContent = c;
+  renderCats(); renderProducts();
+}
+
+// ── RENDER PRODUCTS ──────────────────────────────────────────
+function renderProducts() {
+  const q = state.search.toLowerCase();
+  let list = getProductsForCat(state.activeCat).filter(p =>
+    !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) ||
+    (p.categories||[]).some(c => c.toLowerCase().includes(q))
+  );
+  if (state.activeCat === 'All Products' && !q) {
+    const seen = new Set(); const ord = [];
+    state.CAT_ORDER.forEach(cat =>
+      (state.CAT_SKU_SEQ[cat]||[]).forEach(sku => {
+        if (!seen.has(sku)) {
+          const p = list.find(x => x.sku===sku);
+          if (p) { ord.push(p); seen.add(sku); }
+        }
+      })
+    );
+    list.forEach(p => { if (!seen.has(p.sku)) ord.push(p); });
+    list = ord;
+  }
+  document.getElementById('resultCt').textContent = list.length + ' product' + (list.length!==1?'s':'');
+  const showPricing = state.customer?.show_pricing !== false;
+  const chairSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="10" width="16" height="4" rx="2"/><rect x="6" y="5" width="12" height="6" rx="2"/><line x1="7" y1="14" x2="7" y2="20"/><line x1="17" y1="14" x2="17" y2="20"/></svg>`;
+  if (!list.length) {
+    document.getElementById('prodGrid').innerHTML = `<div class="no-results">${chairSvg}<span>No products found</span></div>`;
+    return;
+  }
+  const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  const fileIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  document.getElementById('prodGrid').innerHTML = list.map(p => {
+    const img   = (p.images||[])[0] || '';
+    const price = showPricing ? formatPrice(p.sku) : '';
+    const nFiles = (p._assets||[]).length;
+    const showExt = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
+    return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button">
+      <div class="card-img" style="position:relative">
+        ${img
+          ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
+          : `<div class="no-img">${chairSvg}</div>`}
+        ${showExt ? `<a class="card-ext" href="${escapeHtml(p.url)}" target="_blank" rel="noopener"
+          onclick="event.stopPropagation()" title="View product page">${extIco}</a>` : ''}
+        ${nFiles ? `<span class="card-files" title="${nFiles} downloadable file${nFiles!==1?'s':''}">${fileIco}${nFiles}</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-sku">${escapeHtml(p.sku)}</div>
+        <div class="card-name">${escapeHtml(p.name)}</div>
+        <div class="card-footer">
+          <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
+          ${price ? `<span class="card-price">${price}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PRODUCT DETAIL MODAL ─────────────────────────────────────
+function openDetail(sku) {
+  const p = state.products.find(x => x.sku===sku);
+  if (!p) return;
+  const imgs   = p.images || [];
+  const price  = state.customer?.show_pricing !== false ? getPrice(sku) : null;
+  const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+  const assets = p._assets || [];
+  const showFull = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
+  document.getElementById('modalWrap').innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-xl">
+      <div class="detail-wrap">
+        <div class="detail-gallery">
+          <img id="mainImg" class="detail-main-img"
+            src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(p.name)}"
+            onerror="this.style.display='none'">
+          <div class="detail-thumbs">
+            ${imgs.map((u,i)=>`<img class="detail-thumb${i===0?' active':''}"
+              src="${escapeHtml(u)}" alt="" onclick="setMainImg('${u}',this)"
+              onerror="this.style.display='none'">`).join('')}
+          </div>
+        </div>
+        <div class="detail-info">
+          <div class="detail-sku">${escapeHtml(p.sku)}</div>
+          <div class="detail-name">${escapeHtml(p.name)}</div>
+          <div class="detail-cats">
+            ${(p.categories||[]).map(c=>`<span class="cat-badge">${escapeHtml(c)}</span>`).join('')}
+            ${p.bifma ? '<span class="bifma-badge">BIFMA Certified</span>' : ''}
+          </div>
+          ${p.description_short ? `<div class="detail-desc">${escapeHtml(p.description_short)}</div>` : ''}
+          ${(p.specs||[]).length ? `
+            <div class="detail-specs">
+              <h4>Features & Specs</h4>
+              <ul class="spec-list">
+                ${p.specs.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>` : ''}
+          ${assets.length ? `
+            <div class="detail-resources">
+              <h4>Resources</h4>
+              <ul class="res-list">
+                ${assets.map(a=>`<li><a class="res-link" href="${escapeHtml(a.url)}" target="_blank" rel="noopener">
+                  ${dlIco}<span>${escapeHtml(assetLabel(a))}</span><span class="res-type">${escapeHtml(a.asset_type)}</span>
+                </a></li>`).join('')}
+              </ul>
+            </div>` : ''}
+          ${price ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>` : ''}
+          <div class="detail-add">
+            <div class="qty-input-wrap">
+              <label>Qty</label>
+              <input type="number" id="detailQty" min="1" max="999" value="1"/>
+            </div>
+            <button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>
+            ${showFull ? `<a class="btn-accent" href="${escapeHtml(p.url)}" target="_blank" rel="noopener">${extIco} Full details</a>` : ''}
+            <button class="btn-close" onclick="closeModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('detailQty')?.focus(),50);
+}
+
+function setMainImg(url, el) {
+  document.getElementById('mainImg').src = url;
+  document.querySelectorAll('.detail-thumb').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function closeModal() { document.getElementById('modalWrap').innerHTML=''; }
+
+// ── PROJECTS ─────────────────────────────────────────────────
+async function loadProjects() {
+  if (!state.activeCatalogId) { state.projects = []; renderProjList(); return; }
+  const {data} = await sb.from('projects')
+    .select('*')
+    .eq('catalog_id', state.activeCatalogId)
+    .order('updated_at', {ascending: false});
+  state.projects = data || [];
+  if (state.projects.length && !state.activeProjectId)
+    state.activeProjectId = state.projects[0].id;
+  renderProjList();
+  if (state.activeProjectId) await loadBom();
+}
+
+function setStatusFilter(s) {
+  state.statusFilter = s;
+  document.querySelectorAll('.sf-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.status === s));
+  renderProjList();
+}
+
+function renderProjList() {
+  const q = (document.getElementById('projSrch')?.value||'').toLowerCase();
+  let list = state.projects.filter(p => {
+    const matchQ = !q || p.project_name.toLowerCase().includes(q) ||
+      (p.project_number||'').toLowerCase().includes(q) ||
+      (p.site_address||'').toLowerCase().includes(q) ||
+      (p.general_contractor||'').toLowerCase().includes(q) ||
+      (p.owner_name||'').toLowerCase().includes(q);
+    const matchS = state.statusFilter==='all' || p.status===state.statusFilter;
+    return matchQ && matchS;
+  });
+  const el = document.getElementById('projList');
+  if (!list.length) {
+    el.innerHTML = `<div class="proj-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      <p>${state.projects.length ? 'No projects match your search.' : 'No projects yet.\nClick + to create your first project.'}</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = list.map(p => `
+    <div class="proj-card${p.id===state.activeProjectId?' active-proj':''}"
+      onclick="selectProject('${p.id}')">
+      <div class="proj-card-name">${escapeHtml(p.project_name)}</div>
+      <div class="proj-card-meta">
+        <span class="status-pill status-${p.status}">${statusLabel(p.status)}</span>
+        ${p.project_number ? `<span>#${escapeHtml(p.project_number)}</span>` : ''}
+        ${p.owner_name     ? `<span>👤 ${escapeHtml(p.owner_name)}</span>` : ''}
+        ${p.site_address   ? `<span>📍 ${escapeHtml(p.site_address)}</span>` : ''}
+        ${p.material_order_by ? `<span>📦 by ${new Date(p.material_order_by).toLocaleDateString('en-CA')}</span>` : ''}
+        <span>${new Date(p.updated_at).toLocaleDateString('en-CA')}</span>
+      </div>
+    </div>`).join('');
+}
+
+async function selectProject(id) {
+  state.activeProjectId = id;
+  renderProjList();
+  await loadBom();
+  switchRTab('bom');
+}
+
+// ── NEW / EDIT PROJECT MODAL ─────────────────────────────────
+function openNewProj() { openProjModal(null); }
+function openEditProj() {
+  const p = state.projects.find(x=>x.id===state.activeProjectId);
+  if (p) openProjModal(p);
+}
+
+function openProjModal(proj) {
+  const isEdit = !!proj;
+  document.getElementById('modalWrap').innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-lg">
+      <h3>${isEdit ? 'Edit Project' : 'New Project'}</h3>
+      <div class="modal-grid">
+        <div class="mfield mfield-full">
+          <label>Project Name *</label>
+          <input id="pName" type="text" maxlength="120" value="${escapeHtml(proj?.project_name||'')}" placeholder="e.g. Downtown Tower — Floor 12"/>
+        </div>
+        <div class="mfield">
+          <label>Project Number / Reference</label>
+          <input id="pNum" type="text" value="${escapeHtml(proj?.project_number||'')}" placeholder="PRJ-2026-001"/>
+        </div>
+        <div class="mfield">
+          <label>Status</label>
+          <select id="pStatus">
+            ${STATUS_OPTIONS.map(([v,lbl])=>
+              `<option value="${v}"${(proj?.status||DEFAULT_STATUS)===v?' selected':''}>${lbl}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="mfield">
+          <label>Project Start Date</label>
+          <input id="pStart" type="date" value="${proj?.start_date||''}"/>
+        </div>
+        <div class="mfield">
+          <label>Material Order-By Date</label>
+          <input id="pOrderBy" type="date" value="${proj?.material_order_by||''}"/>
+        </div>
+        <div class="mfield">
+          <label>Project Owner Name</label>
+          <input id="pOwner" type="text" value="${escapeHtml(proj?.owner_name||'')}" placeholder="John Doe"/>
+        </div>
+        <div class="mfield">
+          <label>Project Owner Phone</label>
+          <input id="pOwnerPhone" type="tel" value="${escapeHtml(proj?.owner_phone||'')}" placeholder="(780) 555-0123"/>
+        </div>
+        <div class="mfield mfield-full">
+          <label>Site Address</label>
+          <input id="pAddr" type="text" value="${escapeHtml(proj?.site_address||'')}" placeholder="123 Main St, Edmonton AB"/>
+        </div>
+        <div class="mfield">
+          <label>General Contractor</label>
+          <input id="pGC" type="text" value="${escapeHtml(proj?.general_contractor||'')}" placeholder="PCL Construction"/>
+        </div>
+        <div class="mfield">
+          <label>Project Manager</label>
+          <input id="pPM" type="text" value="${escapeHtml(proj?.project_manager||'')}" placeholder="Jane Smith"/>
+        </div>
+        <div class="mfield">
+          <label>Est. Completion</label>
+          <input id="pDate" type="date" value="${proj?.estimated_completion||''}"/>
+        </div>
+        <div class="mfield">
+          <label>Budget Reference</label>
+          <input id="pBudget" type="text" value="${escapeHtml(proj?.budget_reference||'')}" placeholder="PO-2026-047"/>
+        </div>
+        <div class="mfield mfield-full">
+          <label>Notes</label>
+          <textarea id="pNotes">${escapeHtml(proj?.notes||'')}</textarea>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button onclick="closeModal()">Cancel</button>
+        <button class="confirm" onclick="saveProject(${isEdit?`'${proj.id}'`:'null'})">${isEdit?'Save Changes':'Create Project'}</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('pName')?.focus(),50);
+}
+
+async function saveProject(id) {
+  const name = document.getElementById('pName').value.trim();
+  if (!name) { showToast('Project name is required'); return; }
+  const payload = {
+    catalog_id:           state.activeCatalogId,
+    project_name:         name,
+    project_number:       document.getElementById('pNum').value.trim() || null,
+    status:               document.getElementById('pStatus').value,
+    start_date:           document.getElementById('pStart').value || null,
+    material_order_by:    document.getElementById('pOrderBy').value || null,
+    owner_name:           document.getElementById('pOwner').value.trim() || null,
+    owner_phone:          document.getElementById('pOwnerPhone').value.trim() || null,
+    site_address:         document.getElementById('pAddr').value.trim() || null,
+    general_contractor:   document.getElementById('pGC').value.trim() || null,
+    project_manager:      document.getElementById('pPM').value.trim() || null,
+    estimated_completion: document.getElementById('pDate').value || null,
+    budget_reference:     document.getElementById('pBudget').value.trim() || null,
+    notes:                document.getElementById('pNotes').value.trim() || null,
+  };
+  if (!id) payload.created_by = state.userId;
+  const {data, error} = id
+    ? await sb.from('projects').update(payload).eq('id',id).select().single()
+    : await sb.from('projects').insert(payload).select().single();
+  if (error) { showToast('Error saving project'); console.error(error); return; }
+  closeModal();
+  await loadProjects();
+  if (!id) { state.activeProjectId = data.id; await loadBom(); switchRTab('bom'); }
+  renderProjList();
+  showToast(id ? 'Project updated' : `Project "${name}" created`);
+}
+
+function confirmDelProj() {
+  const p = state.projects.find(x=>x.id===state.activeProjectId);
+  if (!p) return;
+  document.getElementById('modalWrap').innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h3>Delete project?</h3>
+      <p class="modal-note">This will permanently remove <strong>${escapeHtml(p.project_name)}</strong> and all its BOM items. This cannot be undone.</p>
+      <div class="modal-btns">
+        <button onclick="closeModal()">Cancel</button>
+        <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function deleteProject(id) {
+  await sb.from('projects').delete().eq('id', id);
+  state.activeProjectId = null;
+  closeModal();
+  await loadProjects();
+  showToast('Project deleted');
+}
+
+// ── BOM ──────────────────────────────────────────────────────
+async function loadBom() {
+  if (!state.activeProjectId) { renderBom(); return; }
+  const {data} = await sb.from('project_items')
+    .select('*').eq('project_id', state.activeProjectId)
+    .order('added_at', {ascending: true});
+  state.activeProjItems = data || [];
+  renderBom();
+}
+
+function renderBom() {
+  const proj = state.projects.find(p=>p.id===state.activeProjectId);
+  const el   = document.getElementById('bomItems');
+  const showPricing = state.customer?.show_pricing !== false;
+
+  // Header
+  document.getElementById('bomProjName').textContent = proj?.project_name || 'No project selected';
+  document.getElementById('bomProjMeta').textContent = proj
+    ? [proj.project_number, proj.owner_name, proj.site_address].filter(Boolean).join(' · ') || statusLabel(proj.status)
+    : 'Select a project from the Projects tab';
+  document.getElementById('bomActions').style.display = proj ? 'flex' : 'none';
+  document.getElementById('dlBtn').disabled = !proj || !state.activeProjItems.length;
+
+  if (!proj) {
+    el.innerHTML = `<div class="bom-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      <p>Select a project to view its BOM</p></div>`;
+    document.getElementById('bomStats').innerHTML = '';
+    return;
+  }
+
+  if (!state.activeProjItems.length) {
+    el.innerHTML = `<div class="bom-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="4" y="10" width="16" height="4" rx="2"/>
+        <rect x="6" y="5" width="12" height="6" rx="2"/>
+        <line x1="7" y1="14" x2="7" y2="20"/><line x1="17" y1="14" x2="17" y2="20"/>
+      </svg>
+      <p>No items yet. Click a product to add it to this BOM.</p></div>`;
+  } else {
+    const xIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    el.innerHTML = state.activeProjItems.map(item => {
+      const p     = state.products.find(x=>x.sku===item.sku);
+      const img   = (p?.images||[])[0]||'';
+      const price = item.unit_price;
+      return `<div class="bom-item">
+        <div class="bom-thumb">
+          ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(item.product_name)}" onerror="this.style.display='none'">` : ''}
+        </div>
+        <div class="bom-info">
+          <div class="bom-name" title="${escapeHtml(item.product_name)}">${escapeHtml(item.product_name)}</div>
+          <div class="bom-sku">${escapeHtml(item.sku)}</div>
+          ${showPricing && price ? `<div class="bom-price">$${price.toFixed(2)} / unit</div>` : ''}
+          <div class="qty-row">
+            <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
+            <span class="qty-val">${item.quantity}</span>
+            <div class="qty-btn" onclick="changeQty('${item.id}',1)">+</div>
+            <span class="qty-lbl">units</span>
+            <button class="rm-btn" onclick="removeItem('${item.id}')">${xIco}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Stats
+  const totalUnits = state.activeProjItems.reduce((s,i)=>s+i.quantity,0);
+  const totalLines = state.activeProjItems.length;
+  let totalPrice   = null;
+  if (showPricing) {
+    const sum = state.activeProjItems.reduce((s,i)=>s+(i.unit_price||0)*i.quantity,0);
+    if (sum > 0) totalPrice = sum;
+  }
+  document.getElementById('bomStats').innerHTML = `
+    <div class="stat-box"><div class="stat-val">${totalLines}</div><div class="stat-lbl">Products</div></div>
+    <div class="stat-box"><div class="stat-val">${totalUnits}</div><div class="stat-lbl">Units</div></div>
+    ${totalPrice ? `<div class="stat-box"><div class="stat-val">$${totalPrice.toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0})}</div><div class="stat-lbl">Total</div></div>` : ''}`;
+}
+
+async function addToBom(sku) {
+  if (!state.activeProjectId) {
+    showToast('Please select or create a project first'); closeModal(); switchRTab('projects'); return;
+  }
+  const qty   = Math.max(1, parseInt(document.getElementById('detailQty')?.value||1));
+  const prod  = state.products.find(p=>p.sku===sku);
+  const price = getPrice(sku);
+  // Check if already in BOM
+  const existing = state.activeProjItems.find(i=>i.sku===sku);
+  if (existing) {
+    await sb.from('project_items').update({quantity: existing.quantity+qty}).eq('id',existing.id);
+  } else {
+    await sb.from('project_items').insert({
+      project_id:   state.activeProjectId,
+      sku,
+      product_name: prod?.name || sku,
+      quantity:     qty,
+      unit_price:   price || null,
+      added_by:     state.userId
+    });
+  }
+  closeModal();
+  await loadBom();
+  setSyncStatus('saved');
+  showToast(`Added to BOM`);
+}
+
+async function changeQty(itemId, delta) {
+  const item = state.activeProjItems.find(i=>i.id===itemId);
+  if (!item) return;
+  const newQty = Math.max(1, item.quantity + delta);
+  setSyncStatus('saving');
+  await sb.from('project_items').update({quantity: newQty}).eq('id', itemId);
+  await loadBom();
+  setSyncStatus('saved');
+}
+
+async function removeItem(itemId) {
+  setSyncStatus('saving');
+  await sb.from('project_items').delete().eq('id', itemId);
+  await loadBom();
+  setSyncStatus('saved');
+}
+
+// ── SYNC INDICATOR ───────────────────────────────────────────
+function setSyncStatus(s) {
+  const dot = document.getElementById('syncDot');
+  const lbl = document.getElementById('syncLbl');
+  if (s==='saving') { dot.className='sync-dot saving'; lbl.textContent='Saving…'; }
+  else if (s==='saved') { dot.className='sync-dot'; lbl.textContent='Saved to cloud'; }
+  else { dot.className='sync-dot err'; lbl.textContent='Sync error'; }
+}
+
+// ── DOWNLOAD BOM ─────────────────────────────────────────────
+function openDownload() {
+  const proj     = state.projects.find(p=>p.id===state.activeProjectId);
+  const items    = state.activeProjItems;
+  if (!proj || !items.length) return;
+  const today    = new Date().toLocaleDateString('en-CA');
+  const showPrice = state.customer?.show_pricing !== false;
+  const totalUnits = items.reduce((s,i)=>s+i.quantity,0);
+  const totalPrice = showPrice ? items.reduce((s,i)=>s+(i.unit_price||0)*i.quantity,0) : 0;
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
+  const rows = items.map(item => `
+    <tr>
+      <td style="font-family:monospace;font-size:11px">${escapeHtml(item.sku)}</td>
+      <td>${escapeHtml(item.product_name)}</td>
+      <td style="text-align:center">${item.quantity}</td>
+      ${showPrice ? `<td style="text-align:right">${item.unit_price ? '$'+item.unit_price.toFixed(2) : '—'}</td>
+      <td style="text-align:right">${item.unit_price ? '$'+(item.unit_price*item.quantity).toFixed(2) : '—'}</td>` : ''}
+    </tr>`).join('');
+  const metaLine = [proj.project_number, proj.site_address, proj.general_contractor, proj.project_manager].filter(Boolean).join(' · ');
+  const ownerLine = [
+    proj.owner_name  ? `Owner: ${proj.owner_name}` : '',
+    proj.owner_phone ? `Tel: ${proj.owner_phone}` : ''
+  ].filter(Boolean).join(' · ');
+  const dateLine = [
+    `Status: ${statusLabel(proj.status)}`,
+    proj.start_date        ? `Start: ${fmtDate(proj.start_date)}` : '',
+    proj.material_order_by ? `Order materials by: ${fmtDate(proj.material_order_by)}` : '',
+    proj.estimated_completion ? `Est. completion: ${fmtDate(proj.estimated_completion)}` : ''
+  ].filter(Boolean).join(' · ');
+  document.getElementById('modalWrap').innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-xl">
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Project BOM</div>
+        <div style="font-size:22px;font-weight:600;color:var(--txt)">${escapeHtml(proj.project_name)}</div>
+        ${metaLine  ? `<div style="font-size:13px;color:var(--txt2);margin-top:4px">${escapeHtml(metaLine)}</div>` : ''}
+        ${ownerLine ? `<div style="font-size:13px;color:var(--txt2);margin-top:2px">${escapeHtml(ownerLine)}</div>` : ''}
+        ${dateLine  ? `<div style="font-size:12px;color:var(--txt2);margin-top:2px">${escapeHtml(dateLine)}</div>` : ''}
+        <div style="font-size:12px;color:var(--txt3);margin-top:3px">Prepared: ${today} · ${escapeHtml(state.userEmail)}</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
+        <thead>
+          <tr style="background:var(--bg2)">
+            <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);border-bottom:.5px solid var(--bdr)">SKU</th>
+            <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);border-bottom:.5px solid var(--bdr)">Product</th>
+            <th style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);border-bottom:.5px solid var(--bdr)">Qty</th>
+            ${showPrice ? `
+            <th style="text-align:right;padding:8px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);border-bottom:.5px solid var(--bdr)">Unit</th>
+            <th style="text-align:right;padding:8px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);border-bottom:.5px solid var(--bdr)">Total</th>` : ''}
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background:var(--bg2);font-weight:600;border-top:1px solid var(--bdr2)">
+            <td colspan="2" style="padding:10px">Total</td>
+            <td style="text-align:center;padding:10px">${totalUnits} units</td>
+            ${showPrice && totalPrice ? `<td></td><td style="text-align:right;padding:10px">$${totalPrice.toLocaleString('en-CA',{minimumFractionDigits:2})}</td>` : ''}
+          </tr>
+        </tfoot>
+      </table>
+      ${proj.notes ? `<div style="font-size:12px;color:var(--txt3);padding:10px;background:var(--bg2);border-radius:var(--r);margin-bottom:14px">Notes: ${escapeHtml(proj.notes)}</div>` : ''}
+      <div style="font-size:11px;color:var(--txt3);padding:10px;background:var(--bg2);border-radius:var(--r);margin-bottom:16px">
+        This is a preliminary selection list. Pricing and availability to be confirmed. Product variants (colour, upholstery) to be specified at order stage.
+        Contact: ${escapeHtml(state.customer?.contact_rep||'')} · ${escapeHtml(state.customer?.contact_email||'')}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-secondary" onclick="copyBom()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy text
+        </button>
+        <button class="btn-secondary" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / PDF
+        </button>
+        <button class="btn-secondary" onclick="exportCsv()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button class="btn-close" onclick="closeModal()" style="margin-left:auto">Close</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function copyBom() {
+  const proj  = state.projects.find(p=>p.id===state.activeProjectId);
+  const today = new Date().toLocaleDateString('en-CA');
+  const showPrice = state.customer?.show_pricing !== false;
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
+  const lines = [
+    `Project: ${proj.project_name}`,
+    proj.project_number ? `Reference: ${proj.project_number}` : '',
+    `Status: ${statusLabel(proj.status)}`,
+    proj.owner_name ? `Owner: ${proj.owner_name}` : '',
+    proj.owner_phone ? `Owner Phone: ${proj.owner_phone}` : '',
+    proj.site_address ? `Address: ${proj.site_address}` : '',
+    proj.start_date ? `Start Date: ${fmtDate(proj.start_date)}` : '',
+    proj.material_order_by ? `Material Order-By: ${fmtDate(proj.material_order_by)}` : '',
+    `Date: ${today}`, '',
+    showPrice ? 'SKU | Product | Qty | Unit Price | Line Total'
+              : 'SKU | Product | Qty',
+    ...state.activeProjItems.map(i => showPrice
+      ? `${i.sku} | ${i.product_name} | ${i.quantity} | ${i.unit_price?'$'+i.unit_price.toFixed(2):'—'} | ${i.unit_price?'$'+(i.unit_price*i.quantity).toFixed(2):'—'}`
+      : `${i.sku} | ${i.product_name} | ${i.quantity}`)
+  ].filter(l=>l!==null && l!=='' || l==='').join('\n');
+  navigator.clipboard.writeText(lines).then(()=>showToast('Copied to clipboard'));
+}
+
+function exportCsv() {
+  const proj  = state.projects.find(p=>p.id===state.activeProjectId);
+  const showPrice = state.customer?.show_pricing !== false;
+  const header = showPrice
+    ? 'SKU,Product Name,Quantity,Unit Price,Line Total'
+    : 'SKU,Product Name,Quantity';
+  const rows = state.activeProjItems.map(i => showPrice
+    ? `"${i.sku}","${i.product_name}",${i.quantity},${i.unit_price||''},${i.unit_price?i.unit_price*i.quantity:''}`
+    : `"${i.sku}","${i.product_name}",${i.quantity}`);
+  const csv   = [header,...rows].join('\n');
+  const blob  = new Blob([csv],{type:'text/csv'});
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  const slug  = proj.project_name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  a.href = url; a.download = `bom-${slug}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('CSV downloaded');
+}
+
+// ── UI HELPERS ───────────────────────────────────────────────
+function switchRTab(t) {
+  document.getElementById('panelProjects').classList.toggle('active', t==='projects');
+  document.getElementById('panelBom').classList.toggle('active', t==='bom');
+  document.getElementById('tabProj').classList.toggle('active', t==='projects');
+  document.getElementById('tabBom').classList.toggle('active', t==='bom');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent=msg; el.style.display='block'; el.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.style.display='none',300);},2400);
+}
+
+// ── EVENT LISTENERS ──────────────────────────────────────────
+document.getElementById('srchInput').addEventListener('input', e=>{
+  state.search = e.target.value; renderProducts();
+});
+</script>
+</body>
+</html>
