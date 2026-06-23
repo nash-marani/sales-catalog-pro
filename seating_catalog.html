@@ -233,7 +233,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .detail-specs h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:8px}
 .spec-list{list-style:none;display:flex;flex-direction:column;gap:5px}
 .spec-list li{font-size:12px;color:var(--txt2);display:flex;align-items:flex-start;gap:7px}
-.spec-list li::before{content:"✓";color:var(--acc);font-weight:600;flex-shrink:0;margin-top:1px}
+.spec-list li::before{content:"\2713";color:var(--acc);font-weight:600;flex-shrink:0;margin-top:1px}
 .detail-price{font-size:22px;font-weight:700;color:var(--txt);margin-bottom:14px}
 .detail-price span{font-size:13px;color:var(--txt3);font-weight:400}
 .detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
@@ -244,6 +244,18 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .btn-add{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s}
 .btn-add:hover{background:var(--acc2)}
 .btn-close{padding:10px 14px;border:.5px solid var(--bdr2);border-radius:var(--r);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--txt2);font-family:var(--font)}
+
+/* ── DETAIL RESOURCES (downloads) — added ── */
+.detail-resources{margin:0 0 14px;padding-top:14px;border-top:.5px solid var(--bdr)}
+.detail-resources h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:8px}
+.res-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.res-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--acctxt);text-decoration:none;padding:7px 10px;border:.5px solid var(--bdr);border-radius:var(--r);background:var(--bg2);transition:background .12s,border-color .12s}
+.res-link:hover{background:var(--accbg);border-color:var(--acc)}
+.res-link svg{flex-shrink:0;color:var(--acc)}
+.res-type{margin-left:auto;font-size:10px;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+/* file-count chip on product cards */
+.card-files{position:absolute;bottom:7px;left:7px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.92);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--acctxt)}
+.card-files svg{width:11px;height:11px}
 
 /* ── SYNC INDICATOR ── */
 .sync-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:.5px solid var(--bdr);background:var(--bg2);flex-shrink:0}
@@ -273,11 +285,12 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 }
 </style>
 
+
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424566</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">49752cae-bae5-4929-894c-7252533e3a42</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424566, NNN373W3ZMMJ-320560042-424566</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424708</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">95e922b4-4ea9-418d-a025-0c1459acfb96</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424708, NNN373W3ZMMJ-320560042-424708</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,6 +467,25 @@ const STATUS_LABELS = Object.fromEntries(STATUS_OPTIONS);
 const DEFAULT_STATUS = 'budget';
 function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '); }
 
+// ── SMALL HELPERS (added) ────────────────────────────────────
+// Escape a string before putting it into innerHTML or an attribute.
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+// Friendly fallback label when an asset row has no `label` value.
+function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing'}[a&&a.asset_type] || 'Download');}
+// True if a product page URL points at the Bobrick storefront — we must NOT
+// navigate the main window there; downloads still open in a new tab.
+function isBobrickPage(url){return !!url && /bobrick\.com/i.test(url);}
+
+// Remember which catalog the user is in for THIS browser-tab session, so a page
+// reload — or coming back from an external "Full details" link — returns them to
+// the product grid instead of the catalog picker. Session-scoped, so a brand-new
+// visit still shows the picker for multi-catalog customers. Wrapped in try/catch
+// so it degrades quietly if storage is unavailable.
+function lastCatKey(){ return 'ofwd:lastCatalog:' + (state.customerId || 'anon'); }
+function saveLastCatalog(id){ try{ sessionStorage.setItem(lastCatKey(), id); }catch(e){} }
+function getLastCatalog(){ try{ return sessionStorage.getItem(lastCatKey()); }catch(e){ return null; } }
+function clearLastCatalog(){ try{ for(let i=sessionStorage.length-1;i>=0;i--){ const k=sessionStorage.key(i); if(k && k.indexOf('ofwd:lastCatalog:')===0) sessionStorage.removeItem(k); } }catch(e){} }
+
 // ── STATE ────────────────────────────────────────────────────
 let state = {
   products: [], customer: null, customerId: null, pricing: {}, catalog: null,
@@ -501,6 +533,7 @@ async function signUp() {
 }
 
 async function signOut() {
+  clearLastCatalog();
   await sb.auth.signOut();
   location.reload();
 }
@@ -573,9 +606,18 @@ async function bootstrap() {
     if (catErr) throw catErr;
     state.catalogs = cats || [];
 
-    // 5. Route: no catalogs → error; one → straight in; many → picker
+    // 5. Route: no catalogs → error. Otherwise, if the user was already in a
+    //    catalog this tab session, restore it (so reloads / returning from an
+    //    external link land on the product grid, not the picker). Else: a single
+    //    catalog goes straight in; multiple shows the picker.
     if (state.catalogs.length === 0) {
       showFatal('No catalogs are set up for your customer yet.');
+      return;
+    }
+    const savedId  = getLastCatalog();
+    const savedCat = savedId && state.catalogs.find(c => c.id === savedId);
+    if (savedCat) {
+      selectCatalog(savedCat);
     } else if (state.catalogs.length === 1) {
       selectCatalog(state.catalogs[0]);
     } else {
@@ -589,6 +631,7 @@ async function bootstrap() {
 
 // Show the catalog chooser (full-screen)
 function showCatalogPicker() {
+  clearLastCatalog();   // showing the picker means no catalog is actively selected
   document.getElementById('appWrap').style.display    = 'none';
   document.getElementById('authWrap').style.display   = 'none';
   const wrap = document.getElementById('pickerWrap');
@@ -605,7 +648,7 @@ function showCatalogPicker() {
 
   document.getElementById('pickerList').innerHTML = state.catalogs.map(c => `
     <button class="picker-item" onclick="selectCatalogById('${c.id}')">
-      <span class="picker-item-name">${c.name}</span>
+      <span class="picker-item-name">${escapeHtml(c.name)}</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </button>`).join('');
 }
@@ -619,6 +662,7 @@ function selectCatalogById(id) {
 async function selectCatalog(cat) {
   state.activeCatalog   = cat;
   state.activeCatalogId = cat.id;
+  saveLastCatalog(cat.id);   // remember for this tab session (restored in bootstrap)
   // Resolution (subset/rename/curation) is done server-side by the view,
   // so no client-side scoping is needed — show everything the view returns.
   state.catalog = { show_all: true, included_skus: [], excluded_skus: [] };
@@ -691,6 +735,35 @@ async function loadCatalogProducts(catalogId) {
   state.products    = Array.from(prodMap.values());
   state.CAT_ORDER   = catOrder;
   state.CAT_SKU_SEQ = catSku;
+
+  // ── Downloadable assets (added) ────────────────────────────
+  // The view exposes only `sku`, but product_assets joins on products.id.
+  // Bridge sku -> id, then prefetch brochure/bim/cad assets for this catalog's
+  // products in one query so cards can show a file count and the detail modal
+  // can list Resources without a per-open round-trip. (.in() lists are fine for
+  // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
+  state.products.forEach(p => { p._assets = []; p._pid = null; });
+  try {
+    const skus = state.products.map(p => p.sku).filter(Boolean);
+    if (skus.length) {
+      const { data: idRows } = await sb.from('products').select('id,sku').in('sku', skus);
+      const idBySku = {};
+      (idRows || []).forEach(r => { idBySku[r.sku] = r.id; });
+      state.products.forEach(p => { p._pid = idBySku[p.sku] || null; });
+
+      const pids = state.products.map(p => p._pid).filter(Boolean);
+      if (pids.length) {
+        const { data: assetRows } = await sb.from('product_assets')
+          .select('product_id,asset_type,url,label,sort_order')
+          .in('product_id', pids)
+          .in('asset_type', ['brochure','bim','cad'])
+          .order('sort_order', { ascending: true });
+        const byPid = {};
+        (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
+        state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._assets = byPid[p._pid]; });
+      }
+    }
+  } catch (e) { console.warn('asset prefetch:', e.message); }
 }
 
 // Full-screen fatal message (replaces the product grid / picker)
@@ -776,7 +849,7 @@ function renderCats() {
       : (state.CAT_SKU_SEQ[c] || []).filter(s => visible.find(p => p.sku===s)).length;
     return `<div class="cat-item${state.activeCat===c?' active':''}"
       onclick="setCat('${c.replace(/'/g,"\\'")}')">
-      <span>${c}</span><span class="cat-count">${count}</span>
+      <span>${escapeHtml(c)}</span><span class="cat-count">${count}</span>
     </div>`;
   }).join('');
 }
@@ -815,22 +888,26 @@ function renderProducts() {
     return;
   }
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  const fileIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
   document.getElementById('prodGrid').innerHTML = list.map(p => {
     const img   = (p.images||[])[0] || '';
     const price = showPricing ? formatPrice(p.sku) : '';
+    const nFiles = (p._assets||[]).length;
+    const showExt = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
     return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button">
       <div class="card-img" style="position:relative">
         ${img
-          ? `<img src="${img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`
+          ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
           : `<div class="no-img">${chairSvg}</div>`}
-        ${p.url ? `<a class="card-ext" href="${p.url}" target="_blank" rel="noopener"
-          onclick="event.stopPropagation()" title="View on OFWD website">${extIco}</a>` : ''}
+        ${showExt ? `<a class="card-ext" href="${escapeHtml(p.url)}" target="_blank" rel="noopener"
+          onclick="event.stopPropagation()" title="View product page">${extIco}</a>` : ''}
+        ${nFiles ? `<span class="card-files" title="${nFiles} downloadable file${nFiles!==1?'s':''}">${fileIco}${nFiles}</span>` : ''}
       </div>
       <div class="card-body">
-        <div class="card-sku">${p.sku}</div>
-        <div class="card-name">${p.name}</div>
+        <div class="card-sku">${escapeHtml(p.sku)}</div>
+        <div class="card-name">${escapeHtml(p.name)}</div>
         <div class="card-footer">
-          <span class="card-cat">${(p.categories||[])[0]||''}</span>
+          <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
           ${price ? `<span class="card-price">${price}</span>` : ''}
         </div>
       </div>
@@ -845,33 +922,45 @@ function openDetail(sku) {
   const imgs   = p.images || [];
   const price  = state.customer?.show_pricing !== false ? getPrice(sku) : null;
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+  const assets = p._assets || [];
+  const showFull = p.url && !isBobrickPage(p.url);   // never bounce users to bobrick.com
   document.getElementById('modalWrap').innerHTML = `
   <div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal modal-xl">
       <div class="detail-wrap">
         <div class="detail-gallery">
           <img id="mainImg" class="detail-main-img"
-            src="${imgs[0]||''}" alt="${p.name}"
+            src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(p.name)}"
             onerror="this.style.display='none'">
           <div class="detail-thumbs">
             ${imgs.map((u,i)=>`<img class="detail-thumb${i===0?' active':''}"
-              src="${u}" alt="" onclick="setMainImg('${u}',this)"
+              src="${escapeHtml(u)}" alt="" onclick="setMainImg('${u}',this)"
               onerror="this.style.display='none'">`).join('')}
           </div>
         </div>
         <div class="detail-info">
-          <div class="detail-sku">${p.sku}</div>
-          <div class="detail-name">${p.name}</div>
+          <div class="detail-sku">${escapeHtml(p.sku)}</div>
+          <div class="detail-name">${escapeHtml(p.name)}</div>
           <div class="detail-cats">
-            ${(p.categories||[]).map(c=>`<span class="cat-badge">${c}</span>`).join('')}
+            ${(p.categories||[]).map(c=>`<span class="cat-badge">${escapeHtml(c)}</span>`).join('')}
             ${p.bifma ? '<span class="bifma-badge">BIFMA Certified</span>' : ''}
           </div>
-          ${p.description_short ? `<div class="detail-desc">${p.description_short}</div>` : ''}
+          ${p.description_short ? `<div class="detail-desc">${escapeHtml(p.description_short)}</div>` : ''}
           ${(p.specs||[]).length ? `
             <div class="detail-specs">
               <h4>Features & Specs</h4>
               <ul class="spec-list">
-                ${p.specs.map(s=>`<li>${s}</li>`).join('')}
+                ${p.specs.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>` : ''}
+          ${assets.length ? `
+            <div class="detail-resources">
+              <h4>Resources</h4>
+              <ul class="res-list">
+                ${assets.map(a=>`<li><a class="res-link" href="${escapeHtml(a.url)}" target="_blank" rel="noopener">
+                  ${dlIco}<span>${escapeHtml(assetLabel(a))}</span><span class="res-type">${escapeHtml(a.asset_type)}</span>
+                </a></li>`).join('')}
               </ul>
             </div>` : ''}
           ${price ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>` : ''}
@@ -881,7 +970,7 @@ function openDetail(sku) {
               <input type="number" id="detailQty" min="1" max="999" value="1"/>
             </div>
             <button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>
-            ${p.url ? `<a class="btn-accent" href="${p.url}" target="_blank" rel="noopener">${extIco} Full details</a>` : ''}
+            ${showFull ? `<a class="btn-accent" href="${escapeHtml(p.url)}" target="_blank" rel="noopener">${extIco} Full details</a>` : ''}
             <button class="btn-close" onclick="closeModal()">Close</button>
           </div>
         </div>
@@ -944,12 +1033,12 @@ function renderProjList() {
   el.innerHTML = list.map(p => `
     <div class="proj-card${p.id===state.activeProjectId?' active-proj':''}"
       onclick="selectProject('${p.id}')">
-      <div class="proj-card-name">${p.project_name}</div>
+      <div class="proj-card-name">${escapeHtml(p.project_name)}</div>
       <div class="proj-card-meta">
         <span class="status-pill status-${p.status}">${statusLabel(p.status)}</span>
-        ${p.project_number ? `<span>#${p.project_number}</span>` : ''}
-        ${p.owner_name     ? `<span>👤 ${p.owner_name}</span>` : ''}
-        ${p.site_address   ? `<span>📍 ${p.site_address}</span>` : ''}
+        ${p.project_number ? `<span>#${escapeHtml(p.project_number)}</span>` : ''}
+        ${p.owner_name     ? `<span>👤 ${escapeHtml(p.owner_name)}</span>` : ''}
+        ${p.site_address   ? `<span>📍 ${escapeHtml(p.site_address)}</span>` : ''}
         ${p.material_order_by ? `<span>📦 by ${new Date(p.material_order_by).toLocaleDateString('en-CA')}</span>` : ''}
         <span>${new Date(p.updated_at).toLocaleDateString('en-CA')}</span>
       </div>
@@ -979,11 +1068,11 @@ function openProjModal(proj) {
       <div class="modal-grid">
         <div class="mfield mfield-full">
           <label>Project Name *</label>
-          <input id="pName" type="text" maxlength="120" value="${proj?.project_name||''}" placeholder="e.g. Downtown Tower — Floor 12"/>
+          <input id="pName" type="text" maxlength="120" value="${escapeHtml(proj?.project_name||'')}" placeholder="e.g. Downtown Tower — Floor 12"/>
         </div>
         <div class="mfield">
           <label>Project Number / Reference</label>
-          <input id="pNum" type="text" value="${proj?.project_number||''}" placeholder="PRJ-2026-001"/>
+          <input id="pNum" type="text" value="${escapeHtml(proj?.project_number||'')}" placeholder="PRJ-2026-001"/>
         </div>
         <div class="mfield">
           <label>Status</label>
@@ -1003,23 +1092,23 @@ function openProjModal(proj) {
         </div>
         <div class="mfield">
           <label>Project Owner Name</label>
-          <input id="pOwner" type="text" value="${proj?.owner_name||''}" placeholder="John Doe"/>
+          <input id="pOwner" type="text" value="${escapeHtml(proj?.owner_name||'')}" placeholder="John Doe"/>
         </div>
         <div class="mfield">
           <label>Project Owner Phone</label>
-          <input id="pOwnerPhone" type="tel" value="${proj?.owner_phone||''}" placeholder="(780) 555-0123"/>
+          <input id="pOwnerPhone" type="tel" value="${escapeHtml(proj?.owner_phone||'')}" placeholder="(780) 555-0123"/>
         </div>
         <div class="mfield mfield-full">
           <label>Site Address</label>
-          <input id="pAddr" type="text" value="${proj?.site_address||''}" placeholder="123 Main St, Edmonton AB"/>
+          <input id="pAddr" type="text" value="${escapeHtml(proj?.site_address||'')}" placeholder="123 Main St, Edmonton AB"/>
         </div>
         <div class="mfield">
           <label>General Contractor</label>
-          <input id="pGC" type="text" value="${proj?.general_contractor||''}" placeholder="PCL Construction"/>
+          <input id="pGC" type="text" value="${escapeHtml(proj?.general_contractor||'')}" placeholder="PCL Construction"/>
         </div>
         <div class="mfield">
           <label>Project Manager</label>
-          <input id="pPM" type="text" value="${proj?.project_manager||''}" placeholder="Jane Smith"/>
+          <input id="pPM" type="text" value="${escapeHtml(proj?.project_manager||'')}" placeholder="Jane Smith"/>
         </div>
         <div class="mfield">
           <label>Est. Completion</label>
@@ -1027,11 +1116,11 @@ function openProjModal(proj) {
         </div>
         <div class="mfield">
           <label>Budget Reference</label>
-          <input id="pBudget" type="text" value="${proj?.budget_reference||''}" placeholder="PO-2026-047"/>
+          <input id="pBudget" type="text" value="${escapeHtml(proj?.budget_reference||'')}" placeholder="PO-2026-047"/>
         </div>
         <div class="mfield mfield-full">
           <label>Notes</label>
-          <textarea id="pNotes">${proj?.notes||''}</textarea>
+          <textarea id="pNotes">${escapeHtml(proj?.notes||'')}</textarea>
         </div>
       </div>
       <div class="modal-btns">
@@ -1081,7 +1170,7 @@ function confirmDelProj() {
   <div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <h3>Delete project?</h3>
-      <p class="modal-note">This will permanently remove <strong>${p.project_name}</strong> and all its BOM items. This cannot be undone.</p>
+      <p class="modal-note">This will permanently remove <strong>${escapeHtml(p.project_name)}</strong> and all its BOM items. This cannot be undone.</p>
       <div class="modal-btns">
         <button onclick="closeModal()">Cancel</button>
         <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
@@ -1147,11 +1236,11 @@ function renderBom() {
       const price = item.unit_price;
       return `<div class="bom-item">
         <div class="bom-thumb">
-          ${img ? `<img src="${img}" alt="${item.product_name}" onerror="this.style.display='none'">` : ''}
+          ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(item.product_name)}" onerror="this.style.display='none'">` : ''}
         </div>
         <div class="bom-info">
-          <div class="bom-name" title="${item.product_name}">${item.product_name}</div>
-          <div class="bom-sku">${item.sku}</div>
+          <div class="bom-name" title="${escapeHtml(item.product_name)}">${escapeHtml(item.product_name)}</div>
+          <div class="bom-sku">${escapeHtml(item.sku)}</div>
           ${showPricing && price ? `<div class="bom-price">$${price.toFixed(2)} / unit</div>` : ''}
           <div class="qty-row">
             <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
@@ -1244,8 +1333,8 @@ function openDownload() {
   const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
   const rows = items.map(item => `
     <tr>
-      <td style="font-family:monospace;font-size:11px">${item.sku}</td>
-      <td>${item.product_name}</td>
+      <td style="font-family:monospace;font-size:11px">${escapeHtml(item.sku)}</td>
+      <td>${escapeHtml(item.product_name)}</td>
       <td style="text-align:center">${item.quantity}</td>
       ${showPrice ? `<td style="text-align:right">${item.unit_price ? '$'+item.unit_price.toFixed(2) : '—'}</td>
       <td style="text-align:right">${item.unit_price ? '$'+(item.unit_price*item.quantity).toFixed(2) : '—'}</td>` : ''}
@@ -1266,11 +1355,11 @@ function openDownload() {
     <div class="modal modal-xl">
       <div style="margin-bottom:20px">
         <div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Project BOM</div>
-        <div style="font-size:22px;font-weight:600;color:var(--txt)">${proj.project_name}</div>
-        ${metaLine  ? `<div style="font-size:13px;color:var(--txt2);margin-top:4px">${metaLine}</div>` : ''}
-        ${ownerLine ? `<div style="font-size:13px;color:var(--txt2);margin-top:2px">${ownerLine}</div>` : ''}
-        ${dateLine  ? `<div style="font-size:12px;color:var(--txt2);margin-top:2px">${dateLine}</div>` : ''}
-        <div style="font-size:12px;color:var(--txt3);margin-top:3px">Prepared: ${today} · ${state.userEmail}</div>
+        <div style="font-size:22px;font-weight:600;color:var(--txt)">${escapeHtml(proj.project_name)}</div>
+        ${metaLine  ? `<div style="font-size:13px;color:var(--txt2);margin-top:4px">${escapeHtml(metaLine)}</div>` : ''}
+        ${ownerLine ? `<div style="font-size:13px;color:var(--txt2);margin-top:2px">${escapeHtml(ownerLine)}</div>` : ''}
+        ${dateLine  ? `<div style="font-size:12px;color:var(--txt2);margin-top:2px">${escapeHtml(dateLine)}</div>` : ''}
+        <div style="font-size:12px;color:var(--txt3);margin-top:3px">Prepared: ${today} · ${escapeHtml(state.userEmail)}</div>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
         <thead>
@@ -1292,10 +1381,10 @@ function openDownload() {
           </tr>
         </tfoot>
       </table>
-      ${proj.notes ? `<div style="font-size:12px;color:var(--txt3);padding:10px;background:var(--bg2);border-radius:var(--r);margin-bottom:14px">Notes: ${proj.notes}</div>` : ''}
+      ${proj.notes ? `<div style="font-size:12px;color:var(--txt3);padding:10px;background:var(--bg2);border-radius:var(--r);margin-bottom:14px">Notes: ${escapeHtml(proj.notes)}</div>` : ''}
       <div style="font-size:11px;color:var(--txt3);padding:10px;background:var(--bg2);border-radius:var(--r);margin-bottom:16px">
         This is a preliminary selection list. Pricing and availability to be confirmed. Product variants (colour, upholstery) to be specified at order stage.
-        Contact: ${state.customer?.contact_rep||''} · ${state.customer?.contact_email||''}
+        Contact: ${escapeHtml(state.customer?.contact_rep||'')} · ${escapeHtml(state.customer?.contact_email||'')}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn-secondary" onclick="copyBom()">
