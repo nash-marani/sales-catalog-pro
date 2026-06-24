@@ -257,6 +257,29 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-files{position:absolute;bottom:7px;left:7px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.92);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--acctxt)}
 .card-files svg{width:11px;height:11px}
 
+/* ── CATEGORY LANDING (added) ── */
+.products-grid.cat-grid{grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:12px;padding:18px 14px}
+.cat-card{display:flex;align-items:center;gap:14px;background:var(--bg);border:.5px solid var(--bdr);border-radius:var(--rl);padding:15px 16px;cursor:pointer;transition:border-color .15s,transform .1s,box-shadow .15s;text-align:left}
+.cat-card:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:0 6px 20px rgba(50,106,149,.10)}
+.cat-card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cat-card-icon{width:46px;height:46px;border-radius:11px;background:var(--accbg);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-card-icon svg{width:23px;height:23px}
+.cat-card-body{flex:1;min-width:0}
+.cat-card-name{font-size:14px;font-weight:600;color:var(--txt);line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-card-count{font-size:12px;color:var(--txt3)}
+.cat-card-arrow{color:var(--txt3);flex-shrink:0;display:flex;transition:transform .15s,color .15s}
+.cat-card-arrow svg{width:18px;height:18px}
+.cat-card:hover .cat-card-arrow{color:var(--acc);transform:translateX(2px)}
+.cat-card-all{background:linear-gradient(135deg,var(--accbg),#fff);border-color:rgba(50,106,149,.35)}
+.cat-card-all .cat-card-icon{background:var(--acc);color:#fff}
+.cat-landing-head{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 4px}
+.cat-landing-title{font-size:15px;font-weight:600;color:var(--txt)}
+.cat-landing-sub{font-size:12px;color:var(--txt3)}
+/* breadcrumb back link */
+.crumb-back{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--acc);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);padding:5px 8px;border-radius:6px;transition:background .12s;flex-shrink:0}
+.crumb-back:hover{background:var(--accbg)}
+.crumb-back svg{width:14px;height:14px}
+
 /* ── SYNC INDICATOR ── */
 .sync-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:.5px solid var(--bdr);background:var(--bg2);flex-shrink:0}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0;transition:background .3s}
@@ -288,9 +311,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424710</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">43f4193a-bcba-40bd-ae2d-77cc2bba481f</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424710, NNN373W3ZMMJ-320560042-424710</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424743</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">bd1c64ab-89d1-4a3b-9cad-e31aa102c6b0</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424743, NNN373W3ZMMJ-320560042-424743</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -355,7 +378,11 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
     <!-- Product grid -->
     <main class="main">
       <div class="topbar">
-        <div class="topbar-title" id="topTitle">All Products</div>
+        <button class="crumb-back" id="crumbBack" style="display:none" onclick="goHome()" title="Back to all categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          All categories
+        </button>
+        <div class="topbar-title" id="topTitle">Browse by category</div>
         <div class="srch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" id="srchInput" placeholder="Search by name, SKU, or category…"/>
@@ -456,6 +483,10 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 // Customer config — loaded from URL param or defaults to 'ofwd'
 const CUSTOMER_ID = new URLSearchParams(window.location.search).get('customer') || 'ofwd';
 
+// Sentinel "view" for the category-first landing (grid of category cards).
+// It is not a real category — renderProducts() treats it specially.
+const HOME_VIEW = '__home__';
+
 // Project status stages — single source of truth (value, label)
 const STATUS_OPTIONS = [
   ['budget',                 'At Budget Stage'],
@@ -490,7 +521,7 @@ function clearLastCatalog(){ try{ for(let i=sessionStorage.length-1;i>=0;i--){ c
 let state = {
   products: [], customer: null, customerId: null, pricing: {}, catalog: null,
   catalogs: [], activeCatalog: null, activeCatalogId: null,
-  activeCat: 'All Products', search: '',
+  activeCat: HOME_VIEW, search: '',
   projects: [], activeProjectId: null, activeProjItems: [],
   userId: null, userEmail: null, userRole: null,
   statusFilter: 'all', syncTimer: null,
@@ -666,14 +697,15 @@ async function selectCatalog(cat) {
   // Resolution (subset/rename/curation) is done server-side by the view,
   // so no client-side scoping is needed — show everything the view returns.
   state.catalog = { show_all: true, included_skus: [], excluded_skus: [] };
-  state.activeCat = 'All Products';
+  state.activeCat = HOME_VIEW;   // open on the category landing, not a flat product dump
+  state.search = '';
   state.activeProjectId = null;
 
   // Header: show which catalog we're in
   document.getElementById('navCatalogName').textContent = cat.name;
   document.getElementById('navCatalog').style.display =
     state.catalogs.length > 1 ? 'flex' : 'none';
-  document.getElementById('topTitle').textContent = 'All Products';
+  const si = document.getElementById('srchInput'); if (si) si.value = '';
 
   document.getElementById('pickerWrap').style.display = 'none';
   document.getElementById('appWrap').style.display    = 'flex';
@@ -839,35 +871,145 @@ function formatPrice(sku) {
   return '$' + p.toFixed(2);
 }
 
-// ── RENDER CATEGORIES ────────────────────────────────────────
+// ── CATEGORY ICONS (added) ───────────────────────────────────
+// Small, tasteful glyphs chosen by keyword so the landing cards read at a glance.
+// Pure presentation — no data is fetched for these.
+const CAT_ICONS = {
+  all:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  seat:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="4" rx="2"/><rect x="6" y="5" width="12" height="6" rx="2"/><line x1="7" y1="14" x2="7" y2="20"/><line x1="17" y1="14" x2="17" y2="20"/></svg>',
+  bath:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s5.5 6 5.5 10a5.5 5.5 0 0 1-11 0C6.5 9 12 3 12 3z"/></svg>',
+  partition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="9.5" y="4" width="5" height="16" rx="1"/><rect x="16" y="4" width="5" height="16" rx="1"/></svg>',
+  locker:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="9" y1="7" x2="9.5" y2="7"/><line x1="14.5" y1="7" x2="15" y2="7"/></svg>',
+  storage:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5"/><line x1="12" y1="13" x2="12" y2="21"/></svg>',
+  accessory: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  folder:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'
+};
+function categoryIcon(label) {
+  const l = (label || '').toLowerCase();
+  if (/partition/.test(l))                                              return CAT_ICONS.partition;
+  if (/locker/.test(l))                                                 return CAT_ICONS.locker;
+  if (/shoe|storage|nesting/.test(l))                                   return CAT_ICONS.storage;
+  if (/bath|washroom|restroom|toilet/.test(l))                          return CAT_ICONS.bath;
+  if (/accessor/.test(l))                                               return CAT_ICONS.accessory;
+  if (/chair|seat|stool|ergonomic|executive|conference|reception|guest|task|drafting|stack|fold|big and tall/.test(l))
+                                                                        return CAT_ICONS.seat;
+  return CAT_ICONS.folder;
+}
+
+// ── RENDER CATEGORIES (sidebar) ──────────────────────────────
 function renderCats() {
   const visible = getVisibleProducts();
+  const visibleSkus = new Set(visible.map(p => p.sku));
+  const parts = [];
+  // "All categories" returns to the landing (home) view.
+  parts.push(`<div class="cat-item${state.activeCat===HOME_VIEW?' active':''}" onclick="goHome()">
+      <span>All categories</span>
+    </div>`);
+  parts.push(`<div class="sidebar-div"></div>`);
   const all = ['All Products', ...state.CAT_ORDER];
-  document.getElementById('catList').innerHTML = all.map(c => {
+  parts.push(...all.map(c => {
     const count = c === 'All Products'
       ? visible.length
-      : (state.CAT_SKU_SEQ[c] || []).filter(s => visible.find(p => p.sku===s)).length;
+      : (state.CAT_SKU_SEQ[c] || []).filter(s => visibleSkus.has(s)).length;
     return `<div class="cat-item${state.activeCat===c?' active':''}"
       onclick="setCat('${c.replace(/'/g,"\\'")}')">
       <span>${escapeHtml(c)}</span><span class="cat-count">${count}</span>
     </div>`;
-  }).join('');
+  }));
+  document.getElementById('catList').innerHTML = parts.join('');
 }
 
 function setCat(c) {
   state.activeCat = c;
-  document.getElementById('topTitle').textContent = c;
   renderCats(); renderProducts();
+}
+
+// Return to the category landing and clear any active search.
+function goHome() {
+  state.activeCat = HOME_VIEW;
+  state.search = '';
+  const si = document.getElementById('srchInput'); if (si) si.value = '';
+  renderCats(); renderProducts();
+}
+
+// ── RENDER CATEGORY LANDING (added) ──────────────────────────
+// The default view: a grid of category cards (name + count + icon), with an
+// "All products" card first. Clicking a card reuses setCat() — the exact same
+// filter the sidebar uses — so nothing downstream changes. No data is fetched.
+function renderCategoryCards() {
+  const grid = document.getElementById('prodGrid');
+  grid.className = 'products-grid cat-grid';
+  document.getElementById('crumbBack').style.display = 'none';
+  document.getElementById('topTitle').textContent = 'Browse by category';
+
+  const visible = getVisibleProducts();
+  const visibleSkus = new Set(visible.map(p => p.sku));
+  const totalCount = visible.length;
+  const nCats = state.CAT_ORDER.length;
+
+  document.getElementById('resultCt').textContent =
+    nCats + ' categor' + (nCats===1?'y':'ies');
+
+  const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+  const card = (label, count, icon, isAll) => {
+    const safe = label.replace(/'/g, "\\'");
+    return `<div class="cat-card${isAll?' cat-card-all':''}" role="button" tabindex="0"
+        onclick="setCat('${safe}')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setCat('${safe}')}">
+        <div class="cat-card-icon">${icon}</div>
+        <div class="cat-card-body">
+          <div class="cat-card-name">${escapeHtml(label)}</div>
+          <div class="cat-card-count">${count} product${count!==1?'s':''}</div>
+        </div>
+        <div class="cat-card-arrow">${arrow}</div>
+      </div>`;
+  };
+
+  if (!nCats) {
+    grid.innerHTML = `<div class="no-results">${CAT_ICONS.folder}<span>No categories in this catalog yet</span></div>`;
+    return;
+  }
+
+  const head = `<div class="cat-landing-head">
+      <span class="cat-landing-title">${escapeHtml(state.activeCatalog?.name || 'Catalog')}</span>
+      <span class="cat-landing-sub">${totalCount} product${totalCount!==1?'s':''} across ${nCats} categor${nCats===1?'y':'ies'}</span>
+    </div>`;
+
+  const cards = [ card('All Products', totalCount, CAT_ICONS.all, true) ];
+  state.CAT_ORDER.forEach(label => {
+    const count = (state.CAT_SKU_SEQ[label] || []).filter(s => visibleSkus.has(s)).length;
+    cards.push(card(label, count, categoryIcon(label), false));
+  });
+
+  grid.innerHTML = head + cards.join('');
 }
 
 // ── RENDER PRODUCTS ──────────────────────────────────────────
 function renderProducts() {
+  const grid = document.getElementById('prodGrid');
   const q = state.search.toLowerCase();
-  let list = getProductsForCat(state.activeCat).filter(p =>
+
+  // Landing view: category cards (only when no search is active).
+  if (state.activeCat === HOME_VIEW && !q) {
+    renderCategoryCards();
+    return;
+  }
+
+  // Product / search view. On the landing, a search spans the whole catalog,
+  // so HOME behaves like "All Products" for the purpose of building the list.
+  grid.className = 'products-grid';
+  const baseCat = (state.activeCat === HOME_VIEW) ? 'All Products' : state.activeCat;
+
+  // Breadcrumb + title for the product view.
+  document.getElementById('crumbBack').style.display = 'inline-flex';
+  document.getElementById('topTitle').textContent =
+    (state.activeCat === HOME_VIEW) ? 'Search results' : state.activeCat;
+
+  let list = getProductsForCat(baseCat).filter(p =>
     !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) ||
     (p.categories||[]).some(c => c.toLowerCase().includes(q))
   );
-  if (state.activeCat === 'All Products' && !q) {
+  if (baseCat === 'All Products' && !q) {
     const seen = new Set(); const ord = [];
     state.CAT_ORDER.forEach(cat =>
       (state.CAT_SKU_SEQ[cat]||[]).forEach(sku => {
