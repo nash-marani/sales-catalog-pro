@@ -311,9 +311,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424746</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">962db636-aab6-4770-9662-d5b27a305b15</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424746, NNN373W3ZMMJ-320560042-424746</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424747</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">62d22fe6-2b0d-4eab-99ee-02ed3230a6df</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424747, NNN373W3ZMMJ-320560042-424747</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -365,6 +365,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 7</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1067,7 +1068,7 @@ function renderProducts() {
 function openDetail(sku) {
   const p = state.products.find(x => x.sku===sku);
   if (!p) return;
-  const imgs   = p.images || [];
+  const imgs   = (p.images || []).filter(Boolean);   // drop blank/null entries — a list of empties is "no image"
   const price  = state.customer?.show_pricing !== false ? getPrice(sku) : null;
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
