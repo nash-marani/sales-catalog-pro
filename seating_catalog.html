@@ -311,9 +311,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424744</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">abf55dcf-987f-4833-a983-c6d27d4b7819</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424744, NNN373W3ZMMJ-320560042-424744</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424746</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">962db636-aab6-4770-9662-d5b27a305b15</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424746, NNN373W3ZMMJ-320560042-424746</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -1073,10 +1073,12 @@ function openDetail(sku) {
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   const assets = p._assets || [];
   const showFull = SHOW_EXTERNAL_LINKS && !!p.url;   // detail modal's "Full details" link (gated by master switch)
+  const hasImgs  = imgs.length > 0;                  // no image → collapse to a single tidy column (no empty gallery)
   document.getElementById('modalWrap').innerHTML = `
   <div class="overlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal modal-xl">
+    <div class="modal ${hasImgs ? 'modal-xl' : 'modal-lg'}">
       <div class="detail-wrap">
+        ${hasImgs ? `
         <div class="detail-gallery">
           <img id="mainImg" class="detail-main-img"
             src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(p.name)}"
@@ -1086,7 +1088,7 @@ function openDetail(sku) {
               src="${escapeHtml(u)}" alt="" onclick="setMainImg('${u}',this)"
               onerror="this.style.display='none'">`).join('')}
           </div>
-        </div>
+        </div>` : ''}
         <div class="detail-info">
           <div class="detail-sku">${escapeHtml(p.sku)}</div>
           <div class="detail-name">${escapeHtml(p.name)}</div>
