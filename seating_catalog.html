@@ -311,9 +311,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424748</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">4a77f42f-2b3c-4ecb-a797-670e47f6925a</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424748, NNN373W3ZMMJ-320560042-424748</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424751</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">254a919a-69fd-4cab-b7c1-491612d21400</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424751, NNN373W3ZMMJ-320560042-424751</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -365,7 +365,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 8</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 9</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -706,7 +706,9 @@ async function selectCatalog(cat) {
   state.catalog = { show_all: true, included_skus: [], excluded_skus: [] };
   state.activeCat = HOME_VIEW;   // open on the category landing, not a flat product dump
   state.search = '';
-  state.activeProjectId = null;
+  // NOTE (Model A): we intentionally do NOT clear state.activeProjectId here.
+  // A project spans catalogs, so switching catalogs keeps the same project/BOM
+  // open — letting the user browse another catalog and keep adding to it.
 
   // Header: show which catalog we're in
   document.getElementById('navCatalogName').textContent = cat.name;
@@ -1141,10 +1143,12 @@ function closeModal() { document.getElementById('modalWrap').innerHTML=''; }
 
 // ── PROJECTS ─────────────────────────────────────────────────
 async function loadProjects() {
-  if (!state.activeCatalogId) { state.projects = []; renderProjList(); return; }
+  // Model A: projects span catalogs. We no longer filter by the active catalog —
+  // row-level security already limits results to this customer's catalogs, so a
+  // plain select returns every project the user is entitled to, regardless of
+  // which catalog they're currently browsing.
   const {data} = await sb.from('projects')
     .select('*')
-    .eq('catalog_id', state.activeCatalogId)
     .order('updated_at', {ascending: false});
   state.projects = data || [];
   if (state.projects.length && !state.activeProjectId)
@@ -1187,6 +1191,7 @@ function renderProjList() {
       <div class="proj-card-name">${escapeHtml(p.project_name)}</div>
       <div class="proj-card-meta">
         <span class="status-pill status-${p.status}">${statusLabel(p.status)}</span>
+        ${state.catalogs.length > 1 ? `<span class="status-pill" style="background:var(--accbg);color:var(--acctxt)" title="Project's home catalog">${escapeHtml((state.catalogs.find(c=>c.id===p.catalog_id)||{}).name||'')}</span>` : ''}
         ${p.project_number ? `<span>#${escapeHtml(p.project_number)}</span>` : ''}
         ${p.owner_name     ? `<span>👤 ${escapeHtml(p.owner_name)}</span>` : ''}
         ${p.site_address   ? `<span>📍 ${escapeHtml(p.site_address)}</span>` : ''}
