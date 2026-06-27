@@ -124,6 +124,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-footer{display:flex;align-items:center;justify-content:space-between}
 .card-cat{font-size:10px;color:var(--acctxt);background:var(--accbg);padding:2px 7px;border-radius:10px}
 .card-price{font-size:12px;font-weight:600;color:var(--txt)}
+.card-price-cfp{font-weight:500;color:var(--txt3)}
 .no-results{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:var(--txt3);gap:10px;text-align:center;font-size:14px}
 
 /* ── RIGHT PANEL — PROJECTS ── */
@@ -244,6 +245,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .spec-list li::before{content:"\2713";color:var(--acc);font-weight:600;flex-shrink:0;margin-top:1px}
 .detail-price{font-size:22px;font-weight:700;color:var(--txt);margin-bottom:14px}
 .detail-price span{font-size:13px;color:var(--txt3);font-weight:400}
+.detail-price.detail-price-cfp{font-size:16px;font-weight:600;color:var(--txt2)}
 .detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
 .qty-input-wrap{display:flex;align-items:center;gap:6px}
 .qty-input-wrap label{font-size:12px;color:var(--txt2)}
@@ -319,9 +321,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424845</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">d559389f-2be0-4efc-8bda-4e04549d535a</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424845, NNN373W3ZMMJ-320560042-424845</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -373,7 +375,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 15</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 16</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1167,7 +1169,11 @@ function renderProducts() {
         <div class="card-name">${escapeHtml(p.name)}</div>
         <div class="card-footer">
           <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
-          ${price ? `<span class="card-price">${price}</span>` : ''}
+          ${showPricing
+            ? (price
+                ? `<span class="card-price">${price}</span>`
+                : `<span class="card-price card-price-cfp">Call for pricing</span>`)
+            : ''}
         </div>
       </div>
     </div>`;
@@ -1179,7 +1185,8 @@ function openDetail(sku) {
   const p = state.products.find(x => x.sku===sku);
   if (!p) return;
   const imgs   = (p.images || []).filter(Boolean);   // drop blank/null entries — a list of empties is "no image"
-  const price  = state.customer?.show_pricing !== false ? getPrice(sku) : null;
+  const showPx = state.customer?.show_pricing !== false;
+  const price  = showPx ? getPrice(sku) : null;
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   const assets = p._assets || [];
@@ -1224,7 +1231,11 @@ function openDetail(sku) {
                 </a></li>`).join('')}
               </ul>
             </div>` : ''}
-          ${price ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>` : ''}
+          ${showPx
+            ? (price
+                ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>`
+                : `<div class="detail-price detail-price-cfp">Call for pricing</div>`)
+            : ''}
           <div class="detail-add">
             <div class="qty-input-wrap">
               <label>Qty</label>
