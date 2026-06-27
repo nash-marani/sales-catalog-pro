@@ -375,7 +375,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 16</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 17</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1172,7 +1172,7 @@ function renderProducts() {
           ${showPricing
             ? (price
                 ? `<span class="card-price">${price}</span>`
-                : `<span class="card-price card-price-cfp">Call for pricing</span>`)
+                : `<span class="card-price card-price-cfp">Call</span>`)
             : ''}
         </div>
       </div>
