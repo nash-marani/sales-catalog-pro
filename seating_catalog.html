@@ -319,9 +319,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424800</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">2c748fdd-1daa-42ac-86f4-413dce43cd07</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424800, NNN373W3ZMMJ-320560042-424800</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424845</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">d559389f-2be0-4efc-8bda-4e04549d535a</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424845, NNN373W3ZMMJ-320560042-424845</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -373,7 +373,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 12</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 15</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -495,6 +495,10 @@ const CUSTOMER_ID = new URLSearchParams(window.location.search).get('customer') 
 // Sentinel "view" for the category-first landing (grid of category cards).
 // It is not a real category — renderProducts() treats it specially.
 const HOME_VIEW = '__home__';
+// Prefix marking a "category (group) view" — the right-hand landing shows only the
+// parent categories; clicking one shows all of that category's products. The left
+// rail still carries the full categories + subcategories tree.
+const GROUP_PREFIX = 'group:';
 
 // Master switch for the "view product page" / "Full details" link-outs that send
 // users to the manufacturer's site (ASI, Bobrick, etc.). Set to false to keep
@@ -881,6 +885,19 @@ function getVisibleProducts() {
 function getProductsForCat(cat) {
   const visible = getVisibleProducts();
   if (cat === 'All Products') return visible;
+  // Group (category) view: every distinct product across that group's subcategories,
+  // in the normal category order.
+  if (cat.startsWith(GROUP_PREFIX)) {
+    const group = cat.slice(GROUP_PREFIX.length);
+    const seen = new Set(); const out = [];
+    state.CAT_ORDER.forEach(sub => {
+      if ((state.CAT_GROUP[sub] || 'Other') !== group) return;
+      (state.CAT_SKU_SEQ[sub] || []).forEach(sku => {
+        if (!seen.has(sku)) { const p = visible.find(x => x.sku === sku); if (p) { out.push(p); seen.add(sku); } }
+      });
+    });
+    return out;
+  }
   const skuList = state.CAT_SKU_SEQ[cat] || [];
   return skuList.map(sku => visible.find(p => p.sku === sku)).filter(Boolean);
 }
@@ -957,10 +974,11 @@ function renderCats() {
   state.GROUP_ORDER.forEach(g => {
     const subs = byGroup[g] || [];
     if (!subs.length) return;
-    // keep a group open if the active subcategory lives inside it
+    // keep a group open if the active subcategory lives inside it, or it's the active category view
+    const isActiveGroup = state.activeCat === GROUP_PREFIX + g;
     const containsActive = subs.includes(state.activeCat);
-    const collapsed = state.collapsedGroups.has(g) && !containsActive;
-    parts.push(`<div class="grp-head${collapsed?' collapsed':''}" onclick="toggleGroup('${g.replace(/'/g,"\\'")}')">
+    const collapsed = state.collapsedGroups.has(g) && !containsActive && !isActiveGroup;
+    parts.push(`<div class="grp-head${collapsed?' collapsed':''}${isActiveGroup?' active':''}" onclick="toggleGroup('${g.replace(/'/g,"\\'")}')">
         ${chev}<span class="grp-name">${escapeHtml(g)}</span><span class="grp-count">${skuCount(subs)}</span>
       </div>`);
     if (collapsed) return;
@@ -1009,14 +1027,27 @@ function renderCategoryCards() {
   const visible = getVisibleProducts();
   const visibleSkus = new Set(visible.map(p => p.sku));
   const totalCount = visible.length;
-  const nCats = state.CAT_ORDER.length;
+
+  // distinct visible products in a parent group (products can sit in several subcats)
+  const groupCount = group => {
+    const s = new Set();
+    state.CAT_ORDER.forEach(sub => {
+      if ((state.CAT_GROUP[sub] || 'Other') !== group) return;
+      (state.CAT_SKU_SEQ[sub] || []).forEach(sku => { if (visibleSkus.has(sku)) s.add(sku); });
+    });
+    return s.size;
+  };
+  // only parent groups that actually have visible products in this catalog
+  const groups = state.GROUP_ORDER.filter(g => groupCount(g) > 0);
+  const nGroups = groups.length;
 
   document.getElementById('resultCt').textContent =
-    nCats + ' categor' + (nCats===1?'y':'ies');
+    nGroups + ' categor' + (nGroups===1?'y':'ies');
 
   const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
-  const card = (label, count, icon, isAll) => {
-    const safe = label.replace(/'/g, "\\'");
+  // `target` is the value passed to setCat(): 'All Products' or 'group:<Name>'.
+  const card = (label, count, icon, target, isAll) => {
+    const safe = target.replace(/'/g, "\\'");
     return `<div class="cat-card${isAll?' cat-card-all':''}" role="button" tabindex="0"
         onclick="setCat('${safe}')"
         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setCat('${safe}')}">
@@ -1029,26 +1060,33 @@ function renderCategoryCards() {
       </div>`;
   };
 
-  if (!nCats) {
+  if (!nGroups) {
     grid.innerHTML = `<div class="no-results">${CAT_ICONS.folder}<span>No categories in this catalog yet</span></div>`;
     return;
   }
 
   const head = `<div class="cat-landing-head">
       <span class="cat-landing-title">${escapeHtml(state.activeCatalog?.name || 'Catalog')}</span>
-      <span class="cat-landing-sub">${totalCount} product${totalCount!==1?'s':''} across ${nCats} categor${nCats===1?'y':'ies'}</span>
+      <span class="cat-landing-sub">${totalCount} product${totalCount!==1?'s':''} across ${nGroups} categor${nGroups===1?'y':'ies'}</span>
     </div>`;
 
-  const cards = [ card('All Products', totalCount, CAT_ICONS.all, true) ];
-  state.CAT_ORDER.forEach(label => {
-    const count = (state.CAT_SKU_SEQ[label] || []).filter(s => visibleSkus.has(s)).length;
-    cards.push(card(label, count, categoryIcon(label), false));
+  const cards = [ card('All Products', totalCount, CAT_ICONS.all, 'All Products', true) ];
+  groups.forEach(g => {
+    cards.push(card(g, groupCount(g), categoryIcon(g), GROUP_PREFIX + g, false));
   });
 
   grid.innerHTML = head + cards.join('');
 }
 
 // ── RENDER PRODUCTS ──────────────────────────────────────────
+// ── PER-PAGE SORT RULES ──────────────────────────────────────
+// Maps a category (by its display name) to a sequencing rule. Anything NOT listed
+// keeps its curated "Featured" order. Values: 'price_asc' (low→high) or 'price_desc'.
+// To sequence another page, add a line here, e.g.  'Guest Seating': 'price_desc'.
+const CAT_SORT = {
+  'Office Chairs': 'price_asc',
+};
+
 function renderProducts() {
   const grid = document.getElementById('prodGrid');
   const q = state.search.toLowerCase();
@@ -1067,7 +1105,9 @@ function renderProducts() {
   // Breadcrumb + title for the product view.
   document.getElementById('crumbBack').style.display = 'inline-flex';
   document.getElementById('topTitle').textContent =
-    (state.activeCat === HOME_VIEW) ? 'Search results' : state.activeCat;
+    (state.activeCat === HOME_VIEW) ? 'Search results'
+    : state.activeCat.startsWith(GROUP_PREFIX) ? state.activeCat.slice(GROUP_PREFIX.length)
+    : state.activeCat;
 
   let list = getProductsForCat(baseCat).filter(p =>
     !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) ||
@@ -1085,6 +1125,19 @@ function renderProducts() {
     );
     list.forEach(p => { if (!seen.has(p.sku)) ord.push(p); });
     list = ord;
+  }
+  // Per-page sequencing: only categories listed in CAT_SORT are reordered;
+  // every other page keeps its curated (Featured) order. Call-for-pricing goes last.
+  const sortMode = CAT_SORT[state.activeCat];
+  if (sortMode === 'price_asc' || sortMode === 'price_desc') {
+    const dir = (sortMode === 'price_desc') ? -1 : 1;
+    list = [...list].sort((a, b) => {
+      const pa = getPrice(a.sku), pb = getPrice(b.sku);
+      if (pa == null && pb == null) return 0;
+      if (pa == null) return 1;
+      if (pb == null) return -1;
+      return (pa - pb) * dir;
+    });
   }
   document.getElementById('resultCt').textContent = list.length + ' product' + (list.length!==1?'s':'');
   const showPricing = state.customer?.show_pricing !== false;
