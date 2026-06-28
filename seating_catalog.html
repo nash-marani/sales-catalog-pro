@@ -375,7 +375,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 17</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 18</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -389,7 +389,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
     <!-- Product grid -->
     <main class="main">
       <div class="topbar">
-        <button class="crumb-back" id="crumbBack" style="display:none" onclick="goHome()" title="Back to all categories">
+        <button class="crumb-back" id="crumbBack" style="display:none" onclick="goBack()" title="Back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
           All categories
         </button>
@@ -501,6 +501,9 @@ const HOME_VIEW = '__home__';
 // parent categories; clicking one shows all of that category's products. The left
 // rail still carries the full categories + subcategories tree.
 const GROUP_PREFIX = 'group:';
+// 'group:<G>'    → drill-down view: the subcategory cards inside parent category G
+// 'groupall:<G>' → flat view: every product across all of G's subcategories
+const GROUPALL_PREFIX = 'groupall:';
 
 // Master switch for the "view product page" / "Full details" link-outs that send
 // users to the manufacturer's site (ASI, Bobrick, etc.). Set to false to keep
@@ -887,10 +890,13 @@ function getVisibleProducts() {
 function getProductsForCat(cat) {
   const visible = getVisibleProducts();
   if (cat === 'All Products') return visible;
-  // Group (category) view: every distinct product across that group's subcategories,
-  // in the normal category order.
-  if (cat.startsWith(GROUP_PREFIX)) {
-    const group = cat.slice(GROUP_PREFIX.length);
+  // Group view: every distinct product across that group's subcategories,
+  // in the normal category order. Reached as 'groupall:<G>' (the All-<G> card)
+  // or as 'group:<G>' while a search is active.
+  if (cat.startsWith(GROUPALL_PREFIX) || cat.startsWith(GROUP_PREFIX)) {
+    const group = cat.startsWith(GROUPALL_PREFIX)
+      ? cat.slice(GROUPALL_PREFIX.length)
+      : cat.slice(GROUP_PREFIX.length);
     const seen = new Set(); const out = [];
     state.CAT_ORDER.forEach(sub => {
       if ((state.CAT_GROUP[sub] || 'Other') !== group) return;
@@ -977,7 +983,8 @@ function renderCats() {
     const subs = byGroup[g] || [];
     if (!subs.length) return;
     // keep a group open if the active subcategory lives inside it, or it's the active category view
-    const isActiveGroup = state.activeCat === GROUP_PREFIX + g;
+    const isActiveGroup = state.activeCat === GROUP_PREFIX + g
+                       || state.activeCat === GROUPALL_PREFIX + g;
     const containsActive = subs.includes(state.activeCat);
     const collapsed = state.collapsedGroups.has(g) && !containsActive && !isActiveGroup;
     parts.push(`<div class="grp-head${collapsed?' collapsed':''}${isActiveGroup?' active':''}" onclick="toggleGroup('${g.replace(/'/g,"\\'")}')">
@@ -1001,6 +1008,70 @@ function toggleGroup(g) {
   if (state.collapsedGroups.has(g)) state.collapsedGroups.delete(g);
   else state.collapsedGroups.add(g);
   renderCats();
+}
+
+// Drill-down: the subcategory cards inside a parent category (e.g. Washroom →
+// Bobrick Bathroom Accessories + ASI Bathroom Accessories), with an "All <G>"
+// card to view the whole group at once. Top landing stays parent-only.
+function renderSubcatCards(group) {
+  const grid = document.getElementById('prodGrid');
+  grid.className = 'products-grid cat-grid';
+  document.getElementById('crumbBack').style.display = 'inline-flex';
+  document.getElementById('topTitle').textContent = group;
+
+  const visible = getVisibleProducts();
+  const visibleSkus = new Set(visible.map(p => p.sku));
+  const subCount = sub => (state.CAT_SKU_SEQ[sub] || []).filter(sku => visibleSkus.has(sku)).length;
+  const subs = state.CAT_ORDER.filter(sub =>
+    (state.CAT_GROUP[sub] || 'Other') === group && subCount(sub) > 0);
+
+  // distinct products across the whole group (for the All-<group> card)
+  const groupSkus = new Set();
+  subs.forEach(s => (state.CAT_SKU_SEQ[s] || []).forEach(sku => { if (visibleSkus.has(sku)) groupSkus.add(sku); }));
+  const groupTotal = groupSkus.size;
+
+  document.getElementById('resultCt').textContent =
+    subs.length + ' subcategor' + (subs.length===1?'y':'ies');
+
+  const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+  const card = (label, count, icon, target, isAll) => {
+    const safe = target.replace(/'/g, "\\'");
+    return `<div class="cat-card${isAll?' cat-card-all':''}" role="button" tabindex="0"
+        onclick="setCat('${safe}')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setCat('${safe}')}">
+        <div class="cat-card-icon">${icon}</div>
+        <div class="cat-card-body">
+          <div class="cat-card-name">${escapeHtml(label)}</div>
+          <div class="cat-card-count">${count} product${count!==1?'s':''}</div>
+        </div>
+        <div class="cat-card-arrow">${arrow}</div>
+      </div>`;
+  };
+
+  const head = `<div class="cat-landing-head">
+      <span class="cat-landing-title">${escapeHtml(group)}</span>
+      <span class="cat-landing-sub">${groupTotal} product${groupTotal!==1?'s':''} across ${subs.length} subcategor${subs.length===1?'y':'ies'}</span>
+    </div>`;
+
+  const cards = [ card('All ' + group, groupTotal, categoryIcon(group), GROUPALL_PREFIX + group, true) ];
+  subs.forEach(s => cards.push(card(s, subCount(s), categoryIcon(s), s, false)));
+  grid.innerHTML = head + cards.join('');
+}
+
+// Back button: step up one level rather than always jumping to the top landing.
+function goBack() {
+  if (state.search) {                       // clear an active search first
+    state.search = '';
+    const si = document.getElementById('srchInput'); if (si) si.value = '';
+    renderCats(); renderProducts(); return;
+  }
+  const c = state.activeCat;
+  if (c.startsWith(GROUPALL_PREFIX)) { setCat(GROUP_PREFIX + c.slice(GROUPALL_PREFIX.length)); return; }
+  if (c.startsWith(GROUP_PREFIX))    { goHome(); return; }   // subcategory cards → top landing
+  if (c === 'All Products')          { goHome(); return; }
+  const g = state.CAT_GROUP[c];                              // a subcategory product view →
+  if (g) { setCat(GROUP_PREFIX + g); return; }               //   up to its group's subcat cards
+  goHome();
 }
 
 function setCat(c) {
@@ -1099,6 +1170,12 @@ function renderProducts() {
     return;
   }
 
+  // Drill-down view: a parent category's subcategory cards (no search active).
+  if (state.activeCat.startsWith(GROUP_PREFIX) && !q) {
+    renderSubcatCards(state.activeCat.slice(GROUP_PREFIX.length));
+    return;
+  }
+
   // Product / search view. On the landing, a search spans the whole catalog,
   // so HOME behaves like "All Products" for the purpose of building the list.
   grid.className = 'products-grid';
@@ -1108,6 +1185,7 @@ function renderProducts() {
   document.getElementById('crumbBack').style.display = 'inline-flex';
   document.getElementById('topTitle').textContent =
     (state.activeCat === HOME_VIEW) ? 'Search results'
+    : state.activeCat.startsWith(GROUPALL_PREFIX) ? state.activeCat.slice(GROUPALL_PREFIX.length)
     : state.activeCat.startsWith(GROUP_PREFIX) ? state.activeCat.slice(GROUP_PREFIX.length)
     : state.activeCat;
 
