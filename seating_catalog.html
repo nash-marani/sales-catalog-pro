@@ -125,6 +125,8 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-cat{font-size:10px;color:var(--acctxt);background:var(--accbg);padding:2px 7px;border-radius:10px}
 .card-price{font-size:12px;font-weight:600;color:var(--txt)}
 .card-price-cfp{font-weight:500;color:var(--txt3)}
+.card-lead{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:var(--txt3)}
+.card-lead svg{width:12px;height:12px;flex:none}
 .no-results{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:var(--txt3);gap:10px;text-align:center;font-size:14px}
 
 /* ── RIGHT PANEL — PROJECTS ── */
@@ -246,6 +248,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .detail-price{font-size:22px;font-weight:700;color:var(--txt);margin-bottom:14px}
 .detail-price span{font-size:13px;color:var(--txt3);font-weight:400}
 .detail-price.detail-price-cfp{font-size:16px;font-weight:600;color:var(--txt2)}
+.detail-lead{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--txt2);margin-bottom:6px}
+.detail-lead svg{width:14px;height:14px;flex:none}
+.detail-moq{font-size:13px;color:var(--txt2);margin-bottom:14px}
 .detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
 .qty-input-wrap{display:flex;align-items:center;gap:6px}
 .qty-input-wrap label{font-size:12px;color:var(--txt2)}
@@ -375,7 +380,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 18</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 19</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -808,7 +813,7 @@ async function loadCatalogProducts(catalogId) {
   // products in one query so cards can show a file count and the detail modal
   // can list Resources without a per-open round-trip. (.in() lists are fine for
   // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
-  state.products.forEach(p => { p._assets = []; p._pid = null; });
+  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; });
   try {
     const skus = state.products.map(p => p.sku).filter(Boolean);
     if (skus.length) {
@@ -830,6 +835,26 @@ async function loadCatalogProducts(catalogId) {
       }
     }
   } catch (e) { console.warn('asset prefetch:', e.message); }
+
+  // ── Lead time + MOQ (added) ────────────────────────────────
+  // Product-level attributes, fetched on their own so a schema-cache lag on the
+  // new columns can never disturb the asset prefetch above. Missing values fall
+  // back to lead 0 ("call") and moq null (hidden), which is the intended default.
+  try {
+    const mskus = state.products.map(p => p.sku).filter(Boolean);
+    if (mskus.length) {
+      const { data: meta } = await sb.from('products')
+        .select('sku,typical_lead_time,moq')
+        .in('sku', mskus);
+      const bySku = {};
+      (meta || []).forEach(r => { bySku[r.sku] = r; });
+      state.products.forEach(p => {
+        const m = bySku[p.sku];
+        p._lead = (m && m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
+        p._moq  = (m && m.moq != null) ? Number(m.moq) : null;
+      });
+    }
+  } catch (e) { console.warn('lead/moq prefetch:', e.message); }
 }
 
 // Full-screen fatal message (replaces the product grid / picker)
@@ -919,6 +944,16 @@ function formatPrice(sku) {
   const p = getPrice(sku);
   if (!p) return '';
   return '$' + p.toFixed(2);
+}
+
+// ── LEAD TIME (added) ────────────────────────────────────────
+// typical_lead_time is an integer; 0 is the "call us" state. Unit is a single
+// constant so days → weeks (etc.) is a one-line change.
+const LEAD_TIME_UNIT = 'days';
+const CLOCK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+function leadLabel(p, callWord) {
+  const n = (p && p._lead) ? Number(p._lead) : 0;
+  return (n > 0) ? (n + ' ' + LEAD_TIME_UNIT) : callWord;
 }
 
 // ── CATEGORY ICONS (added) ───────────────────────────────────
@@ -1253,6 +1288,7 @@ function renderProducts() {
                 : `<span class="card-price card-price-cfp">Call</span>`)
             : ''}
         </div>
+        <div class="card-lead">${CLOCK_ICO}<span>${escapeHtml(leadLabel(p,'Call'))}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -1314,6 +1350,8 @@ function openDetail(sku) {
                 ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>`
                 : `<div class="detail-price detail-price-cfp">Call for pricing</div>`)
             : ''}
+          <div class="detail-lead">${CLOCK_ICO}<span>Typical lead time: ${escapeHtml(leadLabel(p,'Please call'))}</span></div>
+          ${p._moq ? `<div class="detail-moq">Minimum order quantity: ${escapeHtml(String(p._moq))}</div>` : ''}
           <div class="detail-add">
             <div class="qty-input-wrap">
               <label>Qty</label>
