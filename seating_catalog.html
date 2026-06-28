@@ -334,9 +334,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424848</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">be3ae462-c861-47a5-97e9-82461aee613c</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424848, NNN373W3ZMMJ-320560042-424848</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -388,7 +388,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 20</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 21</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1004,7 +1004,12 @@ function matchVariant(p, sel) {
   return (p._variants || []).find(v => axes.every(a => (v.attributes || {})[a] === sel[a])) || null;
 }
 function variantPriceText(p, variant) {
-  if (variant) return '$' + Number(variant.unit_price).toFixed(2) + ' <span>CAD / unit</span>';
+  if (variant) {
+    const up = (variant.unit_price != null) ? Number(variant.unit_price) : 0;
+    return up > 0
+      ? '$' + up.toFixed(2) + ' <span>CAD / unit</span>'
+      : 'Call for pricing';
+  }
   const r = variantPriceRange(p);
   if (!r) return 'Call for pricing';
   const body = (r.min === r.max) ? '$' + r.min.toFixed(2)
