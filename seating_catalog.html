@@ -251,6 +251,14 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .detail-lead{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--txt2);margin-bottom:6px}
 .detail-lead svg{width:14px;height:14px;flex:none}
 .detail-moq{font-size:13px;color:var(--txt2);margin-bottom:14px}
+.variant-picker{margin:4px 0 14px}
+.vaxis{margin-bottom:10px}
+.vaxis-label{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:5px}
+.vchips{display:flex;flex-wrap:wrap;gap:7px}
+.vchip{font-size:12px;color:var(--txt);background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:6px 11px;cursor:pointer;transition:border-color .12s,background .12s}
+.vchip:hover{border-color:var(--acc)}
+.vchip.active{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
+.btn-add:disabled{opacity:.45;cursor:not-allowed}
 .detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
 .qty-input-wrap{display:flex;align-items:center;gap:6px}
 .qty-input-wrap label{font-size:12px;color:var(--txt2)}
@@ -380,7 +388,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 19</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 20</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -813,7 +821,7 @@ async function loadCatalogProducts(catalogId) {
   // products in one query so cards can show a file count and the detail modal
   // can list Resources without a per-open round-trip. (.in() lists are fine for
   // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
-  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; });
+  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; });
   try {
     const skus = state.products.map(p => p.sku).filter(Boolean);
     if (skus.length) {
@@ -855,6 +863,22 @@ async function loadCatalogProducts(catalogId) {
       });
     }
   } catch (e) { console.warn('lead/moq prefetch:', e.message); }
+
+  // ── Variants (added) ───────────────────────────────────────
+  // Orderable sub-products (e.g. whiteboard sizes, table Color x Width).
+  // Own isolated fetch, keyed by the parent product id we bridged above.
+  try {
+    const pids = state.products.map(p => p._pid).filter(Boolean);
+    if (pids.length) {
+      const { data: vrows } = await sb.from('product_variants')
+        .select('parent_product_id,variant_sku,attributes,unit_price,sort_order')
+        .in('parent_product_id', pids)
+        .order('sort_order', { ascending: true });
+      const byPid = {};
+      (vrows || []).forEach(v => { (byPid[v.parent_product_id] = byPid[v.parent_product_id] || []).push(v); });
+      state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._variants = byPid[p._pid]; });
+    }
+  } catch (e) { console.warn('variant prefetch:', e.message); }
 }
 
 // Full-screen fatal message (replaces the product grid / picker)
@@ -954,6 +978,63 @@ const CLOCK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 function leadLabel(p, callWord) {
   const n = (p && p._lead) ? Number(p._lead) : 0;
   return (n > 0) ? (n + ' ' + LEAD_TIME_UNIT) : callWord;
+}
+
+// ── VARIANTS (added) ─────────────────────────────────────────
+// One product can have orderable variants (one or more attribute axes).
+// attributes is e.g. {"Size":"24\" x 36\""} or {"Color":"Walnut","Width":"142\""}.
+function variantAxes(p) {
+  const axes = []; const valsByAxis = {};
+  (p._variants || []).forEach(v => {
+    const a = v.attributes || {};
+    Object.keys(a).forEach(k => {
+      if (!valsByAxis[k]) { valsByAxis[k] = []; axes.push(k); }
+      if (!valsByAxis[k].includes(a[k])) valsByAxis[k].push(a[k]);
+    });
+  });
+  return { axes, valsByAxis };
+}
+function variantPriceRange(p) {
+  const ps = (p._variants || []).map(v => Number(v.unit_price)).filter(n => n > 0);
+  return ps.length ? { min: Math.min(...ps), max: Math.max(...ps) } : null;
+}
+function matchVariant(p, sel) {
+  const { axes } = variantAxes(p);
+  if (!axes.length || axes.some(a => !sel[a])) return null;
+  return (p._variants || []).find(v => axes.every(a => (v.attributes || {})[a] === sel[a])) || null;
+}
+function variantPriceText(p, variant) {
+  if (variant) return '$' + Number(variant.unit_price).toFixed(2) + ' <span>CAD / unit</span>';
+  const r = variantPriceRange(p);
+  if (!r) return 'Call for pricing';
+  const body = (r.min === r.max) ? '$' + r.min.toFixed(2)
+             : '$' + r.min.toFixed(2) + ' – $' + r.max.toFixed(2);
+  return body + ' <span>CAD / unit</span>';
+}
+function variantPickerHtml(p, sel) {
+  const { axes, valsByAxis } = variantAxes(p);
+  return axes.map((axis, ai) => `
+    <div class="vaxis">
+      <div class="vaxis-label">${escapeHtml(axis)}</div>
+      <div class="vchips">
+        ${valsByAxis[axis].map((val, vi) =>
+          `<button type="button" class="vchip${sel[axis]===val?' active':''}" onclick="selectVariantOption(${ai},${vi})">${escapeHtml(val)}</button>`
+        ).join('')}
+      </div>
+    </div>`).join('');
+}
+function selectVariantOption(ai, vi) {
+  const cv = state.curVariant; if (!cv) return;
+  const { axes, valsByAxis } = variantAxes(cv.p);
+  const axis = axes[ai]; const val = valsByAxis[axis][vi];
+  cv.sel[axis] = val;
+  const pick = document.getElementById('variantPicker');
+  if (pick) pick.innerHTML = variantPickerHtml(cv.p, cv.sel);
+  const variant = matchVariant(cv.p, cv.sel);
+  const pr = document.getElementById('variantPrice');
+  if (pr) pr.innerHTML = variantPriceText(cv.p, variant);
+  const btn = document.getElementById('detailAddBtn');
+  if (btn) btn.disabled = !variant;
 }
 
 // ── CATEGORY ICONS (added) ───────────────────────────────────
@@ -1266,6 +1347,17 @@ function renderProducts() {
   document.getElementById('prodGrid').innerHTML = list.map(p => {
     const img   = (p.images||[])[0] || '';
     const price = showPricing ? formatPrice(p.sku) : '';
+    let priceHtml = '';
+    if (showPricing) {
+      if ((p._variants||[]).length) {
+        const r = variantPriceRange(p);
+        priceHtml = r ? `<span class="card-price">From $${r.min.toFixed(2)}</span>`
+                      : `<span class="card-price card-price-cfp">Call</span>`;
+      } else {
+        priceHtml = price ? `<span class="card-price">${price}</span>`
+                          : `<span class="card-price card-price-cfp">Call</span>`;
+      }
+    }
     const nFiles = (p._assets||[]).length;
     const showExt = SHOW_EXTERNAL_LINKS && !!p.url;   // card's external-link icon (gated by master switch)
     return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button">
@@ -1282,11 +1374,7 @@ function renderProducts() {
         <div class="card-name">${escapeHtml(p.name)}</div>
         <div class="card-footer">
           <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
-          ${showPricing
-            ? (price
-                ? `<span class="card-price">${price}</span>`
-                : `<span class="card-price card-price-cfp">Call</span>`)
-            : ''}
+          ${priceHtml}
         </div>
         <div class="card-lead">${CLOCK_ICO}<span>${escapeHtml(leadLabel(p,'Call'))}</span></div>
       </div>
@@ -1301,6 +1389,8 @@ function openDetail(sku) {
   const imgs   = (p.images || []).filter(Boolean);   // drop blank/null entries — a list of empties is "no image"
   const showPx = state.customer?.show_pricing !== false;
   const price  = showPx ? getPrice(sku) : null;
+  const hasVar = (p._variants || []).length > 0;
+  state.curVariant = hasVar ? { p, sel: {} } : null;
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   const assets = p._assets || [];
@@ -1345,11 +1435,14 @@ function openDetail(sku) {
                 </a></li>`).join('')}
               </ul>
             </div>` : ''}
-          ${showPx
-            ? (price
-                ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>`
-                : `<div class="detail-price detail-price-cfp">Call for pricing</div>`)
-            : ''}
+          ${hasVar
+            ? `${showPx ? `<div id="variantPrice" class="detail-price">${variantPriceText(p, null)}</div>` : ''}
+               <div id="variantPicker" class="variant-picker">${variantPickerHtml(p, {})}</div>`
+            : (showPx
+                ? (price
+                    ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>`
+                    : `<div class="detail-price detail-price-cfp">Call for pricing</div>`)
+                : '')}
           <div class="detail-lead">${CLOCK_ICO}<span>Typical lead time: ${escapeHtml(leadLabel(p,'Please call'))}</span></div>
           ${p._moq ? `<div class="detail-moq">Minimum order quantity: ${escapeHtml(String(p._moq))}</div>` : ''}
           <div class="detail-add">
@@ -1357,7 +1450,9 @@ function openDetail(sku) {
               <label>Qty</label>
               <input type="number" id="detailQty" min="1" max="999" value="1"/>
             </div>
-            <button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>
+            ${hasVar
+              ? `<button class="btn-add" id="detailAddBtn" disabled onclick="addVariantToBom()">+ Add to BOM</button>`
+              : `<button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>`}
             ${showFull ? `<a class="btn-accent" href="${escapeHtml(p.url)}" target="_blank" rel="noopener">${extIco} Full details</a>` : ''}
             <button class="btn-close" onclick="closeModal()">Close</button>
           </div>
@@ -1659,14 +1754,12 @@ function renderBom() {
     ${totalPrice ? `<div class="stat-box"><div class="stat-val">$${totalPrice.toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0})}</div><div class="stat-lbl">Total</div></div>` : ''}`;
 }
 
-async function addToBom(sku) {
+async function addBomLine(sku, name, price) {
   if (!state.activeProjectId) {
     showToast('Please select or create a project first'); closeModal(); switchRTab('projects'); return;
   }
-  const qty   = Math.max(1, parseInt(document.getElementById('detailQty')?.value||1));
-  const prod  = state.products.find(p=>p.sku===sku);
-  const price = getPrice(sku);
-  // Check if already in BOM
+  const qty = Math.max(1, parseInt(document.getElementById('detailQty')?.value||1));
+  // Same variant SKU already on the BOM → bump quantity
   const existing = state.activeProjItems.find(i=>i.sku===sku);
   if (existing) {
     await sb.from('project_items').update({quantity: existing.quantity+qty}).eq('id',existing.id);
@@ -1674,9 +1767,9 @@ async function addToBom(sku) {
     await sb.from('project_items').insert({
       project_id:   state.activeProjectId,
       sku,
-      product_name: prod?.name || sku,
+      product_name: name || sku,
       quantity:     qty,
-      unit_price:   price || null,
+      unit_price:   (price != null ? price : null),
       added_by:     state.userId
     });
   }
@@ -1684,6 +1777,20 @@ async function addToBom(sku) {
   await loadBom();
   setSyncStatus('saved');
   showToast(`Added to BOM`);
+}
+
+async function addToBom(sku) {
+  const prod = state.products.find(p=>p.sku===sku);
+  await addBomLine(sku, prod?.name || sku, getPrice(sku));
+}
+
+async function addVariantToBom() {
+  const cv = state.curVariant; if (!cv) return;
+  const variant = matchVariant(cv.p, cv.sel);
+  if (!variant) { showToast('Please select all options'); return; }
+  const name  = cv.p.name + ' — ' + Object.values(cv.sel).join(', ');
+  const price = (variant.unit_price != null) ? Number(variant.unit_price) : null;
+  await addBomLine(variant.variant_sku, name, price);
 }
 
 async function changeQty(itemId, delta) {
