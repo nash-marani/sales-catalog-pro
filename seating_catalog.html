@@ -115,6 +115,8 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-img img{width:100%;height:100%;object-fit:cover}
 .card-img .no-img{color:var(--txt3)}
 .card-img .no-img svg{width:36px;height:36px}
+.card-custom{position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:4px;background:var(--acc);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.22)}
+.card-custom svg{width:12px;height:12px;stroke:#fff}
 .card-ext{position:absolute;top:7px;right:7px;width:26px;height:26px;background:rgba(255,255,255,.92);border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;color:var(--acc);text-decoration:none}
 .card-ext svg{width:13px;height:13px}
 .prod-card:hover .card-ext{opacity:1}
@@ -336,9 +338,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424849</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">67862703-5969-457c-bb61-99a083eddaab</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424849, NNN373W3ZMMJ-320560042-424849</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -390,7 +392,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 22</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 23</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1374,6 +1376,7 @@ function renderProducts() {
         ${img
           ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
           : `<div class="no-img">${chairSvg}</div>`}
+        ${p._custom ? `<span class="card-custom">${CUSTOM_ICO}Custom</span>` : ''}
         ${showExt ? `<a class="card-ext" href="${escapeHtml(p.url)}" target="_blank" rel="noopener"
           onclick="event.stopPropagation()" title="View product page">${extIco}</a>` : ''}
         ${nFiles ? `<span class="card-files" title="${nFiles} downloadable file${nFiles!==1?'s':''}">${fileIco}${nFiles}</span>` : ''}
