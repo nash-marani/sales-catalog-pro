@@ -251,6 +251,8 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .detail-lead{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--txt2);margin-bottom:6px}
 .detail-lead svg{width:14px;height:14px;flex:none}
 .detail-moq{font-size:13px;color:var(--txt2);margin-bottom:14px}
+.detail-custom{display:flex;gap:9px;align-items:flex-start;background:var(--accbg);border:.5px solid var(--acc);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--acctxt);line-height:1.5}
+.detail-custom svg{width:16px;height:16px;flex:none;margin-top:1px}
 .variant-picker{margin:4px 0 14px}
 .vaxis{margin-bottom:10px}
 .vaxis-label{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:5px}
@@ -334,9 +336,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424848</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">be3ae462-c861-47a5-97e9-82461aee613c</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424848, NNN373W3ZMMJ-320560042-424848</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424849</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">67862703-5969-457c-bb61-99a083eddaab</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424849, NNN373W3ZMMJ-320560042-424849</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -388,7 +390,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 21</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 22</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -821,7 +823,7 @@ async function loadCatalogProducts(catalogId) {
   // products in one query so cards can show a file count and the detail modal
   // can list Resources without a per-open round-trip. (.in() lists are fine for
   // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
-  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; });
+  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; });
   try {
     const skus = state.products.map(p => p.sku).filter(Boolean);
     if (skus.length) {
@@ -852,7 +854,7 @@ async function loadCatalogProducts(catalogId) {
     const mskus = state.products.map(p => p.sku).filter(Boolean);
     if (mskus.length) {
       const { data: meta } = await sb.from('products')
-        .select('sku,typical_lead_time,moq')
+        .select('sku,typical_lead_time,moq,custom_note')
         .in('sku', mskus);
       const bySku = {};
       (meta || []).forEach(r => { bySku[r.sku] = r; });
@@ -860,6 +862,7 @@ async function loadCatalogProducts(catalogId) {
         const m = bySku[p.sku];
         p._lead = (m && m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
         p._moq  = (m && m.moq != null) ? Number(m.moq) : null;
+        p._custom = (m && m.custom_note) ? m.custom_note : null;
       });
     }
   } catch (e) { console.warn('lead/moq prefetch:', e.message); }
@@ -975,6 +978,7 @@ function formatPrice(sku) {
 // constant so days → weeks (etc.) is a one-line change.
 const LEAD_TIME_UNIT = 'days';
 const CLOCK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+const CUSTOM_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4 14 14-4 4z"/><path d="M9 5l2 2M12 8l2 2M15 11l2 2"/></svg>';
 function leadLabel(p, callWord) {
   const n = (p && p._lead) ? Number(p._lead) : 0;
   return (n > 0) ? (n + ' ' + LEAD_TIME_UNIT) : callWord;
@@ -1448,6 +1452,7 @@ function openDetail(sku) {
                     ? `<div class="detail-price">$${price.toFixed(2)} <span>CAD / unit</span></div>`
                     : `<div class="detail-price detail-price-cfp">Call for pricing</div>`)
                 : '')}
+          ${p._custom ? `<div class="detail-custom">${CUSTOM_ICO}<span>${escapeHtml(p._custom)}</span></div>` : ''}
           <div class="detail-lead">${CLOCK_ICO}<span>Typical lead time: ${escapeHtml(leadLabel(p,'Please call'))}</span></div>
           ${p._moq ? `<div class="detail-moq">Minimum order quantity: ${escapeHtml(String(p._moq))}</div>` : ''}
           <div class="detail-add">
