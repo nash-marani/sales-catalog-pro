@@ -115,8 +115,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-img img{width:100%;height:100%;object-fit:cover}
 .card-img .no-img{color:var(--txt3)}
 .card-img .no-img svg{width:36px;height:36px}
-.card-custom{position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:4px;background:var(--acc);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.22)}
-.card-custom svg{width:12px;height:12px;stroke:#fff}
+.card-band{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--acc);color:#fff;font-size:11px;font-weight:600;padding:5px 8px;text-align:center}
+.card-band svg{width:12px;height:12px;flex:none;stroke:#fff}
+.card-customline{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;font-weight:500;color:var(--acc)}
+.card-customline svg{width:12px;height:12px;flex:none}
 .card-ext{position:absolute;top:7px;right:7px;width:26px;height:26px;background:rgba(255,255,255,.92);border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;color:var(--acc);text-decoration:none}
 .card-ext svg{width:13px;height:13px}
 .prod-card:hover .card-ext{opacity:1}
@@ -338,9 +340,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424851</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">c1feb32a-b281-4d56-a97c-c0f113224e6b</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424851, NNN373W3ZMMJ-320560042-424851</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -392,7 +394,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 23</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 24</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -825,7 +827,7 @@ async function loadCatalogProducts(catalogId) {
   // products in one query so cards can show a file count and the detail modal
   // can list Resources without a per-open round-trip. (.in() lists are fine for
   // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
-  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; });
+  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; p._badge = null; p._customOnly = false; });
   try {
     const skus = state.products.map(p => p.sku).filter(Boolean);
     if (skus.length) {
@@ -856,7 +858,7 @@ async function loadCatalogProducts(catalogId) {
     const mskus = state.products.map(p => p.sku).filter(Boolean);
     if (mskus.length) {
       const { data: meta } = await sb.from('products')
-        .select('sku,typical_lead_time,moq,custom_note')
+        .select('sku,typical_lead_time,moq,custom_note,custom_badge,custom_only')
         .in('sku', mskus);
       const bySku = {};
       (meta || []).forEach(r => { bySku[r.sku] = r; });
@@ -865,6 +867,8 @@ async function loadCatalogProducts(catalogId) {
         p._lead = (m && m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
         p._moq  = (m && m.moq != null) ? Number(m.moq) : null;
         p._custom = (m && m.custom_note) ? m.custom_note : null;
+        p._badge = (m && m.custom_badge) ? m.custom_badge : null;
+        p._customOnly = !!(m && m.custom_only);
       });
     }
   } catch (e) { console.warn('lead/moq prefetch:', e.message); }
@@ -981,6 +985,7 @@ function formatPrice(sku) {
 const LEAD_TIME_UNIT = 'days';
 const CLOCK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const CUSTOM_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4 14 14-4 4z"/><path d="M9 5l2 2M12 8l2 2M15 11l2 2"/></svg>';
+const PHONE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
 function leadLabel(p, callWord) {
   const n = (p && p._lead) ? Number(p._lead) : 0;
   return (n > 0) ? (n + ' ' + LEAD_TIME_UNIT) : callWord;
@@ -1376,7 +1381,7 @@ function renderProducts() {
         ${img
           ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
           : `<div class="no-img">${chairSvg}</div>`}
-        ${p._custom ? `<span class="card-custom">${CUSTOM_ICO}Custom</span>` : ''}
+        ${(p._customOnly && p._badge) ? `<span class="card-band">${PHONE_ICO}<span>${escapeHtml(p._badge)}</span></span>` : ''}
         ${showExt ? `<a class="card-ext" href="${escapeHtml(p.url)}" target="_blank" rel="noopener"
           onclick="event.stopPropagation()" title="View product page">${extIco}</a>` : ''}
         ${nFiles ? `<span class="card-files" title="${nFiles} downloadable file${nFiles!==1?'s':''}">${fileIco}${nFiles}</span>` : ''}
@@ -1389,6 +1394,7 @@ function renderProducts() {
           ${priceHtml}
         </div>
         <div class="card-lead">${CLOCK_ICO}<span>${escapeHtml(leadLabel(p,'Call'))}</span></div>
+        ${(!p._customOnly && p._badge) ? `<div class="card-customline">${CUSTOM_ICO}<span>${escapeHtml(p._badge)}</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
