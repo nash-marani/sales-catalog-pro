@@ -185,6 +185,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .bom-custom-tag{display:inline-block;font-size:9px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;background:var(--acc);color:#fff;padding:1px 6px;border-radius:10px;margin-right:6px;vertical-align:1px}
 .bom-spec{font-size:11px;color:var(--acctxt);margin-top:2px;line-height:1.4}
 .bom-quote{font-size:11px;font-weight:600;color:var(--acctxt);margin-top:3px}
+.bom-editlink{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:11px;font-weight:500;color:var(--acc);background:none;border:none;padding:0;cursor:pointer}
+.bom-editlink:hover{text-decoration:underline}
+.bom-editlink svg{width:12px;height:12px;flex:none}
 .qty-row{display:flex;align-items:center;gap:5px;margin-top:5px}
 .qty-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:14px;color:var(--txt2);background:var(--bg);user-select:none;-webkit-user-select:none}
 .qty-btn:hover{background:var(--bg2)}
@@ -400,7 +403,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 28</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 29</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1774,12 +1777,17 @@ function renderBom() {
             <button class="rm-btn" onclick="removeItem('${item.id}')">${xIco}</button>
           </div>`;
       if (item.is_custom) {
+        const editIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>`;
+        const editBtn = item.custom_spec
+          ? `<button class="bom-editlink" onclick="editCustomItem('${item.id}')">${editIco}Edit details</button>`
+          : `<button class="bom-editlink" onclick="editCustomItem('${item.id}')">${editIco}Add details</button>`;
         return `<div class="bom-item bom-item-custom">
           <div class="bom-thumb bom-thumb-custom">${CUSTOM_ICO}</div>
           <div class="bom-info">
             <div class="bom-name" title="${escapeHtml(item.product_name)}"><span class="bom-custom-tag">Custom</span>${escapeHtml(item.product_name)}</div>
             ${item.custom_spec ? `<div class="bom-spec">${escapeHtml(item.custom_spec)}</div>` : ''}
             <div class="bom-quote">Quote required</div>
+            ${editBtn}
             ${qtyRow}
           </div>
         </div>`;
@@ -1852,30 +1860,44 @@ function addCustomFromDetail() {
   openCustomModal(state.curDetail ? state.curDetail.name : '');
 }
 
-function openCustomModal(prefillName) {
+// Opens the custom-item modal in ADD mode (editItem omitted) or EDIT mode
+// (editItem = an existing project_items row). Edit mode prefills the fields and
+// switches submitCustom() from INSERT to UPDATE via state.editingCustomId.
+function editCustomItem(itemId) {
+  const it = (state.activeProjItems || []).find(x => x.id === itemId);
+  if (!it) return;
+  openCustomModal(it.product_name, it);
+}
+
+function openCustomModal(prefillName, editItem) {
   if (!state.activeProjectId) {
     showToast('Please select or create a project first'); closeModal(); switchRTab('projects'); return;
   }
+  const editing = !!editItem;
+  state.editingCustomId = editing ? editItem.id : null;
+  const nameVal = escapeHtml(editing ? (editItem.product_name || '') : (prefillName || ''));
+  const specVal = escapeHtml(editing ? (editItem.custom_spec || '') : '');
+  const qtyVal  = editing ? (editItem.quantity || 1) : 1;
   document.getElementById('modalWrap').innerHTML = `
   <div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal modal-lg">
-      <h3>Add custom item</h3>
+      <h3>${editing ? 'Edit custom item' : 'Add custom item'}</h3>
       <div class="mfield mfield-full" style="margin-bottom:12px">
         <label>Description *</label>
-        <input id="cName" type="text" maxlength="160" value="${escapeHtml(prefillName||'')}" placeholder="e.g. Custom reception desk"/>
+        <input id="cName" type="text" maxlength="160" value="${nameVal}" placeholder="e.g. Custom reception desk"/>
       </div>
       <div class="mfield mfield-full" style="margin-bottom:12px">
-        <label>Custom details — size, finish, configuration</label>
-        <textarea id="cSpec" placeholder="e.g. 11&quot; x 120&quot;, angled left return, charcoal laminate"></textarea>
+        <label>Custom details &mdash; size, finish, configuration, notes</label>
+        <textarea id="cSpec" placeholder="e.g. 11&quot; x 120&quot;, angled left return, charcoal laminate">${specVal}</textarea>
       </div>
       <div class="mfield" style="margin-bottom:0">
         <label>Quantity</label>
-        <input id="cQty" type="number" min="1" value="1" style="width:90px"/>
+        <input id="cQty" type="number" min="1" value="${qtyVal}" style="width:90px"/>
       </div>
-      <p class="modal-note" style="margin-top:14px">No standard price — this line is added as <strong>Quote required</strong> and is excluded from the BOM total until your rep confirms pricing.</p>
+      <p class="modal-note" style="margin-top:14px">No standard price &mdash; this line is added as <strong>Quote required</strong> and is excluded from the BOM total until your rep confirms pricing.</p>
       <div class="modal-btns">
         <button onclick="closeModal()">Cancel</button>
-        <button class="confirm" onclick="submitCustom()">Add to BOM</button>
+        <button class="confirm" onclick="submitCustom()">${editing ? 'Save changes' : 'Add to BOM'}</button>
       </div>
     </div>
   </div>`;
@@ -1887,22 +1909,30 @@ async function submitCustom() {
   if (!name) { showToast('Please enter a description'); return; }
   const spec = document.getElementById('cSpec').value.trim();
   const qty  = Math.max(1, parseInt(document.getElementById('cQty').value||1));
-  const sku  = 'CUSTOM-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+  const editing = !!state.editingCustomId;
   setSyncStatus('saving');
-  await sb.from('project_items').insert({
-    project_id:   state.activeProjectId,
-    sku,
-    product_name: name,
-    quantity:     qty,
-    unit_price:   null,
-    is_custom:    true,
-    custom_spec:  spec || null,
-    added_by:     state.userId
-  });
+  if (editing) {
+    await sb.from('project_items')
+      .update({ product_name: name, quantity: qty, custom_spec: spec || null })
+      .eq('id', state.editingCustomId);
+  } else {
+    const sku = 'CUSTOM-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+    await sb.from('project_items').insert({
+      project_id:   state.activeProjectId,
+      sku,
+      product_name: name,
+      quantity:     qty,
+      unit_price:   null,
+      is_custom:    true,
+      custom_spec:  spec || null,
+      added_by:     state.userId
+    });
+  }
+  state.editingCustomId = null;
   closeModal();
   await loadBom();
   setSyncStatus('saved');
-  showToast('Custom item added');
+  showToast(editing ? 'Custom item updated' : 'Custom item added');
 }
 
 async function addVariantToBom() {
