@@ -400,7 +400,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 26</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 27</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -831,79 +831,49 @@ async function loadCatalogProducts(catalogId) {
   state.CAT_GROUP   = catGroup;
   state.GROUP_ORDER = groupOrder;
 
-  // ── Downloadable assets (added) ────────────────────────────
-  // The view exposes only `sku`, but product_assets joins on products.id.
-  // Bridge sku -> id, then prefetch brochure/bim/cad assets for this catalog's
-  // products in one query so cards can show a file count and the detail modal
-  // can list Resources without a per-open round-trip. (.in() lists are fine for
-  // catalogs of this size; revisit if a catalog ever returns thousands of rows.)
   state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; p._badge = null; p._customOnly = false; });
-  try {
-    const skus = state.products.map(p => p.sku).filter(Boolean);
-    if (skus.length) {
-      const { data: idRows } = await sb.from('products').select('id,sku').in('sku', skus);
-      const idBySku = {};
-      (idRows || []).forEach(r => { idBySku[r.sku] = r.id; });
-      state.products.forEach(p => { p._pid = idBySku[p.sku] || null; });
 
-      const pids = state.products.map(p => p._pid).filter(Boolean);
-      if (pids.length) {
-        const { data: assetRows } = await sb.from('product_assets')
-          .select('product_id,asset_type,url,label,sort_order')
-          .in('product_id', pids)
-          .in('asset_type', ['brochure','bim','cad'])
-          .order('sort_order', { ascending: true });
-        const byPid = {};
-        (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
-        state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._assets = byPid[p._pid]; });
-      }
+  // ── Product metadata in ONE pass, matched LOCALLY by sku ───
+  // IMPORTANT: we deliberately do NOT use .in('sku', [...]) here. Some SKUs
+  // contain characters — double-quotes, parentheses, commas — that break
+  // PostgREST's in-filter parsing, which silently drops those rows (this is what
+  // hid the pedestal bench's badge, lead time and custom note). Fetching the
+  // columns for every product and matching in JavaScript is exact for ANY sku,
+  // regardless of the characters in it. Also bridges sku -> id for the asset and
+  // variant prefetches below.
+  try {
+    const { data: meta } = await sb.from('products')
+      .select('id,sku,typical_lead_time,moq,custom_note,custom_badge,custom_only')
+      .limit(5000);
+    const bySku = {};
+    (meta || []).forEach(r => { bySku[r.sku] = r; });
+    state.products.forEach(p => {
+      const m = bySku[p.sku];
+      if (!m) return;
+      p._pid = m.id || null;
+      p._lead = (m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
+      p._moq  = (m.moq != null) ? Number(m.moq) : null;
+      p._custom = m.custom_note || null;
+      p._badge = m.custom_badge || null;
+      p._customOnly = !!m.custom_only;
+    });
+  } catch (e) { console.warn('product meta prefetch:', e.message); }
+
+  // ── Downloadable assets, keyed by the product id bridged above ──
+  // product_id values are clean UUIDs, so .in() is safe here.
+  try {
+    const pids = state.products.map(p => p._pid).filter(Boolean);
+    if (pids.length) {
+      const { data: assetRows } = await sb.from('product_assets')
+        .select('product_id,asset_type,url,label,sort_order')
+        .in('product_id', pids)
+        .in('asset_type', ['brochure','bim','cad'])
+        .order('sort_order', { ascending: true });
+      const byPid = {};
+      (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
+      state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._assets = byPid[p._pid]; });
     }
   } catch (e) { console.warn('asset prefetch:', e.message); }
-
-  // ── Lead time + MOQ (added) ────────────────────────────────
-  // Product-level attributes, fetched on their own so a schema-cache lag on the
-  // new columns can never disturb the asset prefetch above. Missing values fall
-  // back to lead 0 ("call") and moq null (hidden), which is the intended default.
-  try {
-    const mskus = state.products.map(p => p.sku).filter(Boolean);
-    if (mskus.length) {
-      const { data: meta } = await sb.from('products')
-        .select('sku,typical_lead_time,moq,custom_note')
-        .in('sku', mskus);
-      const bySku = {};
-      (meta || []).forEach(r => { bySku[r.sku] = r; });
-      state.products.forEach(p => {
-        const m = bySku[p.sku];
-        p._lead = (m && m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
-        p._moq  = (m && m.moq != null) ? Number(m.moq) : null;
-        p._custom = (m && m.custom_note) ? m.custom_note : null;
-      });
-    }
-  } catch (e) { console.warn('lead/moq prefetch:', e.message); }
-
-  // ── Custom badge / made-to-order flag (added) ──────────────
-  // Fetched in ISOLATION on purpose: these are the newest columns, so if they
-  // are missing or the PostgREST schema cache is lagging, only the thumbnail
-  // badge is affected — lead time, MOQ and the detail callout above are safe.
-  try {
-    const bskus = state.products.map(p => p.sku).filter(Boolean);
-    if (bskus.length) {
-      const { data: badges, error: bErr } = await sb.from('products')
-        .select('sku,custom_badge,custom_only')
-        .in('sku', bskus);
-      if (!bErr) {
-        const byB = {};
-        (badges || []).forEach(r => { byB[r.sku] = r; });
-        state.products.forEach(p => {
-          const b = byB[p.sku];
-          p._badge = (b && b.custom_badge) ? b.custom_badge : null;
-          p._customOnly = !!(b && b.custom_only);
-        });
-      } else {
-        console.warn('custom badge prefetch:', bErr.message);
-      }
-    }
-  } catch (e) { console.warn('custom badge prefetch:', e.message); }
 
   // ── Variants (added) ───────────────────────────────────────
   // Orderable sub-products (e.g. whiteboard sizes, table Color x Width).
