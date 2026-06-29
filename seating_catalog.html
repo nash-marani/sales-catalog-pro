@@ -400,7 +400,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 27</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 28</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -845,10 +845,28 @@ async function loadCatalogProducts(catalogId) {
     const { data: meta } = await sb.from('products')
       .select('id,sku,typical_lead_time,moq,custom_note,custom_badge,custom_only')
       .limit(5000);
-    const bySku = {};
-    (meta || []).forEach(r => { bySku[r.sku] = r; });
+    // Build 28: exact-string sku matching (build 27) silently missed any product
+    // whose sku differs between the view and the table by invisible whitespace,
+    // a non-breaking space, or a curly-vs-straight quote — exactly the kind of
+    // messy sku the pedestal bench has. We now key the lookup map by both the
+    // raw sku AND a normalized form (collapsed whitespace + straightened quotes,
+    // lower-cased), and fall back to the normalized key when the exact one misses.
+    // Raw exact match still wins first, so clean skus are unaffected.
+    const normSku = s => (s == null ? '' : String(s)
+      .replace(/[\u2018\u2019\u201B\u2032]/g, "'")   // curly / prime  -> straight apostrophe
+      .replace(/[\u201C\u201D\u2033]/g, '"')          // curly / double-prime -> straight quote
+      .replace(/\u00A0/g, ' ')                         // non-breaking space -> normal space
+      .replace(/\s+/g, ' ')                            // collapse any run of whitespace
+      .trim()
+      .toLowerCase());
+    const bySku = {}, byNorm = {};
+    (meta || []).forEach(r => {
+      bySku[r.sku] = r;
+      const k = normSku(r.sku);
+      if (!(k in byNorm)) byNorm[k] = r;               // first writer wins; collisions are negligible here
+    });
     state.products.forEach(p => {
-      const m = bySku[p.sku];
+      const m = bySku[p.sku] || byNorm[normSku(p.sku)];
       if (!m) return;
       p._pid = m.id || null;
       p._lead = (m.typical_lead_time != null) ? Number(m.typical_lead_time) : 0;
