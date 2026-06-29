@@ -179,6 +179,12 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .bom-name{font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bom-sku{font-size:10px;color:var(--txt3);font-family:var(--mono)}
 .bom-price{font-size:11px;color:var(--txt2);margin-top:2px}
+.bom-item-custom{border-color:var(--acc);background:var(--accbg)}
+.bom-thumb-custom{color:var(--acc)}
+.bom-thumb-custom svg{width:20px;height:20px}
+.bom-custom-tag{display:inline-block;font-size:9px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;background:var(--acc);color:#fff;padding:1px 6px;border-radius:10px;margin-right:6px;vertical-align:1px}
+.bom-spec{font-size:11px;color:var(--acctxt);margin-top:2px;line-height:1.4}
+.bom-quote{font-size:11px;font-weight:600;color:var(--acctxt);margin-top:3px}
 .qty-row{display:flex;align-items:center;gap:5px;margin-top:5px}
 .qty-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:14px;color:var(--txt2);background:var(--bg);user-select:none;-webkit-user-select:none}
 .qty-btn:hover{background:var(--bg2)}
@@ -265,7 +271,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .vchip:hover{border-color:var(--acc)}
 .vchip.active{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
 .btn-add:disabled{opacity:.45;cursor:not-allowed}
-.detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr)}
+.detail-add{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:.5px solid var(--bdr);flex-wrap:wrap}
 .qty-input-wrap{display:flex;align-items:center;gap:6px}
 .qty-input-wrap label{font-size:12px;color:var(--txt2)}
 .qty-input-wrap input{width:60px;padding:8px;border:.5px solid var(--bdr2);border-radius:var(--r);font-size:14px;text-align:center;background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none}
@@ -340,9 +346,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424851</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">c1feb32a-b281-4d56-a97c-c0f113224e6b</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424851, NNN373W3ZMMJ-320560042-424851</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -394,7 +400,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 24</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 25</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -462,6 +468,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
             <button class="btn-secondary" onclick="openDownload()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download
+            </button>
+            <button class="btn-secondary" onclick="openCustomModal('')" title="Add a bespoke item not in the catalog">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Custom item
             </button>
             <button class="btn-secondary" onclick="confirmDelProj()" style="color:var(--danger)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -986,6 +996,7 @@ const LEAD_TIME_UNIT = 'days';
 const CLOCK_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const CUSTOM_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l4-4 14 14-4 4z"/><path d="M9 5l2 2M12 8l2 2M15 11l2 2"/></svg>';
 const PHONE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+const CUSTOM_ICO_BTN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px"><path d="M3 7l4-4 14 14-4 4z"/><path d="M9 5l2 2M12 8l2 2M15 11l2 2"/></svg>';
 function leadLabel(p, callWord) {
   const n = (p && p._lead) ? Number(p._lead) : 0;
   return (n > 0) ? (n + ' ' + LEAD_TIME_UNIT) : callWord;
@@ -1409,6 +1420,9 @@ function openDetail(sku) {
   const price  = showPx ? getPrice(sku) : null;
   const hasVar = (p._variants || []).length > 0;
   state.curVariant = hasVar ? { p, sel: {} } : null;
+  state.curDetail = p;                                 // for the "Add as custom" launcher
+  const customOnly    = !!p._customOnly;               // no standard version — custom is the only path
+  const customCapable = !!(p._badge || p._custom);     // offers a custom option alongside standard
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const dlIco  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
   const assets = p._assets || [];
@@ -1469,9 +1483,12 @@ function openDetail(sku) {
               <label>Qty</label>
               <input type="number" id="detailQty" min="1" max="999" value="1"/>
             </div>
-            ${hasVar
-              ? `<button class="btn-add" id="detailAddBtn" disabled onclick="addVariantToBom()">+ Add to BOM</button>`
-              : `<button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>`}
+            ${customOnly
+              ? `<button class="btn-add" onclick="addCustomFromDetail()">${CUSTOM_ICO_BTN} Add custom to BOM</button>`
+              : `${hasVar
+                  ? `<button class="btn-add" id="detailAddBtn" disabled onclick="addVariantToBom()">+ Add to BOM</button>`
+                  : `<button class="btn-add" onclick="addToBom('${p.sku}')">+ Add to BOM</button>`}
+                 ${customCapable ? `<button class="btn-accent" onclick="addCustomFromDetail()">${CUSTOM_ICO_BTN} Add as custom</button>` : ''}`}
             ${showFull ? `<a class="btn-accent" href="${escapeHtml(p.url)}" target="_blank" rel="noopener">${extIco} Full details</a>` : ''}
             <button class="btn-close" onclick="closeModal()">Close</button>
           </div>
@@ -1739,6 +1756,24 @@ function renderBom() {
       const p     = state.products.find(x=>x.sku===item.sku);
       const img   = (p?.images||[])[0]||'';
       const price = item.unit_price;
+      const qtyRow = `<div class="qty-row">
+            <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
+            <span class="qty-val">${item.quantity}</span>
+            <div class="qty-btn" onclick="changeQty('${item.id}',1)">+</div>
+            <span class="qty-lbl">units</span>
+            <button class="rm-btn" onclick="removeItem('${item.id}')">${xIco}</button>
+          </div>`;
+      if (item.is_custom) {
+        return `<div class="bom-item bom-item-custom">
+          <div class="bom-thumb bom-thumb-custom">${CUSTOM_ICO}</div>
+          <div class="bom-info">
+            <div class="bom-name" title="${escapeHtml(item.product_name)}"><span class="bom-custom-tag">Custom</span>${escapeHtml(item.product_name)}</div>
+            ${item.custom_spec ? `<div class="bom-spec">${escapeHtml(item.custom_spec)}</div>` : ''}
+            <div class="bom-quote">Quote required</div>
+            ${qtyRow}
+          </div>
+        </div>`;
+      }
       return `<div class="bom-item">
         <div class="bom-thumb">
           ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(item.product_name)}" onerror="this.style.display='none'">` : ''}
@@ -1747,13 +1782,7 @@ function renderBom() {
           <div class="bom-name" title="${escapeHtml(item.product_name)}">${escapeHtml(item.product_name)}</div>
           <div class="bom-sku">${escapeHtml(item.sku)}</div>
           ${showPricing && price ? `<div class="bom-price">$${price.toFixed(2)} / unit</div>` : ''}
-          <div class="qty-row">
-            <div class="qty-btn" onclick="changeQty('${item.id}',-1)">−</div>
-            <span class="qty-val">${item.quantity}</span>
-            <div class="qty-btn" onclick="changeQty('${item.id}',1)">+</div>
-            <span class="qty-lbl">units</span>
-            <button class="rm-btn" onclick="removeItem('${item.id}')">${xIco}</button>
-          </div>
+          ${qtyRow}
         </div>
       </div>`;
     }).join('');
@@ -1803,6 +1832,69 @@ async function addToBom(sku) {
   await addBomLine(sku, prod?.name || sku, getPrice(sku));
 }
 
+// ── CUSTOM PLACEHOLDER ITEMS (added) ─────────────────────────
+// A custom line is a placeholder with no standard SKU and no price. It captures
+// a description + free-text spec so a rep can quote it. Stored in project_items
+// with is_custom=true, custom_spec, unit_price=null and a unique generated sku
+// (so two custom lines never merge). Launched from a product (prefilled) or from
+// the BOM panel (blank, for fully bespoke items).
+function addCustomFromDetail() {
+  openCustomModal(state.curDetail ? state.curDetail.name : '');
+}
+
+function openCustomModal(prefillName) {
+  if (!state.activeProjectId) {
+    showToast('Please select or create a project first'); closeModal(); switchRTab('projects'); return;
+  }
+  document.getElementById('modalWrap').innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-lg">
+      <h3>Add custom item</h3>
+      <div class="mfield mfield-full" style="margin-bottom:12px">
+        <label>Description *</label>
+        <input id="cName" type="text" maxlength="160" value="${escapeHtml(prefillName||'')}" placeholder="e.g. Custom reception desk"/>
+      </div>
+      <div class="mfield mfield-full" style="margin-bottom:12px">
+        <label>Custom details — size, finish, configuration</label>
+        <textarea id="cSpec" placeholder="e.g. 11&quot; x 120&quot;, angled left return, charcoal laminate"></textarea>
+      </div>
+      <div class="mfield" style="margin-bottom:0">
+        <label>Quantity</label>
+        <input id="cQty" type="number" min="1" value="1" style="width:90px"/>
+      </div>
+      <p class="modal-note" style="margin-top:14px">No standard price — this line is added as <strong>Quote required</strong> and is excluded from the BOM total until your rep confirms pricing.</p>
+      <div class="modal-btns">
+        <button onclick="closeModal()">Cancel</button>
+        <button class="confirm" onclick="submitCustom()">Add to BOM</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('cName')?.focus(),50);
+}
+
+async function submitCustom() {
+  const name = document.getElementById('cName').value.trim();
+  if (!name) { showToast('Please enter a description'); return; }
+  const spec = document.getElementById('cSpec').value.trim();
+  const qty  = Math.max(1, parseInt(document.getElementById('cQty').value||1));
+  const sku  = 'CUSTOM-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+  setSyncStatus('saving');
+  await sb.from('project_items').insert({
+    project_id:   state.activeProjectId,
+    sku,
+    product_name: name,
+    quantity:     qty,
+    unit_price:   null,
+    is_custom:    true,
+    custom_spec:  spec || null,
+    added_by:     state.userId
+  });
+  closeModal();
+  await loadBom();
+  setSyncStatus('saved');
+  showToast('Custom item added');
+}
+
 async function addVariantToBom() {
   const cv = state.curVariant; if (!cv) return;
   const variant = matchVariant(cv.p, cv.sel);
@@ -1850,11 +1942,11 @@ function openDownload() {
   const fmtDate = d => d ? new Date(d).toLocaleDateString('en-CA') : '';
   const rows = items.map(item => `
     <tr>
-      <td style="font-family:monospace;font-size:11px">${escapeHtml(item.sku)}</td>
-      <td>${escapeHtml(item.product_name)}</td>
+      <td style="font-family:monospace;font-size:11px">${item.is_custom ? 'CUSTOM' : escapeHtml(item.sku)}</td>
+      <td>${escapeHtml(item.product_name)}${item.is_custom && item.custom_spec ? `<div style="font-size:11px;color:#555;margin-top:2px">${escapeHtml(item.custom_spec)}</div>` : ''}</td>
       <td style="text-align:center">${item.quantity}</td>
-      ${showPrice ? `<td style="text-align:right">${item.unit_price ? '$'+item.unit_price.toFixed(2) : '—'}</td>
-      <td style="text-align:right">${item.unit_price ? '$'+(item.unit_price*item.quantity).toFixed(2) : '—'}</td>` : ''}
+      ${showPrice ? `<td style="text-align:right">${item.is_custom ? 'Quote req.' : (item.unit_price ? '$'+item.unit_price.toFixed(2) : '—')}</td>
+      <td style="text-align:right">${item.is_custom ? 'Quote req.' : (item.unit_price ? '$'+(item.unit_price*item.quantity).toFixed(2) : '—')}</td>` : ''}
     </tr>`).join('');
   const metaLine = [proj.project_number, proj.site_address, proj.general_contractor, proj.project_manager].filter(Boolean).join(' · ');
   const ownerLine = [
@@ -1939,9 +2031,14 @@ function copyBom() {
     `Date: ${today}`, '',
     showPrice ? 'SKU | Product | Qty | Unit Price | Line Total'
               : 'SKU | Product | Qty',
-    ...state.activeProjItems.map(i => showPrice
-      ? `${i.sku} | ${i.product_name} | ${i.quantity} | ${i.unit_price?'$'+i.unit_price.toFixed(2):'—'} | ${i.unit_price?'$'+(i.unit_price*i.quantity).toFixed(2):'—'}`
-      : `${i.sku} | ${i.product_name} | ${i.quantity}`)
+    ...state.activeProjItems.map(i => {
+      const nm = i.is_custom && i.custom_spec ? `${i.product_name} [${i.custom_spec}]` : i.product_name;
+      const key = i.is_custom ? 'CUSTOM' : i.sku;
+      if (!showPrice) return `${key} | ${nm} | ${i.quantity}`;
+      const unit = i.is_custom ? 'Quote required' : (i.unit_price?'$'+i.unit_price.toFixed(2):'—');
+      const tot  = i.is_custom ? 'Quote required' : (i.unit_price?'$'+(i.unit_price*i.quantity).toFixed(2):'—');
+      return `${key} | ${nm} | ${i.quantity} | ${unit} | ${tot}`;
+    })
   ].filter(l=>l!==null && l!=='' || l==='').join('\n');
   navigator.clipboard.writeText(lines).then(()=>showToast('Copied to clipboard'));
 }
@@ -1952,9 +2049,15 @@ function exportCsv() {
   const header = showPrice
     ? 'SKU,Product Name,Quantity,Unit Price,Line Total'
     : 'SKU,Product Name,Quantity';
-  const rows = state.activeProjItems.map(i => showPrice
-    ? `"${i.sku}","${i.product_name}",${i.quantity},${i.unit_price||''},${i.unit_price?i.unit_price*i.quantity:''}`
-    : `"${i.sku}","${i.product_name}",${i.quantity}`);
+  const rows = state.activeProjItems.map(i => {
+    const nm  = i.is_custom && i.custom_spec ? `${i.product_name} [${i.custom_spec}]` : i.product_name;
+    const key = i.is_custom ? 'CUSTOM' : i.sku;
+    const safeNm = String(nm).replace(/"/g,'""');
+    if (!showPrice) return `"${key}","${safeNm}",${i.quantity}`;
+    const unit = i.is_custom ? 'Quote required' : (i.unit_price||'');
+    const tot  = i.is_custom ? 'Quote required' : (i.unit_price?i.unit_price*i.quantity:'');
+    return `"${key}","${safeNm}",${i.quantity},${unit},${tot}`;
+  });
   const csv   = [header,...rows].join('\n');
   const blob  = new Blob([csv],{type:'text/csv'});
   const url   = URL.createObjectURL(blob);
