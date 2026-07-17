@@ -558,7 +558,7 @@ function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '
 // Escape a string before putting it into innerHTML or an attribute.
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 // Friendly fallback label when an asset row has no `label` value.
-function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing'}[a&&a.asset_type] || 'Download');}
+function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing',spec:'Specification',assembly:'Assembly Instructions'}[a&&a.asset_type] || 'Download');}
 // True if a product page URL points at the Bobrick storefront — we must NOT
 // navigate the main window there; downloads still open in a new tab.
 function isBobrickPage(url){return !!url && /bobrick\.com/i.test(url);}
@@ -888,7 +888,7 @@ async function loadCatalogProducts(catalogId) {
       const { data: assetRows } = await sb.from('product_assets')
         .select('product_id,asset_type,url,label,sort_order')
         .in('product_id', pids)
-        .in('asset_type', ['brochure','bim','cad'])
+        .in('asset_type', ['brochure','bim','cad','spec','assembly'])
         .order('sort_order', { ascending: true });
       const byPid = {};
       (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
