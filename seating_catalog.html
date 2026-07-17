@@ -349,9 +349,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">df95fb0e-a9f0-43fc-a450-129ced076ead</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-424798, NNN373W3ZMMJ-320560042-424798</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426066</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">d17de7ff-8c7f-4ac4-a73e-30ce36f21b22</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426066, NNN373W3ZMMJ-320560042-426066</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -558,7 +558,7 @@ function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '
 // Escape a string before putting it into innerHTML or an attribute.
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 // Friendly fallback label when an asset row has no `label` value.
-function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing',spec:'Specification',assembly:'Assembly Instructions'}[a&&a.asset_type] || 'Download');}
+function assetLabel(a){return a && a.label ? a.label : ({brochure:'Technical Data Sheet',bim:'BIM Object',cad:'CAD Drawing'}[a&&a.asset_type] || 'Download');}
 // True if a product page URL points at the Bobrick storefront — we must NOT
 // navigate the main window there; downloads still open in a new tab.
 function isBobrickPage(url){return !!url && /bobrick\.com/i.test(url);}
@@ -888,7 +888,7 @@ async function loadCatalogProducts(catalogId) {
       const { data: assetRows } = await sb.from('product_assets')
         .select('product_id,asset_type,url,label,sort_order')
         .in('product_id', pids)
-        .in('asset_type', ['brochure','bim','cad','spec','assembly'])
+        .in('asset_type', ['brochure','bim','cad'])
         .order('sort_order', { ascending: true });
       const byPid = {};
       (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
@@ -1335,12 +1335,13 @@ function renderProducts() {
   // Product / search view. On the landing, a search spans the whole catalog,
   // so HOME behaves like "All Products" for the purpose of building the list.
   grid.className = 'products-grid';
-  const baseCat = (state.activeCat === HOME_VIEW) ? 'All Products' : state.activeCat;
+  const baseCat = (q || state.activeCat === HOME_VIEW) ? 'All Products' : state.activeCat;
 
   // Breadcrumb + title for the product view.
   document.getElementById('crumbBack').style.display = 'inline-flex';
   document.getElementById('topTitle').textContent =
-    (state.activeCat === HOME_VIEW) ? 'Search results'
+    q ? 'Search results'
+    : (state.activeCat === HOME_VIEW) ? 'Search results'
     : state.activeCat.startsWith(GROUPALL_PREFIX) ? state.activeCat.slice(GROUPALL_PREFIX.length)
     : state.activeCat.startsWith(GROUP_PREFIX) ? state.activeCat.slice(GROUP_PREFIX.length)
     : state.activeCat;
