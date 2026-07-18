@@ -349,9 +349,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426066</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">d17de7ff-8c7f-4ac4-a73e-30ce36f21b22</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426066, NNN373W3ZMMJ-320560042-426066</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">aa6e564e-7dc3-402c-a341-786bd81f0f4a</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426124, NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -888,7 +888,7 @@ async function loadCatalogProducts(catalogId) {
       const { data: assetRows } = await sb.from('product_assets')
         .select('product_id,asset_type,url,label,sort_order')
         .in('product_id', pids)
-        .in('asset_type', ['brochure','bim','cad'])
+        .in('asset_type', ['brochure','bim','cad','spec','assembly'])
         .order('sort_order', { ascending: true });
       const byPid = {};
       (assetRows || []).forEach(a => { (byPid[a.product_id] = byPid[a.product_id] || []).push(a); });
