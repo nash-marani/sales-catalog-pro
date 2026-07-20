@@ -353,6 +353,8 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .speckit-rows{list-style:none;margin:0;padding:2px 0}
 .speckit-row{display:flex;align-items:center;gap:11px;padding:9px 15px;border-bottom:.5px solid var(--bdr)}
 .speckit-row:last-child{border-bottom:none}
+.speckit-thumb{flex:none;width:34px;height:34px;border-radius:6px;overflow:hidden;background:var(--bg2)}
+.speckit-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .speckit-badge{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center}
 .speckit-badge svg{width:13px;height:13px;fill:none;stroke-width:2}
 .speckit-badge.ok{background:var(--accbg);color:var(--acc)}
@@ -381,9 +383,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426163</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">af71505f-5c37-46d4-9273-c127ffde691f</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426163, NNN373W3ZMMJ-320560042-426163</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426164</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">c8037080-71dc-44fa-afd9-1f18e9a9f2e8</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426164, NNN373W3ZMMJ-320560042-426164</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -2081,6 +2083,9 @@ function projectSpecPanel() {
     ? `All <b>${total}</b> products have a spec sheet in the catalog.`
     : `<b>${inCat.length}</b> of ${total} products have a spec sheet in the catalog. ${gap} ${gap===1?'is':'are'} not available yet.`;
   const rows = list.map(r => {
+    const pp = r.sku === 'CUSTOM' ? null : productForSku(r.sku);
+    const iu = (pp?.images || [])[0] || '';
+    const thumb = `<span class="speckit-thumb">${iu ? `<img src="${escapeHtml(iu)}" alt="" onerror="this.style.display='none'">` : ''}</span>`;
     let badge, st;
     if (r.status === 'in_catalog') {
       badge = `<span class="speckit-badge ok">${okI}</span>`;
@@ -2092,7 +2097,7 @@ function projectSpecPanel() {
       badge = `<span class="speckit-badge none">${noneI}</span>`;
       st = `<span class="off">No spec on file</span>`;
     }
-    return `<li class="speckit-row">${badge}<div class="speckit-main"><div class="speckit-name">${escapeHtml(r.name)}</div><div class="speckit-sku">${escapeHtml(r.sku)}</div></div><div class="speckit-state">${st}</div></li>`;
+    return `<li class="speckit-row">${thumb}${badge}<div class="speckit-main"><div class="speckit-name">${escapeHtml(r.name)}</div><div class="speckit-sku">${escapeHtml(r.sku)}</div></div><div class="speckit-state">${st}</div></li>`;
   }).join('');
   const btn = inCat.length
     ? `<button class="speckit-btn" onclick="openProjectSpecs()">${openI}Open ${inCat.length} spec ${inCat.length===1?'sheet':'sheets'}</button>`
