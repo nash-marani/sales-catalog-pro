@@ -131,6 +131,8 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-price-cfp{font-weight:500;color:var(--txt3)}
 .card-lead{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:var(--txt3)}
 .card-lead svg{width:12px;height:12px;flex:none}
+.card-usersku{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--acctxt);font-family:var(--mono)}
+.card-usersku .lbl{font-family:var(--font);font-weight:600;color:var(--txt3)}
 .no-results{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:var(--txt3);gap:10px;text-align:center;font-size:14px}
 
 /* ── RIGHT PANEL — PROJECTS ── */
@@ -379,9 +381,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426159</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">a2572200-a750-4275-831a-f76c52dfab46</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426159, NNN373W3ZMMJ-320560042-426159</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426160</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">e904a6ae-045c-4efc-a3ad-735a70a808bf</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426160, NNN373W3ZMMJ-320560042-426160</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -864,7 +866,7 @@ async function loadCatalogProducts(catalogId) {
   state.CAT_GROUP   = catGroup;
   state.GROUP_ORDER = groupOrder;
 
-  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; p._badge = null; p._customOnly = false; });
+  state.products.forEach(p => { p._assets = []; p._pid = null; p._lead = 0; p._moq = null; p._variants = []; p._custom = null; p._badge = null; p._customOnly = false; p._userSku = null; });
 
   // ── Product metadata in ONE pass, matched LOCALLY by sku ───
   // IMPORTANT: we deliberately do NOT use .in('sku', [...]) here. Some SKUs
@@ -941,6 +943,26 @@ async function loadCatalogProducts(catalogId) {
       state.products.forEach(p => { if (p._pid && byPid[p._pid]) p._variants = byPid[p._pid]; });
     }
   } catch (e) { console.warn('variant prefetch:', e.message); }
+
+  // ── Customer-specific SKUs (the customer's own part numbers) ──
+  // Keyed by customer + master sku. No row -> product simply has no user SKU
+  // (renders as nothing), mirroring the "no pricing row -> Call" pattern.
+  // Normalized fallback handles the same messy-sku cases as the meta prefetch.
+  try {
+    if (state.customerId) {
+      const { data: crows } = await sb.from('customer_sku_info')
+        .select('sku,user_sku')
+        .eq('customer_id', state.customerId);
+      if (crows && crows.length) {
+        const norm = s => (s==null?'':String(s)
+          .replace(/[\u2018\u2019\u201B\u2032]/g,"'").replace(/[\u201C\u201D\u2033]/g,'"')
+          .replace(/\u00A0/g,' ').replace(/\s+/g,' ').trim().toLowerCase());
+        const bySku = {}, byNorm = {};
+        crows.forEach(r => { if(r.user_sku){ bySku[r.sku]=r.user_sku; const k=norm(r.sku); if(!(k in byNorm)) byNorm[k]=r.user_sku; } });
+        state.products.forEach(p => { const u = (p.sku in bySku) ? bySku[p.sku] : byNorm[norm(p.sku)]; if (u) p._userSku = u; });
+      }
+    }
+  } catch (e) { console.warn('customer sku prefetch:', e.message); }
 }
 
 // Full-screen fatal message (replaces the product grid / picker)
@@ -1448,7 +1470,8 @@ function renderProducts() {
           <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
           ${priceHtml}
         </div>
-        <div class="card-lead">${CLOCK_ICO}<span>${escapeHtml(leadLabel(p,'Call'))}</span></div>
+        <div class="card-lead">${CLOCK_ICO}<span>LT: ${escapeHtml(leadLabel(p,'Call'))}</span></div>
+        ${p._userSku ? `<div class="card-usersku"><span class="lbl">SKU</span><span>${escapeHtml(p._userSku)}</span></div>` : ''}
         ${(!p._customOnly && p._badge) ? `<div class="card-customline">${CUSTOM_ICO}<span>${escapeHtml(p._badge)}</span></div>` : ''}
       </div>
     </div>`;
