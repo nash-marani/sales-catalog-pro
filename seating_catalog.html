@@ -386,9 +386,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426165</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">14b2031a-edf7-4f36-a5e9-d4acf92e6530</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426165, NNN373W3ZMMJ-320560042-426165</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">aa6e564e-7dc3-402c-a341-786bd81f0f4a</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426124, NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -2088,37 +2088,109 @@ function ensurePdfLib() {
   return _pdfLibPromise;
 }
 
-// Combine every in-catalog spec into ONE PDF and send it to the printer.
+// Combine every in-catalog spec into ONE PDF, prepend a table-of-contents page,
+// stamp page numbers across the whole packet, and send it to the printer.
 // Variants of one family share a spec URL, so we de-dupe: each sheet appears
 // once. All in-catalog specs are bucket-hosted (same public origin), so the
 // browser can fetch and merge them client-side — nothing server-side needed.
 async function combineAndPrintSpecs() {
-  const urls = [...new Set(projectSpecList().filter(r => r.status === 'in_catalog').map(r => r.url))];
-  if (!urls.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
+  const seen = new Set(); const specs = [];
+  for (const r of projectSpecList().filter(x => x.status === 'in_catalog')) {
+    if (seen.has(r.url)) continue; seen.add(r.url);
+    const p = productForSku(r.sku);
+    specs.push({ url: r.url, label: (p?.name || r.name || r.sku) });
+  }
+  if (!specs.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
   try {
     showToast('Building combined spec packet…');
     await ensurePdfLib();
     const { PDFDocument } = window.PDFLib;
     const merged = await PDFDocument.create();
-    let added = 0, failed = 0;
-    for (const url of urls) {
+
+    // 1) Merge each spec's pages, remembering where each one starts.
+    const entries = []; let failed = 0;
+    for (const sp of specs) {
       try {
-        const resp = await fetch(url);
+        const resp = await fetch(sp.url);
         if (!resp.ok) { failed++; continue; }
         const src = await PDFDocument.load(await resp.arrayBuffer());
+        const startContentIdx = merged.getPageCount();          // 0-based, before TOC insert
         const pages = await merged.copyPages(src, src.getPageIndices());
         pages.forEach(pg => merged.addPage(pg));
-        added++;
-      } catch (e) { console.warn('spec merge skip:', url, e.message); failed++; }
+        entries.push({ label: sp.label, startContentIdx });
+      } catch (e) { console.warn('spec merge skip:', sp.url, e.message); failed++; }
     }
-    if (!added) { showToast('Could not load the spec PDFs — try “Open in tabs” instead'); return; }
+    if (!entries.length) { showToast('Could not load the spec PDFs — try “Open in tabs” instead'); return; }
+
+    // 2) TOC cover page(s) + 3) page numbers — nice-to-haves, never block the print.
+    try {
+      const proj = state.projects.find(p => p.id === state.activeProjectId);
+      buildTocPages(merged, entries, proj);
+      await addPageNumbers(merged);
+    } catch (e) { console.warn('TOC / page-numbers skipped:', e.message); }
+
     const blob = new Blob([await merged.save()], { type: 'application/pdf' });
     printBlobPdf(URL.createObjectURL(blob));
-    if (failed) showToast(`Combined ${added} sheet${added===1?'':'s'}; ${failed} could not be loaded`);
+    if (failed) showToast(`Combined ${entries.length} sheet${entries.length===1?'':'s'}; ${failed} could not be loaded`);
   } catch (e) {
     console.error('combine specs failed:', e);
     showToast('Could not build the combined PDF — try “Open in tabs” instead');
   }
+}
+
+// Insert a table-of-contents page (Letter) at the front listing each spec and
+// the page it starts on. Returns the number of TOC pages added.
+function buildTocPages(doc, entries, proj) {
+  const { StandardFonts, rgb } = window.PDFLib;
+  const W = 612, H = 792, mX = 54, top = H - 64, bottom = 60, lh = 20;
+  const cap0 = 28, capN = 33;                                   // entries per first / later TOC page
+  const tocCount = entries.length <= cap0 ? 1 : 1 + Math.ceil((entries.length - cap0) / capN);
+  entries.forEach(e => { e.page = e.startContentIdx + tocCount + 1; });   // final 1-based page
+
+  const font  = doc.embedStandardFont(StandardFonts.Helvetica);
+  const fontB = doc.embedStandardFont(StandardFonts.HelveticaBold);
+  const pages = [];
+  for (let i = 0; i < tocCount; i++) pages.push(doc.insertPage(i, [W, H]));
+
+  const truncate = (s, size, maxW) => {
+    if (font.widthOfTextAtSize(s, size) <= maxW) return s;
+    let t = s;
+    while (t.length > 4 && font.widthOfTextAtSize(t + '…', size) > maxW) t = t.slice(0, -1);
+    return t + '…';
+  };
+
+  let idx = 0;
+  for (let pi = 0; pi < tocCount; pi++) {
+    const page = pages[pi]; let y = top;
+    if (pi === 0) {
+      page.drawText('Specification Sheets', { x: mX, y, size: 20, font: fontB, color: rgb(0.12,0.16,0.20) });
+      y -= 22;
+      const sub = [proj?.project_name, new Date().toLocaleDateString('en-CA')].filter(Boolean).join('   ·   ');
+      if (sub) { page.drawText(sub, { x: mX, y, size: 11, font, color: rgb(0.42,0.42,0.42) }); }
+      y -= 34;
+    }
+    for (; idx < entries.length && y > bottom; idx++) {
+      const e = entries[idx], size = 11, num = String(e.page);
+      const numW = font.widthOfTextAtSize(num, size);
+      page.drawText(truncate(e.label, size, W - mX*2 - numW - 16), { x: mX, y, size, font, color: rgb(0.1,0.1,0.1) });
+      page.drawText(num, { x: W - mX - numW, y, size, font, color: rgb(0.1,0.1,0.1) });
+      y -= lh;
+    }
+  }
+  return tocCount;
+}
+
+// Stamp "Page X of Y" centered at the bottom of every page.
+async function addPageNumbers(doc) {
+  const { StandardFonts, rgb } = window.PDFLib;
+  const font = doc.embedStandardFont(StandardFonts.Helvetica);
+  const pages = doc.getPages(), total = pages.length, size = 9;
+  pages.forEach((page, i) => {
+    const { width } = page.getSize();
+    const txt = `Page ${i + 1} of ${total}`;
+    const w = font.widthOfTextAtSize(txt, size);
+    page.drawText(txt, { x: (width - w) / 2, y: 24, size, font, color: rgb(0.5,0.5,0.5) });
+  });
 }
 
 // Load a generated PDF into a hidden iframe and open the print dialog for it.
