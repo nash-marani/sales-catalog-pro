@@ -350,6 +350,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .speckit-btn:hover{background:var(--acc2)}
 .speckit-btn:disabled{background:var(--bg3);color:var(--txt3);cursor:default}
 .speckit-btn svg{width:14px;height:14px;stroke-width:2}
+.speckit-btns{display:flex;gap:8px;flex-wrap:wrap}
+.speckit-btn.ghost{background:transparent;color:var(--acc);border:.5px solid var(--acc)}
+.speckit-btn.ghost:hover{background:var(--accbg)}
 .speckit-rows{list-style:none;margin:0;padding:2px 0}
 .speckit-row{display:flex;align-items:center;gap:11px;padding:9px 15px;border-bottom:.5px solid var(--bdr)}
 .speckit-row:last-child{border-bottom:none}
@@ -383,9 +386,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426164</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">c8037080-71dc-44fa-afd9-1f18e9a9f2e8</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426164, NNN373W3ZMMJ-320560042-426164</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426165</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">14b2031a-edf7-4f36-a5e9-d4acf92e6530</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426165, NNN373W3ZMMJ-320560042-426165</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -2064,10 +2067,73 @@ function projectSpecList() {
 }
 
 function openProjectSpecs() {
-  const inCat = projectSpecList().filter(r => r.status === 'in_catalog');
-  if (!inCat.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
+  const urls = [...new Set(projectSpecList().filter(r => r.status === 'in_catalog').map(r => r.url))];
+  if (!urls.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
   // Slight stagger so browsers allow multiple tabs from one click.
-  inCat.forEach((r,i) => setTimeout(() => window.open(r.url, '_blank', 'noopener'), i*120));
+  urls.forEach((u,i) => setTimeout(() => window.open(u, '_blank', 'noopener'), i*120));
+}
+
+// Lazy-load pdf-lib from CDN — only when someone actually combines.
+let _pdfLibPromise = null;
+function ensurePdfLib() {
+  if (window.PDFLib) return Promise.resolve();
+  if (_pdfLibPromise) return _pdfLibPromise;
+  _pdfLibPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('pdf-lib failed to load'));
+    document.head.appendChild(s);
+  });
+  return _pdfLibPromise;
+}
+
+// Combine every in-catalog spec into ONE PDF and send it to the printer.
+// Variants of one family share a spec URL, so we de-dupe: each sheet appears
+// once. All in-catalog specs are bucket-hosted (same public origin), so the
+// browser can fetch and merge them client-side — nothing server-side needed.
+async function combineAndPrintSpecs() {
+  const urls = [...new Set(projectSpecList().filter(r => r.status === 'in_catalog').map(r => r.url))];
+  if (!urls.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
+  try {
+    showToast('Building combined spec packet…');
+    await ensurePdfLib();
+    const { PDFDocument } = window.PDFLib;
+    const merged = await PDFDocument.create();
+    let added = 0, failed = 0;
+    for (const url of urls) {
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) { failed++; continue; }
+        const src = await PDFDocument.load(await resp.arrayBuffer());
+        const pages = await merged.copyPages(src, src.getPageIndices());
+        pages.forEach(pg => merged.addPage(pg));
+        added++;
+      } catch (e) { console.warn('spec merge skip:', url, e.message); failed++; }
+    }
+    if (!added) { showToast('Could not load the spec PDFs — try “Open in tabs” instead'); return; }
+    const blob = new Blob([await merged.save()], { type: 'application/pdf' });
+    printBlobPdf(URL.createObjectURL(blob));
+    if (failed) showToast(`Combined ${added} sheet${added===1?'':'s'}; ${failed} could not be loaded`);
+  } catch (e) {
+    console.error('combine specs failed:', e);
+    showToast('Could not build the combined PDF — try “Open in tabs” instead');
+  }
+}
+
+// Load a generated PDF into a hidden iframe and open the print dialog for it.
+// Falls back to opening the PDF in a tab if the browser blocks iframe printing.
+function printBlobPdf(url) {
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  iframe.src = url;
+  iframe.onload = () => {
+    try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
+    catch (e) { window.open(url, '_blank', 'noopener'); }
+  };
+  document.body.appendChild(iframe);
+  // keep the blob alive long enough to print, then clean up
+  setTimeout(() => { try { URL.revokeObjectURL(url); iframe.remove(); } catch (e) {} }, 120000);
 }
 
 function projectSpecPanel() {
@@ -2079,6 +2145,7 @@ function projectSpecPanel() {
   const webI  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>';
   const noneI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/></svg>';
   const openI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>';
+  const printI= '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>';
   const coverage = (gap === 0)
     ? `All <b>${total}</b> products have a spec sheet in the catalog.`
     : `<b>${inCat.length}</b> of ${total} products have a spec sheet in the catalog. ${gap} ${gap===1?'is':'are'} not available yet.`;
@@ -2099,9 +2166,13 @@ function projectSpecPanel() {
     }
     return `<li class="speckit-row">${thumb}${badge}<div class="speckit-main"><div class="speckit-name">${escapeHtml(r.name)}</div><div class="speckit-sku">${escapeHtml(r.sku)}</div></div><div class="speckit-state">${st}</div></li>`;
   }).join('');
+  const uniq = new Set(inCat.map(r => r.url)).size;   // variants of one family share a spec — count sheets, not lines
   const btn = inCat.length
-    ? `<button class="speckit-btn" onclick="openProjectSpecs()">${openI}Open ${inCat.length} spec ${inCat.length===1?'sheet':'sheets'}</button>`
-    : `<button class="speckit-btn" disabled>No sheets to open</button>`;
+    ? `<div class="speckit-btns">
+         <button class="speckit-btn" onclick="combineAndPrintSpecs()">${printI}Combine &amp; print (${uniq})</button>
+         <button class="speckit-btn ghost" onclick="openProjectSpecs()">${openI}Open in tabs</button>
+       </div>`
+    : `<button class="speckit-btn" disabled>No sheets to print</button>`;
   return `<div class="speckit">
         <div class="speckit-head">
           <div><div class="speckit-title">Specification sheets</div><div class="speckit-cov">${coverage}</div></div>
