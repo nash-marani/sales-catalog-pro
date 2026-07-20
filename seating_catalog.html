@@ -381,9 +381,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426160</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">e904a6ae-045c-4efc-a3ad-735a70a808bf</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426160, NNN373W3ZMMJ-320560042-426160</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426162</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">0e0e37a4-7996-428a-83dd-8b000bd81269</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426162, NNN373W3ZMMJ-320560042-426162</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -2030,9 +2030,22 @@ function setSyncStatus(s) {
 // own catalog (Supabase bucket) are offered to print; specs that live only on
 // the external site are shown but not offered; products with no spec are flagged.
 function projectSpecList() {
+  const products = state.products || [];
+  // Resolve a BOM line's SKU to the product that carries its spec:
+  //   1) a product whose own SKU matches the line (parent or standalone) — its own spec wins;
+  //   2) otherwise the parent product that lists this SKU as a variant — inherit the parent's
+  //      spec. Specs are stored once, on the parent (product_assets keys on product_id); a
+  //      variant added to a BOM stores its variant_sku, so this fallback lets that line print
+  //      the family spec with no duplication. A promoted child that has its own product row +
+  //      spec is caught by step 1, so per-child overrides still win when they genuinely exist.
+  const resolveProduct = sku => {
+    const direct = products.find(x => x.sku === sku);
+    if (direct) return direct;
+    return products.find(x => (x._variants || []).some(v => v.variant_sku === sku)) || null;
+  };
   return (state.activeProjItems || []).map(item => {
     if (item.is_custom) return { sku:'CUSTOM', name:item.product_name, status:'none', url:null };
-    const p = state.products.find(x => x.sku === item.sku);
+    const p = resolveProduct(item.sku);
     const spec = p && (p._assets||[]).find(a => a.asset_type === 'spec' && a.url);
     if (!spec) return { sku:item.sku, name:item.product_name, status:'none', url:null };
     const status = /supabase\.co/i.test(spec.url) ? 'in_catalog' : 'on_website';
