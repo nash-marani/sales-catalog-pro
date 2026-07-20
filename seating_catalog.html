@@ -338,6 +338,36 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .spinner{width:32px;height:32px;border:3px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── Project spec-sheet panel ── */
+.speckit{margin:0 0 16px;border:.5px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.speckit-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:13px 15px;background:var(--bg2);border-bottom:.5px solid var(--bdr)}
+.speckit-title{font-size:14px;font-weight:600;color:var(--txt)}
+.speckit-cov{font-size:12px;color:var(--txt2);margin-top:2px}
+.speckit-cov b{color:var(--txt);font-weight:600}
+.speckit-btn{padding:8px 14px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-size:12.5px;font-weight:500;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap}
+.speckit-btn:hover{background:var(--acc2)}
+.speckit-btn:disabled{background:var(--bg3);color:var(--txt3);cursor:default}
+.speckit-btn svg{width:14px;height:14px;stroke-width:2}
+.speckit-rows{list-style:none;margin:0;padding:2px 0}
+.speckit-row{display:flex;align-items:center;gap:11px;padding:9px 15px;border-bottom:.5px solid var(--bdr)}
+.speckit-row:last-child{border-bottom:none}
+.speckit-badge{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center}
+.speckit-badge svg{width:13px;height:13px;fill:none;stroke-width:2}
+.speckit-badge.ok{background:var(--accbg);color:var(--acc)}
+.speckit-badge.web{background:#f6f0dd;color:#8a6d1f}
+.speckit-badge.none{background:var(--bg2);color:var(--txt3)}
+.speckit-main{flex:1;min-width:0}
+.speckit-name{font-size:13px;color:var(--txt)}
+.speckit-sku{font-family:monospace;font-size:11px;color:var(--txt3);margin-top:1px}
+.speckit-state{font-size:12px;flex:none;text-align:right}
+.speckit-state a{color:var(--acc);font-weight:600;text-decoration:none}
+.speckit-state a:hover{text-decoration:underline}
+.speckit-state .off{color:var(--txt3)}
+.speckit-foot{padding:11px 15px;background:var(--bg2);border-top:.5px solid var(--bdr);font-size:11.5px;color:var(--txt3)}
+
+@media print{
+  .speckit-btn,.speckit-state a{display:none!important}
+}
 @media print{
   .nav,.sidebar,.topbar,.products-grid,.rpanel{display:none!important}
   .overlay{position:static!important;background:none!important}
@@ -349,9 +379,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">aa6e564e-7dc3-402c-a341-786bd81f0f4a</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426124, NNN373W3ZMMJ-320560042-426124</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-426159</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">a2572200-a750-4275-831a-f76c52dfab46</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-426159, NNN373W3ZMMJ-320560042-426159</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -1971,6 +2001,68 @@ function setSyncStatus(s) {
   else { dot.className='sync-dot err'; lbl.textContent='Sync error'; }
 }
 
+// ── PROJECT SPEC SHEETS ──────────────────────────────────────
+// Classifies each BOM line by where its spec sheet lives, reading the assets
+// already loaded on each product (p._assets). Rule: only specs stored in our
+// own catalog (Supabase bucket) are offered to print; specs that live only on
+// the external site are shown but not offered; products with no spec are flagged.
+function projectSpecList() {
+  return (state.activeProjItems || []).map(item => {
+    if (item.is_custom) return { sku:'CUSTOM', name:item.product_name, status:'none', url:null };
+    const p = state.products.find(x => x.sku === item.sku);
+    const spec = p && (p._assets||[]).find(a => a.asset_type === 'spec' && a.url);
+    if (!spec) return { sku:item.sku, name:item.product_name, status:'none', url:null };
+    const status = /supabase\.co/i.test(spec.url) ? 'in_catalog' : 'on_website';
+    return { sku:item.sku, name:item.product_name, status, url:spec.url };
+  });
+}
+
+function openProjectSpecs() {
+  const inCat = projectSpecList().filter(r => r.status === 'in_catalog');
+  if (!inCat.length) { showToast('No spec sheets are in the catalog for this project yet'); return; }
+  // Slight stagger so browsers allow multiple tabs from one click.
+  inCat.forEach((r,i) => setTimeout(() => window.open(r.url, '_blank', 'noopener'), i*120));
+}
+
+function projectSpecPanel() {
+  const list = projectSpecList();
+  if (!list.length) return '';
+  const inCat = list.filter(r => r.status === 'in_catalog');
+  const total = list.length, gap = total - inCat.length;
+  const okI   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m20 6-11 11-5-5"/></svg>';
+  const webI  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>';
+  const noneI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/></svg>';
+  const openI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>';
+  const coverage = (gap === 0)
+    ? `All <b>${total}</b> products have a spec sheet in the catalog.`
+    : `<b>${inCat.length}</b> of ${total} products have a spec sheet in the catalog. ${gap} ${gap===1?'is':'are'} not available yet.`;
+  const rows = list.map(r => {
+    let badge, st;
+    if (r.status === 'in_catalog') {
+      badge = `<span class="speckit-badge ok">${okI}</span>`;
+      st = `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">Open &rarr;</a>`;
+    } else if (r.status === 'on_website') {
+      badge = `<span class="speckit-badge web">${webI}</span>`;
+      st = `<span class="off">Not in catalog yet</span>`;
+    } else {
+      badge = `<span class="speckit-badge none">${noneI}</span>`;
+      st = `<span class="off">No spec on file</span>`;
+    }
+    return `<li class="speckit-row">${badge}<div class="speckit-main"><div class="speckit-name">${escapeHtml(r.name)}</div><div class="speckit-sku">${escapeHtml(r.sku)}</div></div><div class="speckit-state">${st}</div></li>`;
+  }).join('');
+  const btn = inCat.length
+    ? `<button class="speckit-btn" onclick="openProjectSpecs()">${openI}Open ${inCat.length} spec ${inCat.length===1?'sheet':'sheets'}</button>`
+    : `<button class="speckit-btn" disabled>No sheets to open</button>`;
+  return `<div class="speckit">
+        <div class="speckit-head">
+          <div><div class="speckit-title">Specification sheets</div><div class="speckit-cov">${coverage}</div></div>
+          ${btn}
+        </div>
+        <ul class="speckit-rows">${rows}</ul>
+        <div class="speckit-foot">${inCat.length ? 'Each sheet opens in a new tab, ready to print.' : 'Spec sheets appear here as they are added to the catalog.'}</div>
+      </div>`;
+}
+
 // ── DOWNLOAD BOM ─────────────────────────────────────────────
 function openDownload() {
   const proj     = state.projects.find(p=>p.id===state.activeProjectId);
@@ -2036,6 +2128,7 @@ function openDownload() {
         This is a preliminary selection list. Pricing and availability to be confirmed. Product variants (colour, upholstery) to be specified at order stage.
         Contact: ${escapeHtml(state.customer?.contact_rep||'')} · ${escapeHtml(state.customer?.contact_email||'')}
       </div>
+      ${projectSpecPanel()}
       <div style="display:flex;gap:8px">
         <button class="btn-secondary" onclick="copyBom()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
