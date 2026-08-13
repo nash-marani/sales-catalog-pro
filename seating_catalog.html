@@ -115,6 +115,14 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 .card-img img{width:100%;height:100%;object-fit:contain;padding:8px}
 .card-img .no-img{color:var(--txt3)}
 .card-img .no-img svg{width:36px;height:36px}
+.grid-section{grid-column:1/-1;margin:6px 0 0}
+.grid-section:first-child{margin-top:0}
+.grid-section h3{font-size:14px;font-weight:600;color:var(--txt);margin:0;display:flex;align-items:baseline;gap:8px;padding-bottom:5px;border-bottom:.5px solid var(--bdr)}
+.grid-section .gs-ct{font-size:11px;font-weight:400;color:var(--txt3)}
+.grid-section .gs-note{font-size:11px;color:var(--txt2);margin-top:5px}
+.card-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:var(--r);margin-bottom:4px}
+.card-tag-built{background:#e6f1fb;color:#0c447c}
+.card-tag-kd{background:#faeeda;color:#854f0b}
 .card-band{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--acc);color:#fff;font-size:11px;font-weight:600;padding:5px 8px;text-align:center}
 .card-band svg{width:12px;height:12px;flex:none;stroke:#fff}
 .card-customline{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;font-weight:500;color:var(--acc)}
@@ -389,9 +397,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">785b9af2-aae5-4704-91de-949235fcb145</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427734, NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427738</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">defbbe8d-e570-4682-a82c-dc422bcf75ee</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427738, NNN373W3ZMMJ-320560042-427738</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -1394,6 +1402,54 @@ const CAT_SORT = {
   'Office Chairs': 'price_asc',
 };
 
+// Per-category section headers. Only categories listed here are split; every
+// other page renders as one flat grid exactly as before. Sections are tried in
+// order and the FIRST match wins, so the catch-all must be last -- that
+// guarantees no product can silently fall off the page. Matching is on the
+// combined sku + name text because that is the only signal in the data today;
+// if an assembly_state column is ever added, only test() needs to change.
+const CAT_SECTIONS = {
+  'Standard Lockers': [
+    { id:'kd',    label:'Knock-down - flat packed',
+                  note:'Assembly required. Lower freight, same locker.',
+                  chip:'Knock-down', chipClass:'card-tag-kd', strip:true,
+                  test: t => /knock[\s-]?down|flat[\s-]?pack|\bk\.?d\.?\b/.test(t) },
+    { id:'built', label:'Assembled - ships built',
+                  note:'Arrives ready to place. Higher freight.',
+                  chip:'Assembled', chipClass:'card-tag-built', strip:true,
+                  test: t => /pre[\s-]?built|assembled/.test(t) },
+    { id:'spec',  label:'Specialty lockers',
+                  note:'Open frames and made-to-order configurations.',
+                  chip:null, strip:false,
+                  test: () => true },
+  ],
+};
+
+// Knock-down is tested before assembled on purpose: a name reading
+// "prebuilt or knock-down" should land in knock-down rather than be claimed by
+// the looser assembled pattern.
+const sectionText = p => (p.sku + ' ' + p.name)
+  .replace(/[\u2018\u2019\u201B\u2032]/g, "'")
+  .replace(/[\u201C\u201D\u2033]/g, '"')
+  .toLowerCase();
+
+function sectionFor(p, defs) {
+  if (!defs) return null;
+  const t = sectionText(p);
+  return defs.find(d => d.test(t)) || null;
+}
+
+// Once the section header and the chip both say "knock-down", repeating it in
+// the product NAME is noise. Applied to the displayed name only. The sku line is
+// deliberately left whole: trimming it makes the 15" assembled and 15" knock-down
+// cards show the same string, and a sku copied off a card has to be unambiguous.
+// products.sku itself is never altered either way -- curation_skus.sku matches on
+// that exact string and the storage filenames embed it.
+const stripAssemblyWords = s => String(s)
+  .replace(/\s*\((?:pre[\s-]?built|prebuilt|knock[\s-]?down|kd|g)\)/gi, '')
+  .replace(/\s{2,}/g, ' ')
+  .trim();
+
 function renderProducts() {
   const grid = document.getElementById('prodGrid');
   const q = state.search.toLowerCase();
@@ -1463,7 +1519,9 @@ function renderProducts() {
   }
   const extIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const fileIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
-  document.getElementById('prodGrid').innerHTML = list.map(p => {
+  const secDefs = (!q && CAT_SECTIONS[state.activeCat]) ? CAT_SECTIONS[state.activeCat] : null;
+
+  const cardHtml = (p, sec) => {
     const img   = (p.images||[])[0] || '';
     const price = showPricing ? formatPrice(p.sku) : '';
     let priceHtml = '';
@@ -1492,8 +1550,9 @@ function renderProducts() {
         ${nFiles ? `<span class="card-files" title="${nFiles} downloadable file${nFiles!==1?'s':''}">${fileIco}${nFiles}</span>` : ''}
       </div>
       <div class="card-body">
+        ${(sec && sec.chip) ? `<div class="card-tag ${sec.chipClass}">${escapeHtml(sec.chip)}</div>` : ''}
         <div class="card-sku">${escapeHtml(p.sku)}</div>
-        <div class="card-name">${escapeHtml(p.name)}</div>
+        <div class="card-name">${escapeHtml((sec && sec.strip) ? stripAssemblyWords(p.name) : p.name)}</div>
         <div class="card-footer">
           <span class="card-cat">${escapeHtml((p.categories||[])[0]||'')}</span>
           ${priceHtml}
@@ -1503,6 +1562,28 @@ function renderProducts() {
         ${(!p._customOnly && p._badge) ? `<div class="card-customline">${CUSTOM_ICO}<span>${escapeHtml(p._badge)}</span></div>` : ''}
       </div>
     </div>`;
+  };
+
+  if (!secDefs) {
+    document.getElementById('prodGrid').innerHTML = list.map(p => cardHtml(p, null)).join('');
+    return;
+  }
+
+  // Bucket once, keeping each section's products in the order the list already
+  // had -- curated order, or whatever CAT_SORT produced above.
+  const buckets = new Map(secDefs.map(d => [d.id, []]));
+  list.forEach(p => {
+    const sec = sectionFor(p, secDefs);
+    if (sec) buckets.get(sec.id).push(p);
+  });
+
+  document.getElementById('prodGrid').innerHTML = secDefs.map(d => {
+    const items = buckets.get(d.id);
+    if (!items.length) return '';
+    return `<div class="grid-section">
+        <h3>${escapeHtml(d.label)}<span class="gs-ct">${items.length}</span></h3>
+        ${d.note ? `<div class="gs-note">${escapeHtml(d.note)}</div>` : ''}
+      </div>` + items.map(p => cardHtml(p, d)).join('');
   }).join('');
 }
 
