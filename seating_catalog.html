@@ -243,7 +243,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 /* ── PRODUCT DETAIL MODAL ── */
 .detail-wrap{display:flex;gap:20px}
 .detail-gallery{width:260px;flex-shrink:0}
-.detail-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);border:.5px solid var(--bdr);margin-bottom:8px}
+.no-img{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--txt3)}
+.detail-main-img{width:100%;aspect-ratio:1;object-fit:contain;background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);margin-bottom:8px}
+.detail-gallery .no-img{aspect-ratio:1;border-radius:var(--r);border:.5px solid var(--bdr);margin-bottom:8px}
+.detail-gallery .no-img svg{width:48px;height:48px}
 .detail-thumbs{display:flex;gap:6px;flex-wrap:wrap}
 .detail-thumb{width:52px;height:52px;object-fit:cover;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:border-color .15s}
 .detail-thumb.active{border-color:var(--acc)}
@@ -386,9 +389,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427449</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">7c2b1c7e-715e-4c2b-a015-3f4f57e608c0</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427449, NNN373W3ZMMJ-320560042-427449</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">785b9af2-aae5-4704-91de-949235fcb145</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427734, NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -592,6 +595,24 @@ const DEFAULT_STATUS = 'budget';
 function statusLabel(s) { return STATUS_LABELS[s] || (s || '').replace(/_/g, ' '); }
 
 // ── SMALL HELPERS (added) ────────────────────────────────────
+// Placeholder shown when a product has no image, or when its image fails
+// to load. Kept global so both cases render the same thing.
+const PLACEHOLDER_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="10" width="16" height="4" rx="2"/><rect x="6" y="5" width="12" height="6" rx="2"/><line x1="7" y1="14" x2="7" y2="20"/><line x1="17" y1="14" x2="17" y2="20"/></svg>`;
+
+// An image URL can be recorded in the database while the file behind it is
+// gone (a moved storage object returns HTTP 400, not 404). Hiding the <img>
+// leaves an empty box; swap in the same placeholder used for "no image" so
+// the card still looks deliberate.
+function imgFail(el){
+  const wrap = el.parentElement;
+  el.remove();
+  if (wrap && !wrap.querySelector('.no-img')) {
+    const d = document.createElement('div');
+    d.className = 'no-img';
+    d.innerHTML = PLACEHOLDER_SVG;
+    wrap.prepend(d);
+  }
+}
 // Escape a string before putting it into innerHTML or an attribute.
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 // Friendly fallback label when an asset row has no `label` value.
@@ -1458,10 +1479,12 @@ function renderProducts() {
     }
     const nFiles = (p._assets||[]).length;
     const showExt = SHOW_EXTERNAL_LINKS && !!p.url;   // card's external-link icon (gated by master switch)
-    return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button">
+    return `<div class="prod-card" onclick="openDetail('${p.sku}')" tabindex="0" role="button"
+      aria-label="${escapeHtml(p.name)}, SKU ${escapeHtml(p.sku)}"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail('${p.sku}')}">
       <div class="card-img" style="position:relative">
         ${img
-          ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
+          ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="imgFail(this)">`
           : `<div class="no-img">${chairSvg}</div>`}
         ${(p._customOnly && p._badge) ? `<span class="card-band">${PHONE_ICO}<span>${escapeHtml(p._badge)}</span></span>` : ''}
         ${showExt ? `<a class="card-ext" href="${escapeHtml(p.url)}" target="_blank" rel="noopener"
@@ -1487,6 +1510,7 @@ function renderProducts() {
 function openDetail(sku) {
   const p = state.products.find(x => x.sku===sku);
   if (!p) return;
+  _focusBeforeModal = document.activeElement;   // hand focus back on close
   const imgs   = (p.images || []).filter(Boolean);   // drop blank/null entries — a list of empties is "no image"
   const showPx = state.customer?.show_pricing !== false;
   const price  = showPx ? getPrice(sku) : null;
@@ -1508,10 +1532,12 @@ function openDetail(sku) {
         <div class="detail-gallery">
           <img id="mainImg" class="detail-main-img"
             src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(p.name)}"
-            onerror="this.style.display='none'">
+            onerror="imgFail(this)">
           <div class="detail-thumbs">
             ${imgs.map((u,i)=>`<img class="detail-thumb${i===0?' active':''}"
-              src="${escapeHtml(u)}" alt="" onclick="setMainImg('${u}',this)"
+              src="${escapeHtml(u)}" alt="View ${i+1} of ${escapeHtml(p.name)}"
+              tabindex="0" role="button" onclick="setMainImg('${u}',this)"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setMainImg('${u}',this)}"
               onerror="this.style.display='none'">`).join('')}
           </div>
         </div>` : ''}
@@ -1577,7 +1603,27 @@ function setMainImg(url, el) {
   el.classList.add('active');
 }
 
-function closeModal() { document.getElementById('modalWrap').innerHTML=''; }
+// Remember what had focus before a modal opened, so it can be handed back
+// on close. Without this, dismissing a dialog drops keyboard users at the
+// top of the document and they must tab all the way back.
+let _focusBeforeModal = null;
+
+function closeModal() {
+  document.getElementById('modalWrap').innerHTML='';
+  if (_focusBeforeModal && document.body.contains(_focusBeforeModal)) {
+    try { _focusBeforeModal.focus(); } catch(e){}
+  }
+  _focusBeforeModal = null;
+}
+
+// Escape closes whatever is open. Every dialog in the app routes through
+// closeModal(), so one listener covers all of them. Registered once at
+// load rather than per-dialog.
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  const wrap = document.getElementById('modalWrap');
+  if (wrap && wrap.innerHTML.trim() !== '') { e.preventDefault(); closeModal(); }
+});
 
 // ── PROJECTS ─────────────────────────────────────────────────
 async function loadProjects() {
