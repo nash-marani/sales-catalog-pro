@@ -398,9 +398,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">785b9af2-aae5-4704-91de-949235fcb145</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427734, NNN373W3ZMMJ-320560042-427734</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427747</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">0aaebcfc-cd65-48e3-840c-bfc378bb76db</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427747, NNN373W3ZMMJ-320560042-427747</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -1401,7 +1401,19 @@ function renderCategoryCards() {
 // To sequence another page, add a line here, e.g.  'Guest Seating': 'price_desc'.
 const CAT_SORT = {
   'Office Chairs': 'price_asc',
+  'Standard Lockers': 'card_price_asc',
 };
+
+// The price a card actually shows: variant-priced products display "From $min"
+// and have no row in state.pricing, so getPrice() alone returns null for every
+// locker and a price sort would appear to do nothing. Returns null when there is
+// no price at all -- those sort last, so "Call" items collect at the end of
+// their section instead of leading it.
+function cardPrice(p) {
+  const r = variantPriceRange(p);
+  if (r) return r.min;
+  return getPrice(p.sku);
+}
 
 // Per-category section headers. Only categories listed here are split; every
 // other page renders as one flat grid exactly as before. Sections are tried in
@@ -1501,7 +1513,20 @@ function renderProducts() {
   // Per-page sequencing: only categories listed in CAT_SORT are reordered;
   // every other page keeps its curated (Featured) order. Call-for-pricing goes last.
   const sortMode = CAT_SORT[state.activeCat];
-  if (sortMode === 'price_asc' || sortMode === 'price_desc') {
+  if (sortMode === 'card_price_asc' || sortMode === 'card_price_desc') {
+    // Sorted here, before bucketing. Sections keep whatever order the list
+    // arrives in, so one sort of the whole list gives price order inside every
+    // section -- add or remove a product and it lands in the right place by
+    // itself, with no sort_order to maintain.
+    const dir = (sortMode === 'card_price_desc') ? -1 : 1;
+    list = [...list].sort((a, b) => {
+      const pa = cardPrice(a), pb = cardPrice(b);
+      if (pa == null && pb == null) return 0;
+      if (pa == null) return 1;
+      if (pb == null) return -1;
+      return (pa - pb) * dir;
+    });
+  } else if (sortMode === 'price_asc' || sortMode === 'price_desc') {
     const dir = (sortMode === 'price_desc') ? -1 : 1;
     list = [...list].sort((a, b) => {
       const pa = getPrice(a.sku), pb = getPrice(b.sku);
