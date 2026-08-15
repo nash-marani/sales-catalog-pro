@@ -400,9 +400,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427878</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">faaa711e-b7ae-4edd-aabd-7eb805f2a8b3</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427878, NNN373W3ZMMJ-320560042-427878</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427879</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">a7e32a24-7b79-41af-83c1-98a5cadae64f</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427879, NNN373W3ZMMJ-320560042-427879</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,7 +454,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 42</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 43</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1482,17 +1482,22 @@ const DESK_SUITE_SECTIONS = [
 // case-insensitive exact match on the product SKU. A locker in no list falls
 // through to the Knock-down / Assembled / Specialty bands exactly as today.
 const LOCKER_SERIES = {
-  vantage: [
-    'TM-121872-ONETier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-121872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-121872-SIXTier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-151872-ONETier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-151872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
+  // Explicit membership per band. Nothing is inferred from the product name --
+  // move a SKU between bands by moving the string between these lists.
+  vantage_kd: [
     'TM-121872-ONETier-VARIABLE-44GR (Knock Down) (G)',
     'TM-121872-Two Tier-VARIABLE-44GR (Knock Down) (G)',
     'TM-121872-SIXTier-OneBank-VARIABLE-44GR (KD) (G)',
     'TM-151872-ONETier-VARIABLE-44GR (Knock Down) (G)',
     'TM-151872-TWOTier-VARIABLE-44GR (Knock Down) (G)',
+    // still to be moved into vantage_asm -- these are prebuilt units
+    'TM-121872-ONETier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-121872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-151872-ONETier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-151872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
+  ],
+  vantage_asm: [
+    'TM-121872-SIXTier-VARIABLE-44GR (prebuilt) (G)',
   ],
   titan:     [],
   nexus:     [],
@@ -1525,15 +1530,11 @@ const LOCKER_SECTIONS = [
   { id:'vantagekd',  label:'Standard Lockers - Vantage Series, Knock-down',
                   note:'Assembly required. Lower freight, same locker.',
                   chip:null, strip:true, autoChip:true, pos:1,
-                  test: (t, p) => inSeries('vantage', p && p.sku) && isKnockDown(t) },
+                  test: (t, p) => inSeries('vantage_kd', p && p.sku) },
   { id:'vantageasm', label:'Standard Lockers - Vantage Series, Assembled',
                   note:'Arrives ready to place. Higher freight.',
                   chip:null, strip:true, autoChip:true, pos:2,
-                  test: (t, p) => inSeries('vantage', p && p.sku) && isAssembled(t) },
-  { id:'vantage', label:'Standard Lockers - Vantage Series',
-                  note:'The core locker range.',
-                  chip:null, strip:true, autoChip:true, pos:3,
-                  test: (t, p) => inSeries('vantage', p && p.sku) },
+                  test: (t, p) => inSeries('vantage_asm', p && p.sku) },
   { id:'titan',   label:'Future Proof, versatile - Titan Series',
                   note:'Adaptable configurations that grow with the site.',
                   chip:null, strip:true, autoChip:true, pos:4,
