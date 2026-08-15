@@ -400,9 +400,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427879</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">a7e32a24-7b79-41af-83c1-98a5cadae64f</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427879, NNN373W3ZMMJ-320560042-427879</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427880</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">7f133a59-1d4e-4017-b7ac-404033e4570a</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427880, NNN373W3ZMMJ-320560042-427880</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,7 +454,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 43</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 44</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1490,14 +1490,13 @@ const LOCKER_SERIES = {
     'TM-121872-SIXTier-OneBank-VARIABLE-44GR (KD) (G)',
     'TM-151872-ONETier-VARIABLE-44GR (Knock Down) (G)',
     'TM-151872-TWOTier-VARIABLE-44GR (Knock Down) (G)',
-    // still to be moved into vantage_asm -- these are prebuilt units
-    'TM-121872-ONETier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-121872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-151872-ONETier-VARIABLE-44GR (prebuilt) (G)',
-    'TM-151872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
   ],
   vantage_asm: [
+    'TM-121872-ONETier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-121872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
     'TM-121872-SIXTier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-151872-ONETier-VARIABLE-44GR (prebuilt) (G)',
+    'TM-151872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
   ],
   titan:     [],
   nexus:     [],
@@ -1529,11 +1528,11 @@ const inSeries = (key, sku) =>
 const LOCKER_SECTIONS = [
   { id:'vantagekd',  label:'Standard Lockers - Vantage Series, Knock-down',
                   note:'Assembly required. Lower freight, same locker.',
-                  chip:null, strip:true, autoChip:true, pos:1,
+                  chip:null, strip:true, autoChip:true, pos:2,
                   test: (t, p) => inSeries('vantage_kd', p && p.sku) },
   { id:'vantageasm', label:'Standard Lockers - Vantage Series, Assembled',
                   note:'Arrives ready to place. Higher freight.',
-                  chip:null, strip:true, autoChip:true, pos:2,
+                  chip:null, strip:true, autoChip:true, pos:1,
                   test: (t, p) => inSeries('vantage_asm', p && p.sku) },
   { id:'titan',   label:'Future Proof, versatile - Titan Series',
                   note:'Adaptable configurations that grow with the site.',
