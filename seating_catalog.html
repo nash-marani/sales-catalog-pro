@@ -400,9 +400,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427877</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">75d12132-8806-4eb7-957b-8d5607275366</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427877, NNN373W3ZMMJ-320560042-427877</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427878</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">faaa711e-b7ae-4edd-aabd-7eb805f2a8b3</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427878, NNN373W3ZMMJ-320560042-427878</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,7 +454,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 41</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 42</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1507,6 +1507,9 @@ const LOCKER_SERIES = {
 // Knock-down vs assembled is the most operationally significant fact on a locker
 // card (freight, labour), and the series bands mix both. So when a band sets no
 // chip of its own, derive one from the product text instead of losing it.
+const isKnockDown = t => /knock[\s-]?down|flat[\s-]?pack|\bk\.?d\.?\b/.test(t);
+const isAssembled = t => /pre[\s-]?built|assembled/.test(t);
+
 const assemblyChip = t =>
     /knock[\s-]?down|flat[\s-]?pack|\bk\.?d\.?\b/.test(t) ? { c:'Knock-down', k:'card-tag-kd' }
   : /pre[\s-]?built|assembled/.test(t)                        ? { c:'Assembled',  k:'card-tag-built' }
@@ -1519,38 +1522,46 @@ const inSeries = (key, sku) =>
 // While every list is empty they match nothing and render nothing, so the page
 // looks exactly as it does today until SKUs are assigned.
 const LOCKER_SECTIONS = [
+  { id:'vantagekd',  label:'Standard Lockers - Vantage Series, Knock-down',
+                  note:'Assembly required. Lower freight, same locker.',
+                  chip:null, strip:true, autoChip:true, pos:1,
+                  test: (t, p) => inSeries('vantage', p && p.sku) && isKnockDown(t) },
+  { id:'vantageasm', label:'Standard Lockers - Vantage Series, Assembled',
+                  note:'Arrives ready to place. Higher freight.',
+                  chip:null, strip:true, autoChip:true, pos:2,
+                  test: (t, p) => inSeries('vantage', p && p.sku) && isAssembled(t) },
   { id:'vantage', label:'Standard Lockers - Vantage Series',
                   note:'The core locker range.',
-                  chip:null, strip:true, autoChip:true, pos:1,
+                  chip:null, strip:true, autoChip:true, pos:3,
                   test: (t, p) => inSeries('vantage', p && p.sku) },
   { id:'titan',   label:'Future Proof, versatile - Titan Series',
                   note:'Adaptable configurations that grow with the site.',
-                  chip:null, strip:true, autoChip:true, pos:2,
+                  chip:null, strip:true, autoChip:true, pos:4,
                   test: (t, p) => inSeries('titan', p && p.sku) },
   { id:'nexus',   label:'Electronic, Network - Nexus Series',
                   note:'Electronic locking and networked access control.',
-                  chip:null, strip:true, autoChip:true, pos:3,
+                  chip:null, strip:true, autoChip:true, pos:5,
                   test: (t, p) => inSeries('nexus', p && p.sku) },
   { id:'compass', label:'Education Sector - Compass Series',
                   note:'Built for schools, campuses and training facilities.',
-                  chip:null, strip:true, autoChip:true, pos:4,
+                  chip:null, strip:true, autoChip:true, pos:6,
                   test: (t, p) => inSeries('compass', p && p.sku) },
   { id:'specapp', label:'Lockers - Specialty Applications',
                   note:'Purpose-built lockers for specific environments.',
-                  chip:null, strip:true, autoChip:true, pos:5,
+                  chip:null, strip:true, autoChip:true, pos:7,
                   test: (t, p) => inSeries('specialty', p && p.sku) },
 
   { id:'kd',      label:'Knock-down - flat packed',
                   note:'Assembly required. Lower freight, same locker.',
-                  chip:'Knock-down', chipClass:'card-tag-kd', strip:true, pos:6,
+                  chip:'Knock-down', chipClass:'card-tag-kd', strip:true, pos:8,
                   test: t => /knock[\s-]?down|flat[\s-]?pack|\bk\.?d\.?\b/.test(t) },
   { id:'built',   label:'Assembled - ships built',
                   note:'Arrives ready to place. Higher freight.',
-                  chip:'Assembled', chipClass:'card-tag-built', strip:true, pos:7,
+                  chip:'Assembled', chipClass:'card-tag-built', strip:true, pos:9,
                   test: t => /pre[\s-]?built|assembled/.test(t) },
   { id:'spec',    label:'Specialty lockers and finishing accessories',
                   note:'Open frames, made-to-order configurations and finishing accessories.',
-                  chip:null, strip:false, pos:8,
+                  chip:null, strip:false, pos:10,
                   test: () => true },
 ];
 
