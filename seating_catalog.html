@@ -400,9 +400,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427875</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">182ae92c-27ad-42ab-b54b-ce29de473d97</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427875, NNN373W3ZMMJ-320560042-427875</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427876</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">820860dc-5e3b-4e26-a324-42facaa815f1</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427876, NNN373W3ZMMJ-320560042-427876</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,7 +454,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 37</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 38</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1455,7 +1455,7 @@ const DESK_SUITE_SECTIONS = [
   { id:'meeting', label:'Meeting & Common Spaces',
                   note:'Tables for shared and collaborative space.',
                   chip:null, strip:false, pos:5,
-                  test: t => /meeting|conference|boardroom/.test(t) },
+                  test: t => /meeting|conference|boardroom|serving\s*station|coffee|refreshment/.test(t) },
   { id:'suite',   label:'To Complete your Suite',
                   note:'Pedestals, storage and accessories that finish the workstation.',
                   chip:null, strip:false, pos:3,
