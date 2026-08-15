@@ -398,9 +398,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427795</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">05d67d76-4107-4b74-8ead-f9f17374cc20</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427795, NNN373W3ZMMJ-320560042-427795</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427870</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">4aa8841e-c7db-471b-990b-b2b5a41f4fa1</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427870, NNN373W3ZMMJ-320560042-427870</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -1435,6 +1435,37 @@ const CAT_SECTIONS = {
                   note:'Open frames, made-to-order configurations and finishing accessories.',
                   chip:null, strip:false,
                   test: () => true },
+  ],
+
+  // Desk Suites. Order is load-bearing, because several names satisfy more
+  // than one pattern and the first match wins:
+  //   - "L-Shape Desk 24\" x 71\" with Return" contains "return", so l-shape
+  //     must be tested before returns or every L-shape lands in Returns.
+  //   - "L-Shaped Work Station with 1 Pedestal" contains "pedestal", so
+  //     l-shape must also come before the catch-all accessories band.
+  // No chips: unlike knock-down vs assembled, the band label is not extra
+  // information here -- the name already says "Rectangular" or "L-Shape".
+  'Desk Suites': [
+    { id:'rect',    label:'Rectangular Desks',
+                    note:'Single-surface desks. Choose depth and width.',
+                    chip:null, strip:false,
+                    test: t => /rectangular/.test(t) },
+    { id:'lshape',  label:'L-Shape Desks',
+                    note:'Desk and return as one workstation.',
+                    chip:null, strip:false,
+                    test: t => /l[\s-]?shape|corner\s+work/.test(t) },
+    { id:'returns', label:'Returns & Bridges',
+                    note:'Add-on surfaces to extend or connect a desk.',
+                    chip:null, strip:false,
+                    test: t => /\breturn\b|\bbridge\b/.test(t) },
+    { id:'meeting', label:'Meeting',
+                    note:'Tables for shared and collaborative space.',
+                    chip:null, strip:false,
+                    test: t => /meeting|conference|boardroom/.test(t) },
+    { id:'suite',   label:'To Complete your Suite',
+                    note:'Pedestals, storage and accessories that finish the workstation.',
+                    chip:null, strip:false,
+                    test: () => true },
   ],
 };
 
