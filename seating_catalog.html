@@ -398,9 +398,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427871</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">fba1272d-def6-48f2-8468-92eeaa6bd72e</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427871, NNN373W3ZMMJ-320560042-427871</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427872</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">4bd22958-4b32-4ccf-97e1-08b3569de697</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427872, NNN373W3ZMMJ-320560042-427872</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -452,7 +452,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 31</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 32</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1438,23 +1438,23 @@ function cardPrice(p) {
 const DESK_SUITE_SECTIONS = [
   { id:'rect',    label:'Rectangular Desks',
                   note:'Single-surface desks. Choose depth and width.',
-                  chip:null, strip:false,
+                  chip:null, strip:false, pos:1,
                   test: t => /rectangular/.test(t) },
   { id:'lshape',  label:'L-Shape Desks',
                   note:'Desk and return as one workstation.',
-                  chip:null, strip:false,
+                  chip:null, strip:false, pos:2,
                   test: t => /l[\s-]?shape|corner\s+work/.test(t) },
   { id:'returns', label:'Returns & Bridges',
                   note:'Add-on surfaces to extend or connect a desk.',
-                  chip:null, strip:false,
+                  chip:null, strip:false, pos:4,
                   test: t => /\breturn\b|\bbridge\b/.test(t) },
   { id:'meeting', label:'Meeting',
                   note:'Tables for shared and collaborative space.',
-                  chip:null, strip:false,
+                  chip:null, strip:false, pos:5,
                   test: t => /meeting|conference|boardroom/.test(t) },
   { id:'suite',   label:'To Complete your Suite',
                   note:'Pedestals, storage and accessories that finish the workstation.',
-                  chip:null, strip:false,
+                  chip:null, strip:false, pos:3,
                   test: () => true },
 ];
 
@@ -1644,7 +1644,15 @@ function renderProducts() {
     if (sec) buckets.get(sec.id).push(p);
   });
 
-  document.getElementById('prodGrid').innerHTML = secDefs.map(d => {
+  // Bands are TESTED in array order (catch-all last, so nothing can fall off the
+  // page) but DISPLAYED in `pos` order. Keeping the two separate is what lets the
+  // catch-all "To Complete your Suite" sit third on screen while still being
+  // matched last. Defs without a `pos` keep their array position.
+  const renderOrder = secDefs
+    .map((d, i) => ({ d, i }))
+    .sort((a, b) => ((a.d.pos ?? a.i) - (b.d.pos ?? b.i)) || (a.i - b.i));
+
+  document.getElementById('prodGrid').innerHTML = renderOrder.map(({ d }) => {
     const items = buckets.get(d.id);
     if (!items.length) return '';
     return `<div class="grid-section">
