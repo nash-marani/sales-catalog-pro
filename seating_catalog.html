@@ -400,9 +400,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
-<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427880</mso:_dlc_DocId>
-<mso:_dlc_DocIdItemGuid msdt:dt="string">7f133a59-1d4e-4017-b7ac-404033e4570a</mso:_dlc_DocIdItemGuid>
-<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427880, NNN373W3ZMMJ-320560042-427880</mso:_dlc_DocIdUrl>
+<mso:_dlc_DocId msdt:dt="string">NNN373W3ZMMJ-320560042-427881</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">96031808-e1d6-4904-b183-24216ceac63d</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://xenali.sharepoint.com/sites/xenshare/_layouts/15/DocIdRedir.aspx?ID=NNN373W3ZMMJ-320560042-427881, NNN373W3ZMMJ-320560042-427881</mso:_dlc_DocIdUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -454,7 +454,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--txt);min-height:1
       <button class="btn-sm-nav" onclick="showCatalogPicker()" title="Switch catalog">Switch</button>
     </div>
     <div class="nav-sp"></div>
-    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 44</span>
+    <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" title="Build marker — confirms which version is live. Safe to remove.">build 46</span>
     <span class="nav-user" id="navUser"></span>
     <span class="nav-role" id="navRole"></span>
     <button class="btn-sm-nav" onclick="signOut()">Sign out</button>
@@ -1497,6 +1497,7 @@ const LOCKER_SERIES = {
     'TM-121872-SIXTier-VARIABLE-44GR (prebuilt) (G)',
     'TM-151872-ONETier-VARIABLE-44GR (prebuilt) (G)',
     'TM-151872-TWOTier-VARIABLE-44GR (prebuilt) (G)',
+    '988-LockerFinishing-Accessories',
   ],
   titan:     [],
   nexus:     [],
@@ -1504,7 +1505,6 @@ const LOCKER_SERIES = {
   specialty: [
     '117-Gear Locker with hat-shelf VARIABLE Frame (Group)',
     'TM-121872-ONETier-Vented-VARIABLE-44GR (prebuilt) (G)',
-    '988-LockerFinishing-Accessories',
   ],
 };
 
@@ -1526,7 +1526,7 @@ const inSeries = (key, sku) =>
 // While every list is empty they match nothing and render nothing, so the page
 // looks exactly as it does today until SKUs are assigned.
 const LOCKER_SECTIONS = [
-  { id:'vantagekd',  label:'Standard Lockers - Vantage Series, Knock-down',
+  { id:'vantagekd',  label:'Standard Lockers - Vantage Series, Flat Pack',
                   note:'Assembly required. Lower freight, same locker.',
                   chip:null, strip:true, autoChip:true, pos:2,
                   test: (t, p) => inSeries('vantage_kd', p && p.sku) },
@@ -1537,14 +1537,17 @@ const LOCKER_SECTIONS = [
   { id:'titan',   label:'Future Proof, versatile - Titan Series',
                   note:'Adaptable configurations that grow with the site.',
                   chip:null, strip:true, autoChip:true, pos:4,
+                  alsoSkus: ['988-LockerFinishing-Accessories'],
                   test: (t, p) => inSeries('titan', p && p.sku) },
   { id:'nexus',   label:'Electronic, Network - Nexus Series',
                   note:'Electronic locking and networked access control.',
                   chip:null, strip:true, autoChip:true, pos:5,
+                  alsoSkus: ['988-LockerFinishing-Accessories'],
                   test: (t, p) => inSeries('nexus', p && p.sku) },
   { id:'compass', label:'Education Sector - Compass Series',
                   note:'Built for schools, campuses and training facilities.',
                   chip:null, strip:true, autoChip:true, pos:6,
+                  alsoSkus: ['988-LockerFinishing-Accessories'],
                   test: (t, p) => inSeries('compass', p && p.sku) },
   { id:'specapp', label:'Lockers - Specialty Applications',
                   note:'Purpose-built lockers for specific environments.',
@@ -1748,6 +1751,19 @@ function renderProducts() {
   list.forEach(p => {
     const sec = sectionFor(p, secDefs);
     if (sec) buckets.get(sec.id).push(p);
+  });
+
+  // A product normally lands in exactly one band (first match wins). `alsoSkus`
+  // is the deliberate exception: a SKU listed there is appended to that band as
+  // well, so cross-cutting items -- finishing accessories that apply to every
+  // locker series -- can appear under each one without leaving their home band.
+  secDefs.forEach(d => {
+    if (!d.alsoSkus || !d.alsoSkus.length) return;
+    const bucket = buckets.get(d.id);
+    d.alsoSkus.forEach(sku => {
+      const p = list.find(x => String(x.sku).toLowerCase() === String(sku).toLowerCase());
+      if (p && !bucket.includes(p)) bucket.push(p);
+    });
   });
 
   // Bands are TESTED in array order (catch-all last, so nothing can fall off the
